@@ -27,10 +27,10 @@
   --f-num:"IBM Plex Mono", ui-monospace, Menlo, monospace;
   --r:12px;
   --brand:#0E6B57;
-  --m-panel:#A87512; --m-caja:#0E7C86; --m-nomina:#4F46E5; --m-cobrar:#15803D; --m-pagar:#C2410C; --m-ajustes:#475569;
+  --m-panel:#A87512; --m-caja:#0E7C86; --m-nomina:#4F46E5; --m-cobrar:#15803D; --m-pagar:#C2410C; --m-ajustes:#475569; --m-reportes:#7C3AED;
 }
 @media (prefers-color-scheme: dark){:root:not([data-tema]){
-  --brand:#4CC4A4; --m-panel:#D4AF5A; --m-caja:#3CC6CF; --m-nomina:#8B8CF8; --m-cobrar:#4ADE9A; --m-pagar:#F59E7A; --m-ajustes:#A3AEC0;
+  --brand:#4CC4A4; --m-panel:#D4AF5A; --m-caja:#3CC6CF; --m-nomina:#8B8CF8; --m-cobrar:#4ADE9A; --m-pagar:#F59E7A; --m-ajustes:#A3AEC0; --m-reportes:#C4B5FD;
   --bg:#101614; --surface:#18201D; --sunk:#0C110F; --line:#2A3531;
   --ink:#E6EEEA; --muted:#93A39B; --accent:#4CC4A4; --accent-ink:#06231C; --accent-soft:#163A31;
   --in:#5BD1A5; --out:#F08A74; --warn:#E8B64A; --warn-soft:#3A2F12; --bad-soft:#3D1F19; color-scheme:dark}}
@@ -38,17 +38,17 @@
   --bg:#F5F7FA; --surface:#FFFFFF; --sunk:#EEF1F5; --line:#DDE3EA;
   --ink:#111827; --muted:#5B6474; --accent-ink:#FFFFFF; --accent-soft:#DCF2EA;
   --in:#0F8A5F; --out:#C2410C; --warn:#A16207; --warn-soft:#FEF3C7; --bad-soft:#FDE4DC; color-scheme:light;
-  --brand:#0E6B57; --m-panel:#A87512; --m-caja:#0E7C86; --m-nomina:#4F46E5; --m-cobrar:#15803D; --m-pagar:#C2410C; --m-ajustes:#475569}
+  --brand:#0E6B57; --m-panel:#A87512; --m-caja:#0E7C86; --m-nomina:#4F46E5; --m-cobrar:#15803D; --m-pagar:#C2410C; --m-ajustes:#475569; --m-reportes:#7C3AED}
 :root[data-tema="oscuro"]{
   --bg:#0E0F12; --surface:#17191D; --sunk:#0A0B0D; --line:#2A2D33;
   --ink:#EDEDED; --muted:#9A9EA6; --accent-ink:#101114; --accent-soft:#1E2A24;
   --in:#4ADE9A; --out:#F59E7A; --warn:#E8B64A; --warn-soft:#3A2F12; --bad-soft:#3D1F19; color-scheme:dark;
-  --brand:#D4AF5A; --m-panel:#D4AF5A; --m-caja:#3CC6CF; --m-nomina:#8B8CF8; --m-cobrar:#4ADE9A; --m-pagar:#F59E7A; --m-ajustes:#A3AEC0}
+  --brand:#D4AF5A; --m-panel:#D4AF5A; --m-caja:#3CC6CF; --m-nomina:#8B8CF8; --m-cobrar:#4ADE9A; --m-pagar:#F59E7A; --m-ajustes:#A3AEC0; --m-reportes:#C4B5FD}
 :root[data-tema="esmeralda"]{
   --bg:#0B2A21; --surface:#10372C; --sunk:#082019; --line:#1E4B3E;
   --ink:#F3EDDF; --muted:#A9C0B5; --accent-ink:#0B2A21; --accent-soft:#164A3B;
   --in:#7EE0B5; --out:#F2A08A; --warn:#E8C26A; --warn-soft:#3B3418; --bad-soft:#43251E; color-scheme:dark;
-  --brand:#D4AF5A; --m-panel:#D4AF5A; --m-caja:#5FD3C6; --m-nomina:#A5B4FC; --m-cobrar:#86EFAC; --m-pagar:#FDBA74; --m-ajustes:#CBD5C0}
+  --brand:#D4AF5A; --m-panel:#D4AF5A; --m-caja:#5FD3C6; --m-nomina:#A5B4FC; --m-cobrar:#86EFAC; --m-pagar:#FDBA74; --m-ajustes:#CBD5C0; --m-reportes:#C4B5FD}
 :root[data-theme="dark-unused"]{
   --bg:#101614; --surface:#18201D; --sunk:#0C110F; --line:#2A3531;
   --ink:#E6EEEA; --muted:#93A39B; --accent:#4CC4A4; --accent-ink:#06231C; --accent-soft:#163A31;
@@ -56,7 +56,7 @@
 *{box-sizing:border-box}
 body{--accent:var(--brand)}
 body.mods.mod-panel{--accent:var(--m-panel)} body.mods.mod-caja{--accent:var(--m-caja)} body.mods.mod-nomina{--accent:var(--m-nomina)}
-body.mods.mod-cobrar{--accent:var(--m-cobrar)} body.mods.mod-pagar{--accent:var(--m-pagar)} body.mods.mod-ajustes{--accent:var(--m-ajustes)}
+body.mods.mod-cobrar{--accent:var(--m-cobrar)} body.mods.mod-pagar{--accent:var(--m-pagar)} body.mods.mod-reportes{--accent:var(--m-reportes)} body.mods.mod-ajustes{--accent:var(--m-ajustes)}
 body.mods header.top{border-bottom:2px solid var(--accent)}
 body.mods #main h2::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent);margin-right:10px;vertical-align:.12em}
 .tint{--tc:var(--accent)}
@@ -188,7 +188,7 @@ tr.tot td{font-weight:600;background:var(--sunk)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(140px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;max-width:90%}
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}}
 /* ===== Retoque colorido (línea Mi Tambo) ===== */
-:root{--sh:0 1px 2px #0000000d,0 8px 20px -10px #00000040;--h-panel:#A87512;--h-caja:#0E7C86;--h-nomina:#4F46E5;--h-cobrar:#15803D;--h-pagar:#C2410C;--h-ajustes:#475569;--h-in:#0F8A5F;--h-out:#C2410C}
+:root{--sh:0 1px 2px #0000000d,0 8px 20px -10px #00000040;--h-panel:#A87512;--h-caja:#0E7C86;--h-nomina:#4F46E5;--h-cobrar:#15803D;--h-pagar:#C2410C;--h-ajustes:#475569;--h-reportes:#6D28D9;--h-in:#0F8A5F;--h-out:#C2410C}
 body{--edge:color-mix(in srgb,var(--line) 55%,var(--accent) 45%);background-image:radial-gradient(520px 320px at 100% 0,color-mix(in srgb,var(--m-panel) 14%,transparent),transparent),radial-gradient(520px 360px at 0 0,color-mix(in srgb,var(--brand) 12%,transparent),transparent);background-repeat:no-repeat;background-attachment:fixed}
 .panel,.list,.kpis,.tbl{border-radius:18px;box-shadow:var(--sh);border-bottom:3px solid var(--edge)}
 .list .item{transition:background .12s}
@@ -261,6 +261,31 @@ body.mods nav.tabs button.on::before{display:none}
 .sheet::before{content:"";display:block;width:42px;height:5px;border-radius:3px;background:var(--line);margin:-6px auto 14px}
 .sheet-bg{-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
 @media (prefers-reduced-motion:reduce){#main.enter>*{animation:none}.btn,.qb,.tile{transition:none}}
+.hpdf{position:absolute;top:12px;right:12px;z-index:2;display:flex;align-items:center;gap:5px;padding:6px 11px 6px 9px;border-radius:999px;background:#ffffff26;border:1px solid #ffffff55;color:#fff;font-size:12.5px;font-weight:700;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 2px 0 #0003}
+.hpdf:active{transform:translateY(1px)}
+.hpdf svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
+.hero .hl{padding-right:64px}.mh-top{padding-right:64px}
+.btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-2px}
+.medal.img{background:#fff!important;overflow:hidden;padding:0}
+.medal.img img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .bt{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.blogo{width:34px;height:34px;border-radius:10px;object-fit:cover;flex:none;background:#fff;box-shadow:0 0 0 2px var(--accent)}
+.er .erl{display:grid;grid-template-columns:minmax(0,1fr) auto 64px;gap:8px;padding:6px 2px;font-size:14px;align-items:baseline}
+.er .erl .pc{text-align:right;color:var(--muted);font-size:12px}
+.er .erl.hd{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line)}
+.er .erl.g{font-weight:600;border-top:1px solid var(--line);margin-top:4px;padding-top:9px}
+.er .erl.d{font-size:13px;color:var(--muted);padding:2px 2px 2px 14px}
+.er .erl.t{font-weight:700;background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:10px;padding:8px 8px;margin-top:6px}
+.er .erl.f{font-weight:800;font-size:15.5px;background:color-mix(in srgb,var(--accent) 20%,transparent);border-radius:12px;padding:10px 8px;margin-top:8px}
+.er .erl.cmp{grid-template-columns:1fr auto;font-size:11.5px;color:var(--muted);padding:2px 8px 4px}
+.logo-row{display:flex;align-items:center;gap:12px}
+.logo-prev{width:64px;height:64px;border-radius:16px;object-fit:cover;background:#fff;border:1px solid var(--line);flex:none;display:grid;place-items:center;color:var(--muted)}
+.logo-prev svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips .ch{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-radius:999px;background:var(--sunk);font-size:13px}
+.chips .ch small{color:var(--muted)}
+.chips .ch button{border:0;background:transparent;color:var(--muted);font-size:16px;line-height:1;padding:0 4px;cursor:pointer}
 @media (max-width:380px){.qb{font-size:11px}.hero .hn,.mhero .bn{font-size:26px}}
 </style>
 
@@ -295,7 +320,7 @@ const MINIMOS=[
  ["minas","Minas y canteras",11113.46],
  ["zf","Zonas francas",9986.54],
  ["gobierno","Gobierno central y municipal",7716.70]];
-const DEF_CFG={tema:"esmeralda",negocio:"Mi Negocio",inssLab:7,inssPat:21.5,inatec:2,tc:36.62};
+const DEF_CFG={tema:"esmeralda",ruc:"",tel:"",dir:"",prop:"",logo:"",catsIn:[],catsOut:[],recs:[],recPag:{},diaINSS:"",diaIR:"",aguiPag:"",negocio:"Mi Negocio",inssLab:7,inssPat:21.5,inatec:2,tc:36.62};
 const CAT_IN=["Ventas","Servicios","Cobro a clientes","Otros ingresos"];
 const CAT_OUT=["Compras / inventario","Alquiler","Servicios básicos","Nómina","Impuestos","Transporte","Mantenimiento","Pago a proveedores","Publicidad","Otros gastos"];
 const METODOS=["Efectivo","Banco","Transferencia","Tarjeta"];
@@ -422,7 +447,7 @@ function aplicarTema(){
   const t=S.cfg.tema||"auto",r=document.documentElement;
   if(t==="auto")delete r.dataset.tema;else r.dataset.tema=t;
   document.body.classList.toggle("mods",S.cfg.mods!==false);
-  ["panel","caja","nomina","cobrar","pagar","ajustes"].forEach(k=>document.body.classList.toggle("mod-"+k,S.gate==="ok"&&S.tab===k));
+  ["panel","caja","nomina","cobrar","pagar","ajustes","reportes"].forEach(k=>document.body.classList.toggle("mod-"+k,S.gate==="ok"&&S.tab===k));
   const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=getComputedStyle(document.body).getPropertyValue("--surface").trim()||"#0E6B57";
 }
 function renderGate(){
@@ -452,14 +477,14 @@ function render(){
   if(S.gate!=="ok"){renderGate();return}
   aplicarTema();
   document.querySelector("nav.tabs").hidden=false;
-  $("#brand").innerHTML=esc(S.cfg.negocio||"Mi Negocio")+"<small>Libro del negocio · Nicaragua</small>";
+  $("#brand").innerHTML=(S.cfg.logo?`<img class="blogo" src="${S.cfg.logo}" alt="">`:"")+`<span class="bt">${esc(S.cfg.negocio||"Mi Negocio")}<small>${S.tab==="reportes"?"Reportes financieros":"Libro del negocio · Nicaragua"}</small></span>`;
   $("#meslbl").textContent=mesLbl(S.mes);
-  $("#mesnav").hidden=!(S.tab==="panel"||S.tab==="caja");
+  $("#mesnav").hidden=!(S.tab==="panel"||S.tab==="caja"||(S.tab==="reportes"&&(S.rp||{}).per!=="rango"));
   $("#tabs").innerHTML=TABS.map(([k,l,ic])=>`<button data-act="tab" data-k="${k}" class="${S.tab===k?"on":""}" aria-label="${l}"><svg viewBox="0 0 24 24">${ic}</svg>${l}</button>`).join("");
   const fab=$("#fab");
   const fabs={panel:["+ Movimiento","nuevoMov"],caja:["+ Movimiento","nuevoMov"],nomina:S.nomTab==="emps"?["+ Empleado","nuevoEmp"]:["+ Planilla","nuevaNom"],cobrar:["+ Cuenta por cobrar","nuevaCxc"],pagar:["+ Cuenta por pagar","nuevaCxp"]};
   const f=fabs[S.tab];fab.hidden=!f;if(f){fab.textContent=f[0];fab.dataset.act=f[1]}
-  const v={panel:vPanel,caja:vCaja,nomina:vNomina,cobrar:()=>vCuentas("cxc"),pagar:()=>vCuentas("cxp"),ajustes:vAjustes}[S.tab];
+  const v={reportes:vReportes,panel:vPanel,caja:vCaja,nomina:vNomina,cobrar:()=>vCuentas("cxc"),pagar:()=>vCuentas("cxp"),ajustes:vAjustes}[S.tab];
   const mainEl=$("#main");if(S._lastTab!==S.tab){mainEl.classList.remove("enter");void mainEl.offsetWidth;mainEl.classList.add("enter");S._lastTab=S.tab}
   $("#main").innerHTML=(avisoSafari()?`<div style="height:14px"></div>`+avisoSafari():"")+v()+modoAviso();
 }
@@ -478,11 +503,14 @@ const ICO={
  in:'<path d="M12 19V5M5 12l7-7 7 7"/>',out:'<path d="M12 5v14M19 12l-7 7-7-7"/>',
  caja:'<path d="M3 7h18v12H3zM3 11h18M16 15h2"/>',nomina:'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5M16 6.5a3 3 0 0 1 0 5.6M18 14.5c1.4.8 2.3 2.4 2.5 4.5"/>',
  cobrar:'<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>',pagar:'<path d="M12 20V8M7 13l5-5 5 5M5 4h14"/>',
- planilla:'<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4"/>',reloj:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>'};
+ planilla:'<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4"/>',reloj:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+ pdf:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M12 11v6M9.5 14.5 12 17l2.5-2.5"/>',
+ grafico:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',reportes:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+ logo:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-8 8"/>'};
 const secP=(k,ico,col,tit,sub,body,alerta)=>`<div class="acc ${AJ.has(k)?"op":""}" id="aj-${k}"><button class="ah" data-act="ajSec" data-k="${k}" aria-expanded="${AJ.has(k)}"><span class="ai" style="background:var(${col});color:#fff">${ic(ico)}</span><span class="at"><b>${tit}</b><small>${alerta?`<span class="chip bad">${alerta}</span> `:""}${sub}</small></span><span class="chev">›</span></button><div class="ab">${body}</div></div>`;
 const ic=k=>`<svg viewBox="0 0 24 24" aria-hidden="true">${ICO[k]}</svg>`;
 const inic=n=>String(n||"?").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();
-function heroMod(mod,eb,lbl,big,chips){return `<div class="mhero" style="--mc:var(--h-${mod})"><div class="mh-top"><span class="mh-ic">${ic(mod)}</span><div><div class="eb">${eb}</div><div class="lb">${lbl}</div></div></div><div class="bn num">${big}</div>${chips&&chips.length?`<div class="mh-ch">${chips.map(([l,v,w])=>`<div class="${w?"w":""}"><span>${l}</span><b class="num">${v}</b></div>`).join("")}</div>`:""}</div>`}
+function heroMod(mod,eb,lbl,big,chips,pdf){return `<div class="mhero" style="--mc:var(--h-${mod})">${pdf?`<button class="hpdf" data-act="pdf" data-k="${pdf}" aria-label="Descargar PDF">${ic("pdf")}PDF</button>`:""}<div class="mh-top"><span class="mh-ic">${ic(mod)}</span><div><div class="eb">${eb}</div><div class="lb">${lbl}</div></div></div><div class="bn num">${big}</div>${chips&&chips.length?`<div class="mh-ch">${chips.map(([l,v,w])=>`<div class="${w?"w":""}"><span>${l}</span><b class="num">${v}</b></div>`).join("")}</div>`:""}</div>`}
 function vPanel(){
   const t=sumMes(S.mes);
   const cxc=Object.values(S.cxc),cxp=Object.values(S.cxp);
@@ -513,11 +541,12 @@ function vPanel(){
   const qa=(mod,ico,act,lbl)=>`<button class="qb" style="--mc:var(--m-${mod});--hc:var(--h-${mod})" data-act="${act}"><span class="qi">${ic(ico)}</span>${lbl}</button>`;
   return `
   ${hayEjemplos()?`<div class="notice"><b>Datos de ejemplo.</b> Lo que ves marcado como ejemplo es para mostrar cómo funciona. Borralo en Ajustes cuando empieces a registrar lo tuyo.</div>`:""}
-  <div class="hero">
-    <div class="hl"><div class="medal">LN</div><div style="min-width:0"><div class="eb">${esc(mesLbl(S.mes))} · Resultado</div><div class="hn num">${C(t.r)}</div><div class="sb">${t.i>0?(t.r>=0?"Ganancia":"Pérdida")+" del "+Math.abs(marg)+"% sobre las ventas":"Todavía no hay ventas este mes"}</div></div></div>
+  <div class="hero"><button class="hpdf" data-act="pdf" data-k="panel" aria-label="Descargar PDF">${ic("pdf")}PDF</button>
+    <div class="hl"><div class="medal ${S.cfg.logo?"img":""}">${S.cfg.logo?`<img src="${S.cfg.logo}" alt="">`:"LN"}</div><div style="min-width:0"><div class="eb">${esc(mesLbl(S.mes))} · Resultado</div><div class="hn num">${C(t.r)}</div><div class="sb">${t.i>0?(t.r>=0?"Ganancia":"Pérdida")+" del "+Math.abs(marg)+"% sobre las ventas":"Todavía no hay ventas este mes"}</div></div></div>
     <div class="hk"><div><span>${ic("in")} Ingresos</span><b class="num">${C(t.i)}</b></div><div><span>${ic("out")} Gastos</span><b class="num">${C(t.g)}</b></div></div>
   </div>
-  <div class="qa">${qa("cobrar","in","qaVenta","Venta")}${qa("pagar","out","qaGasto","Gasto")}${qa("caja","cobrar","nuevaCxc","Por cobrar")}${qa("nomina","planilla","qaPlanilla","Planilla")}</div>
+  <div class="qa">${qa("cobrar","in","qaVenta","Venta")}${qa("pagar","out","qaGasto","Gasto")}${qa("nomina","planilla","qaPlanilla","Planilla")}${qa("reportes","grafico","irReportes","Reportes")}</div>
+  ${vRecordatorios()}
   <div class="tiles">
     ${tile("cobrar","tab","cobrar","Te deben",C(pc),vc>0?"Vencido "+C(vc):"Nada vencido",vc>0)}
     ${tile("pagar","tab","pagar","Debés",C(pp),vp>0?"Vencido "+C(vp):"Nada vencido",vp>0)}
@@ -539,7 +568,7 @@ function vCaja(){
   const grupos={};ms.forEach(m=>(grupos[m.fecha]=grupos[m.fecha]||[]).push(m));
   const html=Object.keys(grupos).map(f=>{const g=grupos[f];const net=g.reduce((a,m)=>a+(m.tipo==="ingreso"?1:-1)*enC(m),0);
     return `<div class="dayhead"><span>${fechaCorta(f).toUpperCase()}</span><span class="num">${net>=0?"+":""}${C(net)}</span></div>`+g.map(m=>`<button class="item" data-act="editMov" data-id="${m.id}"><span class="av" style="--hc:var(--h-${m.tipo==="ingreso"?"in":"out"})">${ic(m.tipo==="ingreso"?"in":"out")}</span><div class="main"><div class="t">${esc(m.descripcion||m.categoria)}${m.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${esc(m.categoria)} · ${esc(m.metodo)}${m.moneda==="USD"?" · "+U(m.monto):""}</div></div><span class="num ${m.tipo==="ingreso"?"in-c":"out-c"}">${m.tipo==="ingreso"?"+":"−"}${C(enC(m))}</span></button>`).join("")}).join("");
-  return `${heroMod("caja","Caja","Saldo de "+esc(mesLbl(S.mes)),C(t.r),[["Entró",C(t.i)],["Salió",C(t.g)]])}
+  return `${heroMod("caja","Caja","Saldo de "+esc(mesLbl(S.mes)),C(t.r),[["Entró",C(t.i)],["Salió",C(t.g)]],"caja")}
   <div class="spread" style="margin:14px 0 10px"><div class="seg">${[["todo","Todo"],["ingreso","Ingresos"],["gasto","Gastos"]].map(([k,l])=>`<button data-act="cajaF" data-k="${k}" class="${S.cajaFiltro===k?"on":""}">${l}</button>`).join("")}</div><button class="btn sm" data-act="csv">Exportar CSV</button></div>
   <div class="list">${html||`<div class="empty">No hay movimientos en ${esc(mesLbl(S.mes))}. Tocá “+ Movimiento” para registrar una venta o un gasto.</div>`}</div>`;
 }
@@ -557,7 +586,7 @@ function vNomina(){
   }
   const nm=Object.values(S.noms).filter(n=>n.periodo===hoy().slice(0,7)).reduce((a,n)=>{const t=totNom(n.lineas||[]);a.c+=t.costo;a.n+=t.neto;return a},{c:0,n:0});
   const masa=act.reduce((a,e)=>a+(+e.salario||0),0);
-  return `${heroMod("nomina","Nómina · "+esc(mesLbl(hoy().slice(0,7))),nm.c?"Costo total de planillas del mes":"Salarios mensuales de tu equipo",nm.c?C(nm.c):C(masa),[["Trabajadores",act.length+" de "+MAX_EMP],[nm.c?"Neto pagado":"Costo con INSS e INATEC",nm.c?C(nm.n):C(masa*(1+(S.cfg.inssPat+S.cfg.inatec)/100))]])}
+  return `${heroMod("nomina","Nómina · "+esc(mesLbl(hoy().slice(0,7))),nm.c?"Costo total de planillas del mes":"Salarios mensuales de tu equipo",nm.c?C(nm.c):C(masa),[["Trabajadores",act.length+" de "+MAX_EMP],[nm.c?"Neto pagado":"Costo con INSS e INATEC",nm.c?C(nm.n):C(masa*(1+(S.cfg.inssPat+S.cfg.inatec)/100))]],"nomina")}
   <div class="seg" style="display:inline-flex;margin-bottom:12px">${[["emps","Empleados"],["plan","Planillas"]].map(([k,l])=>`<button data-act="nomT" data-k="${k}" class="${S.nomTab===k?"on":""}">${l}</button>`).join("")}</div>${body}
   <h3>Cómo se calcula</h3><div class="panel" style="font-size:13px;line-height:1.55">INSS laboral ${S.cfg.inssLab}% del salario bruto. IR salarial con la tabla progresiva anual sobre el salario neto de INSS, proyectado a 12 meses (o 24 quincenas). Horas extra pagadas al doble del valor hora (salario ÷ 30 ÷ 8). El empleador aporta INSS patronal ${S.cfg.inssPat}% e INATEC ${S.cfg.inatec}%. Prestaciones: vacaciones de 15 días por semestre, aguinaldo de un mes por año (se paga en los primeros 10 días de diciembre) e indemnización por antigüedad del Art. 45 (tope de 5 meses).</div>`;
 }
@@ -572,7 +601,7 @@ function vCuentas(col){
   abiertas.forEach(c=>{const d=c.vence?dias(c.vence,h):0;const s=saldo(c);if(d<=0)b[0]+=s;else if(d<=30)b[1]+=s;else if(d<=60)b[2]+=s;else b[3]+=s});
   const tot=b.reduce((a,x)=>a+x,0);
   const row=c=>`<button class="item" data-act="verCuenta" data-col="${col}" data-id="${c.id}"><span class="av ini" style="--hc:var(--h-${cx?"cobrar":"pagar"})">${esc(inic(c.nombre))}</span><div class="main"><div class="t">${esc(c.nombre)}${c.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${esc(c.concepto||"")}${c.vence?" · vence "+fechaCorta(c.vence):""}</div></div>${chipEstado(c)}<span class="num">${C(estado(c)==="pagado"?c.monto:saldo(c))}</span></button>`;
-  return `${heroMod(cx?"cobrar":"pagar",cx?"Cuentas por cobrar":"Cuentas por pagar",cx?"Total que te deben":"Total que debés",C(tot),[["Al día",C(b[0])],["1–30 días",C(b[1]),b[1]>0],["31–60 días",C(b[2]),b[2]>0],["Más de 60",C(b[3]),b[3]>0]])}
+  return `${heroMod(cx?"cobrar":"pagar",cx?"Cuentas por cobrar":"Cuentas por pagar",cx?"Total que te deben":"Total que debés",C(tot),[["Al día",C(b[0])],["1–30 días",C(b[1]),b[1]>0],["31–60 días",C(b[2]),b[2]>0],["Más de 60",C(b[3]),b[3]>0]],col)}
   <h3>Abiertas (${abiertas.length})</h3><div class="list">${abiertas.length?abiertas.map(row).join(""):`<div class="empty">${cx?"Nadie te debe nada. Registrá aquí las ventas al crédito.":"No tenés deudas pendientes. Registrá aquí las facturas de proveedores."}</div>`}</div>
   ${cerradas.length?`<h3>Pagadas (${cerradas.length})</h3><div class="list">${cerradas.slice(0,20).map(row).join("")}</div>`:""}`;
 }
@@ -590,9 +619,15 @@ function vAjustes(){
     <div class="temas">${TEMAS.map(([k,n,d,col])=>`<button class="tema ${tema===k?"on":""}" data-act="tema" data-k="${k}" aria-pressed="${tema===k}"><span class="sw">${col.map(x=>`<i style="background:${x}"></i>`).join("")}</span><span><b>${n}</b><br><small>${d}</small></span></button>`).join("")}</div>
     <div class="spread" style="margin-top:12px"><div><b style="font-size:14px">Colores por módulo</b><div class="mods-row" style="margin-top:6px">${[["Panel","panel"],["Caja","caja"],["Nómina","nomina"],["Cobrar","cobrar"],["Pagar","pagar"]].map(([n,k])=>`<span style="background:var(--m-${k});color:var(--accent-ink)">${n}</span>`).join("")}</div></div>
     <button class="btn sm ${mods?"pri":""}" data-act="mods" aria-pressed="${mods}">${mods?"Activados":"Desactivados"}</button></div>`)}
-  ${sec("neg","C$","--m-panel","Negocio y tasas",esc(c.negocio)+" · TC "+(+c.tc||0),`
+  ${sec("neg","C$","--m-panel","Negocio, logo y tasas",esc(c.negocio)+(c.logo?" · con logo":"")+" · TC "+(+c.tc||0),`
+    <div class="logo-row" style="margin-bottom:12px">${c.logo?`<img class="logo-prev" src="${c.logo}" alt="Logo">`:`<span class="logo-prev">${ic("logo")}</span>`}
+      <div style="display:grid;gap:6px"><b style="font-size:14px">Logo del negocio</b><span class="muted" style="font-size:12px">Aparece en el Panel y en todos los PDF.</span>
+      <div class="row"><label class="btn sm pri" style="cursor:pointer">${c.logo?"Cambiar":"Subir logo"}<input type="file" id="logoIn" accept="image/*" hidden></label>${c.logo?`<button class="btn sm" data-act="quitarLogo">Quitar</button>`:""}</div></div></div>
     <form class="f" id="fCfg">
     <label>Nombre del negocio<input id="cNeg" value="${esc(c.negocio)}" required></label>
+    <div class="two"><label>RUC<input id="cRuc" value="${esc(c.ruc||"")}" autocapitalize="characters"></label><label>Teléfono<input id="cTel" value="${esc(c.tel||"")}" inputmode="tel"></label></div>
+    <label>Propietario o responsable<input id="cProp" value="${esc(c.prop||"")}"></label>
+    <label>Dirección<input id="cDir" value="${esc(c.dir||"")}"></label>
     <div class="two"><label>INSS laboral %<input id="cLab" type="number" step="0.01" value="${c.inssLab}"></label><label>INSS patronal %<input id="cPat" type="number" step="0.01" value="${c.inssPat}"></label></div>
     <div class="two"><label>INATEC %<input id="cIna" type="number" step="0.01" value="${c.inatec}"></label><label>Tipo de cambio C$ por US$<input id="cTc" type="number" step="0.0001" value="${c.tc}"></label></div>
     <div class="muted" style="font-size:12px">Con 10 trabajadores o menos aplica el INSS patronal de 21.5%. Verificá el tipo de cambio oficial del BCN.</div>
@@ -614,6 +649,27 @@ function vAjustes(){
       <div id="rMsg"></div>
       <div class="actions"><button class="btn" type="submit" id="rBtn">Restaurar</button></div>
     </form></div>`)}
+  ${sec("cat","+","--m-caja","Categorías propias",((c.catsIn||[]).length+(c.catsOut||[]).length)?((c.catsIn||[]).length+(c.catsOut||[]).length)+" propias · además de las que trae":"Agregá tus propias categorías",`
+    <div style="display:grid;gap:10px">
+    <div><b style="font-size:13px">De ingreso</b><div class="chips" style="margin-top:6px">${CAT_IN.map(n=>`<span class="ch">${esc(n)}</span>`).join("")}${(c.catsIn||[]).map(x=>`<span class="ch" style="background:color-mix(in srgb,var(--m-cobrar) 22%,var(--sunk))">${esc(x.n)} <small>${x.g==="otros"?"otros ingresos":"ventas"}</small><button data-act="delCat" data-t="in" data-n="${esc(x.n)}" aria-label="Quitar ${esc(x.n)}">×</button></span>`).join("")}</div></div>
+    <div><b style="font-size:13px">De gasto</b><div class="chips" style="margin-top:6px">${CAT_OUT.map(n=>`<span class="ch">${esc(n)}</span>`).join("")}${(c.catsOut||[]).map(x=>`<span class="ch" style="background:color-mix(in srgb,var(--m-pagar) 22%,var(--sunk))">${esc(x.n)} <small>${(GRUPOS_OUT.find(g=>g[0]===x.g)||GRUPOS_OUT[1])[1].toLowerCase()}</small><button data-act="delCat" data-t="out" data-n="${esc(x.n)}" aria-label="Quitar ${esc(x.n)}">×</button></span>`).join("")}</div></div>
+    <form class="f" id="fCat"><label>Nueva categoría<input id="cNom" maxlength="40" placeholder="Ej.: Ventas por WhatsApp, Internet, Empaques" required></label>
+      <div class="two"><label>Tipo<select id="cTipo">${opts([["out","Gasto"],["in","Ingreso"]],"out")}</select></label><label>En el estado de resultados<select id="cGrupo">${opts(GRUPOS_OUT,"op")}</select></label></div>
+      <div class="actions"><button class="btn pri" type="submit">Agregar categoría</button></div></form>
+    <div class="muted" style="font-size:12px">Las categorías que trae la app no se pueden quitar. Si quitás una propia, los movimientos ya registrados la conservan.</div></div>`)}
+  ${sec("rec","⏰","--m-nomina","Recordatorios de pagos",(c.recs||[]).length?(c.recs||[]).length+" pagos mensuales"+(c.diaINSS?" · INSS día "+c.diaINSS:""):"Alquiler, luz, INSS, IR…",`
+    <div style="display:grid;gap:12px">
+    <div class="muted" style="font-size:13px">Aparecen en el Panel 5 días antes de la fecha. Al marcarlos como pagados con monto, se anotan solos en Caja como gasto.</div>
+    ${(c.recs||[]).length?`<div class="list" style="box-shadow:none;border-bottom:1px solid var(--line)">${(c.recs||[]).map(r=>`<div class="item"><span class="av" style="--hc:var(--h-nomina)">${ic("reloj")}</span><div class="main"><div class="t">${esc(r.t)}</div><div class="s">Día ${r.dia} de cada mes${+r.monto?" · "+C(r.monto):""} · ${esc(r.cat||"")}</div></div><button class="btn sm" data-act="delRec" data-id="${r.id}">Quitar</button></div>`).join("")}</div>`:""}
+    <form class="f" id="fRec"><label>Pago a recordar<input id="rNom" maxlength="50" placeholder="Ej.: Alquiler del local" required></label>
+      <div class="two"><label>Día del mes<input id="rDia" type="number" min="1" max="31" value="5" required></label><label>Monto C$ (opcional)<input id="rMonto" type="number" step="0.01" min="0" inputmode="decimal"></label></div>
+      <label>Categoría al anotarlo en Caja<select id="rCat">${opts(catsOut(),"Alquiler")}</select></label>
+      <div class="actions"><button class="btn pri" type="submit">Agregar recordatorio</button></div></form>
+    <form class="f" id="fDias" style="border-top:1px solid var(--line);padding-top:12px"><b style="font-size:14px">Planilla: INSS e IR</b>
+      <div class="muted" style="font-size:12px">Escribí el día del mes en que pagás al INSS y declarás el IR retenido, según tu calendario con INSS y DGI. Dejalo vacío si no querés el aviso.</div>
+      <div class="two"><label>Día de pago INSS<input id="dInss" type="number" min="1" max="31" value="${esc(c.diaINSS||"")}"></label><label>Día de declaración IR<input id="dIr" type="number" min="1" max="31" value="${esc(c.diaIR||"")}"></label></div>
+      <div class="actions"><button class="btn" type="submit">Guardar fechas</button></div></form>
+    <div class="muted" style="font-size:12px">El aviso de aguinaldo aparece solo del 15 de noviembre al 10 de diciembre, y el de planilla desde el día 25 si todavía no la generaste.</div></div>`)}
   ${sec("ir","%","--m-pagar","Tabla de IR salarial","Tarifa progresiva anual",`
     <div class="tbl"><table><tr><th>Desde</th><th>Hasta</th><th>Impuesto base</th><th>% sobre exceso</th></tr>${IR_TABLA.map(([a,b,base,p])=>`<tr><td class="num">${C(a)}</td><td>${b===Infinity?"En adelante":C(b)}</td><td>${C(base)}</td><td>${p*100}%</td></tr>`).join("")}</table></div>`)}
   ${sec("min","≥","--m-ajustes","Salario mínimo vigente","Desde 1 mar 2026 · 10 sectores",`
@@ -646,7 +702,7 @@ function formMov(m,tipoIni){
     <div class="actions">${n?"":delBtn()}<button type="button" class="btn" data-act="close">Cancelar</button><button class="btn pri" type="submit">Guardar</button></div>
   </form>`,root=>{
     let tipo=m.tipo;const cat=root.querySelector("#mCat");
-    const fill=()=>{const list=tipo==="ingreso"?CAT_IN:CAT_OUT;cat.innerHTML=opts(list,list.includes(m.categoria)?m.categoria:list[0])};fill();
+    const fill=()=>{const list=tipo==="ingreso"?catsIn():catsOut();cat.innerHTML=opts(list,list.includes(m.categoria)?m.categoria:list[0])};fill();
     root.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{tipo=b.dataset.t;root.querySelectorAll("[data-t]").forEach(x=>x.classList.toggle("on",x===b));fill()});
     root.querySelector("#fMov").onsubmit=e=>{e.preventDefault();
       const id=m.id||uid();
@@ -749,7 +805,7 @@ function verNom(n){
     <div class="spread"><span>INATEC</span><span class="num">${C(t.inatec)}</span></div>
     <div class="spread b"><span>Costo total del periodo</span><span class="num">${C(t.costo)}</span></div>
   </div>
-  <div class="actions"><button class="btn danger" data-act="armDel">Eliminar</button><button class="btn" data-act="editNom" data-id="${n.id}">Editar</button>
+  <div class="actions"><button class="btn danger" data-act="armDel">Eliminar</button><button class="btn" data-act="editNom" data-id="${n.id}">Editar</button><button class="btn" data-act="pdf" data-k="planilla" data-id="${n.id}">${ic("pdf")} PDF</button>
   ${n.movId&&S.movs[n.movId]?'<span class="chip ok" style="align-self:center">Registrada en caja</span>':`<button class="btn pri" data-act="nomCaja" data-id="${n.id}">Registrar en caja</button>`}</div>`,root=>{
     armDelete(root,()=>{del("noms",n.id);closeModal();toast("Planilla eliminada")});
   });
@@ -770,7 +826,7 @@ function colilla(n,i){
    <div class="spread"><span>IR salarial</span><span class="num">${C(l.ir)}</span></div>
    <div class="spread"><span>Otras deducciones</span><span class="num">${C(l.ded)}</span></div></div>
   <div class="panel spread" style="margin-top:14px;background:var(--accent-soft);border-color:var(--accent)"><strong>Neto a recibir</strong><span class="num" style="font-size:20px">${C(l.neto)}</span></div>
-  <div class="actions"><button class="btn" data-act="verNomBack" data-id="${n.id}">Volver</button><button class="btn pri" id="cpy">Copiar colilla</button></div>`,root=>{
+  <div class="actions"><button class="btn" data-act="verNomBack" data-id="${n.id}">Volver</button><button class="btn" id="cpy">Copiar</button><button class="btn pri" data-act="pdf" data-k="colilla" data-id="${n.id}" data-i="${i}">${ic("pdf")} PDF</button></div>`,root=>{
     root.querySelector("#cpy").onclick=()=>{try{navigator.clipboard.writeText(txt).then(()=>toast("Colilla copiada"),()=>toast("No se pudo copiar"))}catch(e){toast("No se pudo copiar")}};
   });
 }
@@ -805,7 +861,7 @@ function verCuenta(col,c){
     <label>Método<select id="aMet">${opts(METODOS,"Efectivo")}</select></label>
     <label class="chk"><input type="checkbox" id="aCaja" checked> Anotar también en caja como ${cx?"ingreso":"gasto"}</label>
     <div class="actions"><button class="btn pri" type="submit">Registrar ${cx?"cobro":"pago"}</button></div></form>`:""}
-  <div class="actions" style="margin-top:14px"><button class="btn" data-act="close">Cerrar</button><button class="btn" data-act="editCuenta" data-col="${col}" data-id="${c.id}">Editar</button></div>`,root=>{
+  <div class="actions" style="margin-top:14px"><button class="btn" data-act="close">Cerrar</button><button class="btn" data-act="editCuenta" data-col="${col}" data-id="${c.id}">Editar</button><button class="btn" data-act="pdf" data-k="edocta" data-col="${col}" data-id="${c.id}">${ic("pdf")} Estado de cuenta</button></div>`,root=>{
     const f=root.querySelector("#fAb");if(!f)return;
     f.onsubmit=e=>{e.preventDefault();const monto=r2(root.querySelector("#aM").value),fecha=root.querySelector("#aF").value,metodo=root.querySelector("#aMet").value;
       if(monto<=0)return;
@@ -827,7 +883,7 @@ document.addEventListener("click",ev=>{
   if(a==="bg"){if(ev.target===el)closeModal();return}
   switch(a){
     case "tab":S.tab=el.dataset.k;closeModal();render();window.scrollTo(0,0);break;
-    case "mes":S.mes=addMes(S.mes,+el.dataset.d);render();break;
+    case "mes":{const pr=(S.rp||{}).per,st=S.tab==="reportes"?(pr==="trim"?3:pr==="anio"?12:1):1;S.mes=addMes(S.mes,+el.dataset.d*st);render();break}
     case "close":closeModal();break;
     case "cajaF":S.cajaFiltro=el.dataset.k;render();break;
     case "nomT":S.nomTab=el.dataset.k;render();break;
@@ -852,6 +908,14 @@ document.addEventListener("click",ev=>{
       COLS.forEach(c=>Object.values(S[c]).filter(x=>x.ejemplo).forEach(x=>del(c,x.id)));toast("Ejemplos borrados");break;
     case "csv":exportCsv();break;
     case "waId":pedirCodigo();break;
+    case "pdf":generarPDF(el.dataset.k,el.dataset.id,el.dataset.col,el.dataset.i);break;
+    case "irReportes":S.tab="reportes";closeModal();render();window.scrollTo(0,0);break;
+    case "rpPer":S.rp={...(S.rp||{}),per:el.dataset.k};render();break;
+    case "recPag":marcarRec(el.dataset.id);break;
+    case "irAjRec":AJ.add("rec");LSG("ln_aj",JSON.stringify([...AJ]));S.tab="ajustes";render();setTimeout(()=>{const x=document.getElementById("aj-rec");if(x)x.scrollIntoView({behavior:"smooth"})},60);break;
+    case "quitarLogo":putCfg({...S.cfg,logo:"",logoW:0,logoH:0});toast("Logo quitado");break;
+    case "delCat":{const t=el.dataset.t,key=t==="in"?"catsIn":"catsOut";putCfg({...S.cfg,[key]:(S.cfg[key]||[]).filter(c=>c.n!==el.dataset.n)});toast("Categoría quitada");break}
+    case "delRec":putCfg({...S.cfg,recs:(S.cfg.recs||[]).filter(r=>r.id!==el.dataset.id)});toast("Recordatorio quitado");break;
     case "qaVenta":formMov(null,"ingreso");break;
     case "qaGasto":formMov(null,"gasto");break;
     case "qaPlanilla":S.tab="nomina";S.nomTab="plan";render();formNom();break;
@@ -869,6 +933,12 @@ function leerRespaldo(txt){
   try{const j=JSON.parse(txt),d=j.data||j;if(!d||typeof d!=="object"||!COLS.some(c=>d[c]))throw 0;return d}catch(e){return null}
 }
 document.addEventListener("change",ev=>{
+  if(ev.target.id==="logoIn"){const f=ev.target.files[0];if(!f)return;const u=URL.createObjectURL(f),im=new Image();
+    im.onload=()=>{const k=Math.min(1,300/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*k)),h=Math.max(1,Math.round(im.height*k)),cv=document.createElement("canvas");cv.width=w;cv.height=h;const g=cv.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,w,h);g.drawImage(im,0,0,w,h);URL.revokeObjectURL(u);
+      putCfg({...S.cfg,logo:cv.toDataURL("image/jpeg",.86),logoW:w,logoH:h});toast("Logo guardado")};
+    im.onerror=()=>{URL.revokeObjectURL(u);toast("No se pudo leer la imagen. Probá con otra foto.")};im.src=u;return}
+  if(ev.target.id==="rpD1"||ev.target.id==="rpD2"){S.rp={...(S.rp||{}),per:"rango",d1:$("#rpD1").value,d2:$("#rpD2").value};render();return}
+  if(ev.target.id==="cTipo"){const g=$("#cGrupo");if(g)g.innerHTML=opts(ev.target.value==="in"?GRUPOS_IN:GRUPOS_OUT);return}
   if(ev.target.id!=="rFile")return;const f=ev.target.files[0];if(!f)return;
   f.text().then(t=>{$("#rTxt").value=t;pendRest=null;$("#rMsg").innerHTML="";$("#rBtn").textContent="Restaurar"});
 });
@@ -879,6 +949,12 @@ document.addEventListener("submit",async ev=>{
     LSG("ln_lic",v);S.lic=r;S.gate="ok";
     if(r.n&&S.cfg.negocio===DEF_CFG.negocio)putCfg({...S.cfg,negocio:r.n});
     render();toast(r.e?"Acceso activo hasta el "+fechaCorta(r.e)+" "+r.e.slice(0,4):"Acceso activo sin vencimiento");return}
+  if(ev.target.id==="fCat"){ev.preventDefault();const n=$("#cNom").value.trim(),t=$("#cTipo").value,g=$("#cGrupo").value;if(!n)return;
+    if(catsIn().concat(catsOut()).some(x=>x.toLowerCase()===n.toLowerCase())){toast("Esa categoría ya existe");return}
+    const key=t==="in"?"catsIn":"catsOut";putCfg({...S.cfg,[key]:[...(S.cfg[key]||[]),{n,g}]});toast("Categoría agregada");return}
+  if(ev.target.id==="fRec"){ev.preventDefault();const t=$("#rNom").value.trim(),dia=Math.min(31,Math.max(1,+$("#rDia").value||1));if(!t)return;
+    putCfg({...S.cfg,recs:[...(S.cfg.recs||[]),{id:uid(),t,monto:r2($("#rMonto").value),dia,cat:$("#rCat").value}]});toast("Recordatorio agregado");return}
+  if(ev.target.id==="fDias"){ev.preventDefault();const v=x=>{const n=+$(x).value;return n>=1&&n<=31?String(Math.round(n)):""};putCfg({...S.cfg,diaINSS:v("#dInss"),diaIR:v("#dIr")});toast("Fechas guardadas");return}
   if(ev.target.id==="fRest"){ev.preventDefault();
     const d=leerRespaldo($("#rTxt").value);
     if(!d){$("#rMsg").innerHTML=`<div class="notice" style="margin:0"><b>No es un respaldo válido.</b> Elegí el archivo .json que descargaste de esta app.</div>`;return}
@@ -888,7 +964,7 @@ document.addEventListener("submit",async ev=>{
       $("#rBtn").textContent="Confirmar";return}
     COLS.forEach(c=>S[c]=d[c]||{});S.cfg={...DEF_CFG,...(d.cfg||{})};pendRest=null;saveLocal();render();toast("Respaldo restaurado");return}
   if(ev.target.id!=="fCfg")return;ev.preventDefault();
-  putCfg({...S.cfg,negocio:$("#cNeg").value.trim()||"Mi Negocio",inssLab:+$("#cLab").value||0,inssPat:+$("#cPat").value||0,inatec:+$("#cIna").value||0,tc:+$("#cTc").value||0});
+  putCfg({...S.cfg,ruc:$("#cRuc").value.trim(),prop:$("#cProp").value.trim(),tel:$("#cTel").value.trim(),dir:$("#cDir").value.trim(),negocio:$("#cNeg").value.trim()||"Mi Negocio",inssLab:+$("#cLab").value||0,inssPat:+$("#cPat").value||0,inatec:+$("#cIna").value||0,tc:+$("#cTc").value||0});
   toast("Ajustes guardados");
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
@@ -898,6 +974,307 @@ async function exportCsv(){
   movsDe(S.mes).sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(m=>rows.push([m.fecha,m.tipo,m.categoria,m.descripcion||"",m.metodo,m.moneda,m.monto,r2(enC(m))]));
   const csv="﻿"+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(",")).join("\n");
   guardarArchivo("caja-"+S.mes+".csv",csv);
+}
+
+/* ---------- Generador de PDF (sin librerías, como Mi Tambo) ---------- */
+const PDF_WH=[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
+const PDF_WB=[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];
+const PDF_SPECIAL={"–":0x96,"—":0x97,"‘":0x91,"’":0x92,"“":0x93,"”":0x94,"•":0x95,"…":0x85,"€":0x80,"−":0x2D};
+function pdfCode(ch){const c=ch.charCodeAt(0);if(c<128)return c;if(c>=160&&c<=255)return c;return PDF_SPECIAL[ch]!==undefined?PDF_SPECIAL[ch]:63}
+function pdfW(ch,b){const c=ch.charCodeAt(0),T=b?PDF_WB:PDF_WH;if(c>=32&&c<=126)return T[c-32];
+  if(ch==="·")return 278;if(ch==="–")return 556;if(ch==="—")return 1000;if("‘’".includes(ch))return 222;if("“”".includes(ch))return 333;if(ch==="•")return 350;if(ch==="…")return 1000;if(ch==="ª"||ch==="º")return 370;
+  const base=ch.normalize("NFD")[0];const bc=base.charCodeAt(0);return bc>=32&&bc<=126?T[bc-32]:556}
+function pdfTW(s,sz,b){let w=0;for(const ch of String(s))w+=pdfW(ch,b);return w*sz/1000}
+function pdfHex(s){let h="";for(const ch of String(s))h+=pdfCode(ch).toString(16).padStart(2,"0");return h}
+function pdfFit(s,w,sz,b){s=String(s);if(pdfTW(s,sz,b)<=w)return s;while(s.length>1&&pdfTW(s+"…",sz,b)>w)s=s.slice(0,-1);return s+"…"}
+function pdfWrap(s,w,sz,b){const out=[];String(s).split("\n").forEach(par=>{let line="";par.split(/\s+/).forEach(word=>{const t=line?line+" "+word:word;if(pdfTW(t,sz,b)>w&&line){out.push(line);line=word}else line=t});out.push(line)});return out}
+function pdfRGB(h){h=h.replace("#","");return [0,2,4].map(i=>(parseInt(h.substr(i,2),16)/255).toFixed(3)).join(" ")}
+
+function PDFDoc(meta){
+  const W=595.28,H=841.89,M=36,CW=W-2*M,pages=[];let c=null,y=0;
+  const INK="#16201C",MUT="#5E6B64",LINE="#D5DDD4",BAND="#0F4A35",GOLD="#D4AF5A",SOFT="#EEF3EF";
+  let logo=null;
+  if(meta.logo&&/^data:image\/jpeg;base64,/.test(meta.logo)){try{const bin=atob(meta.logo.split(",")[1]);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);logo={data:u,w:meta.logoW||300,h:meta.logoH||300}}catch(e){logo=null}}
+  const f2=n=>(+n).toFixed(2);
+  const T=(x,yy,s,sz=9,b=false,color=INK,al="l")=>{s=String(s==null?"":s);const w=pdfTW(s,sz,b);if(al==="r")x-=w;else if(al==="c")x-=w/2;c.push(`BT /${b?"F2":"F1"} ${sz} Tf ${pdfRGB(color)} rg ${f2(x)} ${f2(yy)} Td <${pdfHex(s)}> Tj ET`)};
+  const R=(x,yy,w,h,color)=>c.push(`${pdfRGB(color)} rg ${f2(x)} ${f2(yy)} ${f2(w)} ${f2(h)} re f`);
+  const L=(x1,y1,x2,y2,color=LINE,lw=0.6)=>c.push(`${pdfRGB(color)} RG ${lw} w ${f2(x1)} ${f2(y1)} m ${f2(x2)} ${f2(y2)} l S`);
+  function header(first){
+    const bh=first?92:52;R(0,H-bh,W,bh,BAND);R(0,H-bh-3,W,3,GOLD);
+    let tx=M;
+    if(logo){const s=first?58:32,ly=H-bh+(bh-s)/2;R(M-2,ly-2,s+4,s+4,"#FFFFFF");c.push(`q ${s} 0 0 ${s} ${f2(M)} ${f2(ly)} cm /Im1 Do Q`);tx=M+s+12}
+    if(first){
+      T(tx,H-36,pdfFit(meta.negocio||"Mi Negocio",CW-210-(tx-M),16,true),16,true,"#FFFFFF");
+      const d1=[meta.ruc?"RUC "+meta.ruc:"",meta.tel?"Tel. "+meta.tel:""].filter(Boolean).join("  ·  ");
+      if(d1)T(tx,H-52,pdfFit(d1,CW-210-(tx-M),8.5),8.5,false,"#CFE3DA");
+      const d2=[meta.dir,meta.prop?"Propietario: "+meta.prop:""].filter(Boolean).join("  ·  ");
+      if(d2)T(tx,H-65,pdfFit(d2,CW-210-(tx-M),8.5),8.5,false,"#CFE3DA");
+      T(W-M,H-36,pdfFit(meta.titulo,200,12.5,true),12.5,true,GOLD,"r");
+      if(meta.periodo)T(W-M,H-52,pdfFit(meta.periodo,200,9),9,false,"#FFFFFF","r");
+      y=H-bh-26;
+    }else{
+      T(tx,H-31,pdfFit(meta.negocio||"Mi Negocio",CW-220,11,true),11,true,"#FFFFFF");
+      T(W-M,H-31,pdfFit(meta.titulo+(meta.periodo?" · "+meta.periodo:""),260,9),9,false,GOLD,"r");
+      y=H-bh-24;
+    }
+  }
+  function page(){c=[];pages.push(c);header(pages.length===1)}
+  page();
+  const api={
+    W,H,M,CW,
+    get y(){return y},set y(v){y=v},
+    T,R,L,
+    ensure(h){if(y-h<M+28)page()},
+    space(h){y-=h},
+    h1(s,color=BAND){api.ensure(40);y-=4;R(M,y-3,4,15,GOLD);T(M+10,y,s,12.5,true,color);y-=10;L(M,y,W-M,y,LINE,0.8);y-=16},
+    p(s,sz=9,color=MUT,b=false){pdfWrap(s,CW,sz,b).forEach(l=>{api.ensure(sz+4);T(M,y,l,sz,b,color);y-=sz+4})},
+    kpis(items){api.ensure(54);const n=items.length,g=8,w=(CW-g*(n-1))/n;items.forEach((k,i)=>{const x=M+i*(w+g);R(x,y-40,w,46,SOFT);R(x,y-40,w,2.5,k.c||BAND);T(x+8,y-8,pdfFit(k.l.toUpperCase(),w-16,7,true),7,true,MUT);T(x+8,y-28,pdfFit(k.v,w-16,12.5,true),12.5,true,k.vc||INK)});y-=58},
+    row(l,v,o={}){api.ensure(17);const sz=o.sz||9.5,b=!!o.b,ind=o.ind||0;if(o.fill)R(M,y-5,CW,17,o.fill);T(M+6+ind,y,pdfFit(l,CW-180-ind,sz,b),sz,b,o.lc||INK);if(o.v2!==undefined)T(W-M-110,y,o.v2,sz,b,o.vc2||MUT,"r");T(W-M-6,y,v,sz,b,o.vc||INK,"r");y-=o.gap||16;if(o.line)L(M,y+10,W-M,y+10,LINE,0.5)},
+    table(cols,rows,o={}){
+      const sz=o.sz||8.5,rh=sz+7.5;let tot=cols.reduce((a,c)=>a+c.w,0);const sc=CW/tot;cols=cols.map(c=>({...c,w:c.w*sc}));
+      const head=()=>{api.ensure(rh+6);R(M,y-5,CW,rh+2,BAND);let x=M;cols.forEach(cl=>{const al=cl.al||"l";T(al==="r"?x+cl.w-5:x+5,y,pdfFit(cl.t,cl.w-8,sz-0.5,true),sz-0.5,true,"#FFFFFF",al);x+=cl.w});y-=rh+3};
+      head();
+      rows.forEach((r,ri)=>{const isTot=r._tot;if(y-rh<M+28){page();head()}
+        if(isTot)R(M,y-5,CW,rh,"#E3ECE7");else if(ri%2)R(M,y-5,CW,rh,"#F6F8F6");
+        let x=M;cols.forEach((cl,ci)=>{const v=r[ci],al=cl.al||"l";const col=(r._c&&r._c[ci])||INK;T(al==="r"?x+cl.w-5:x+5,y,pdfFit(v==null?"":v,cl.w-8,sz,isTot||cl.b),sz,isTot||!!cl.b,col,al);x+=cl.w});
+        y-=rh});
+      L(M,y+rh-5,W-M,y+rh-5,LINE,0.6);y-=8},
+    bars(items,fmt){const mx=Math.max(1,...items.map(i=>i[1]));items.forEach(([l,v,col])=>{api.ensure(24);T(M,y,pdfFit(l,200,9),9,false,INK);T(W-M,y,fmt(v),9,true,INK,"r");y-=7;R(M,y-4,CW,5,"#E7ECE6");R(M,y-4,Math.max(2,CW*v/mx),5,col||"#B4432F");y-=16})},
+    firmas(labels){api.ensure(70);y-=34;const n=labels.length,g=30,w=(CW-g*(n-1))/n;labels.forEach((l,i)=>{const x=M+i*(w+g);L(x,y,x+w,y,INK,0.7);T(x+w/2,y-12,l,8.5,false,MUT,"c")});y-=30},
+    build(){
+      const enc=new TextEncoder(),parts=[],offs=[];let len=0;
+      const push=x=>{const u=typeof x==="string"?enc.encode(x):x;parts.push(u);len+=u.length};
+      const obj=(n,body)=>{offs[n]=len;push(`${n} 0 obj\n`);if(Array.isArray(body))body.forEach(push);else push(body);push("\nendobj\n")};
+      push("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n".replace(/[\xE2\xE3\xCF\xD3]/g,""));
+      const np=pages.length,fecha=new Date(),fs=String(fecha.getDate()).padStart(2,"0")+"/"+String(fecha.getMonth()+1).padStart(2,"0")+"/"+fecha.getFullYear();
+      pages.forEach((pc,i)=>{c=pc;L(M,M-2,W-M,M-2,LINE,0.5);T(M,M-14,"Libro del Negocio · "+(meta.negocio||""),7.5,false,MUT);T(W/2,M-14,"Generado el "+fs,7.5,false,MUT,"c");T(W-M,M-14,"Página "+(i+1)+" de "+np,7.5,false,MUT,"r")});
+      // 1 catálogo, 2 páginas, 3 F1, 4 F2, 5 imagen, 6.. páginas y contenidos
+      const first=6,kids=pages.map((_,i)=>`${first+i*2} 0 R`).join(" ");
+      obj(1,"<< /Type /Catalog /Pages 2 0 R >>");
+      obj(2,`<< /Type /Pages /Kids [${kids}] /Count ${np} >>`);
+      obj(3,"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");
+      obj(4,"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
+      if(logo)obj(5,[`<< /Type /XObject /Subtype /Image /Width ${logo.w} /Height ${logo.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${logo.data.length} >>\nstream\n`,logo.data,"\nendstream"]);
+      else obj(5,"<< /Type /XObject /Subtype /Form /BBox [0 0 1 1] /Length 0 >>\nstream\n\nendstream");
+      pages.forEach((pc,i)=>{const s=pc.join("\n");const n=first+i*2;
+        obj(n,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> /XObject << /Im1 5 0 R >> >> /Contents ${n+1} 0 R >>`);
+        obj(n+1,`<< /Length ${enc.encode(s).length} >>\nstream\n${s}\nendstream`)});
+      const total=first+np*2,xref=len;let x=`xref\n0 ${total}\n0000000000 65535 f \n`;for(let i=1;i<total;i++)x+=String(offs[i]).padStart(10,"0")+" 00000 n \n";
+      push(x+`trailer\n<< /Size ${total} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+      const out=new Uint8Array(len);let o=0;parts.forEach(p=>{out.set(p,o);o+=p.length});return out}
+  };
+  return api;
+}
+
+/* ---------- Categorías propias ---------- */
+const GRUPOS_OUT=[["costo","Costo de ventas"],["op","Gasto operativo"],["imp","Impuestos"]];
+const GRUPOS_IN=[["ventas","Ventas y servicios"],["otros","Otros ingresos"]];
+function catsIn(){return CAT_IN.concat((S.cfg.catsIn||[]).map(c=>c.n).filter(n=>!CAT_IN.includes(n)))}
+function catsOut(){return CAT_OUT.concat((S.cfg.catsOut||[]).map(c=>c.n).filter(n=>!CAT_OUT.includes(n)))}
+function grupoMov(m){
+  if(m.tipo==="ingreso"){if(m.categoria==="Otros ingresos")return "otros";const c=(S.cfg.catsIn||[]).find(x=>x.n===m.categoria);return c&&c.g==="otros"?"otros":"ventas"}
+  if(m.categoria==="Compras / inventario"||m.categoria==="Pago a proveedores")return "costo";
+  if(m.categoria==="Impuestos")return "imp";
+  const c=(S.cfg.catsOut||[]).find(x=>x.n===m.categoria);return c&&["costo","op","imp"].includes(c.g)?c.g:"op";
+}
+
+/* ---------- Fechas y períodos de reportes ---------- */
+function fmtD(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function addDias(s,n){const d=parseD(s);d.setDate(d.getDate()+n);return fmtD(d)}
+function finMes(m){const [y,mm]=m.split("-").map(Number);return m+"-"+String(new Date(y,mm,0).getDate()).padStart(2,"0")}
+const fLarga=s=>{const d=parseD(s);return d.getDate()+" "+MESES[d.getMonth()].slice(0,3).toLowerCase()+" "+d.getFullYear()};
+function rpPeriodo(per,ancla,r1,r2){
+  const [y,m]=ancla.split("-").map(Number);
+  if(per==="trim"){const q=Math.floor((m-1)/3),m1=y+"-"+String(q*3+1).padStart(2,"0"),m3=y+"-"+String(q*3+3).padStart(2,"0");return {d1:m1+"-01",d2:finMes(m3),lbl:"Trimestre "+(q+1)+" · "+MESES[q*3].slice(0,3)+"–"+MESES[q*3+2].slice(0,3)+" "+y,prev:()=>rpPeriodo("trim",addMes(m1,-3))}}
+  if(per==="anio")return {d1:y+"-01-01",d2:y+"-12-31",lbl:"Año "+y,prev:()=>rpPeriodo("anio",(y-1)+"-01")};
+  if(per==="rango"){let a=r1||ancla+"-01",b=r2||finMes(ancla);if(a>b)[a,b]=[b,a];const n=dias(a,b)+1;return {d1:a,d2:b,lbl:fLarga(a)+" al "+fLarga(b),prev:()=>rpPeriodo("rango",ancla,addDias(a,-n),addDias(a,-1))}}
+  return {d1:ancla+"-01",d2:finMes(ancla),lbl:mesLbl(ancla),prev:()=>rpPeriodo("mes",addMes(ancla,-1))};
+}
+function periodoActual(){const r=S.rp||{per:"mes"};return rpPeriodo(r.per,S.mes,r.d1,r.d2)}
+const movsEntre=(d1,d2)=>Object.values(S.movs).filter(m=>m.fecha>=d1&&m.fecha<=d2);
+
+/* ---------- Cálculos financieros ---------- */
+function calcER(d1,d2){
+  const g={ventas:{},otros:{},costo:{},op:{},imp:{}};
+  movsEntre(d1,d2).forEach(m=>{const k=grupoMov(m);g[k][m.categoria]=(g[k][m.categoria]||0)+enC(m)});
+  const s=o=>Object.values(o).reduce((a,b)=>a+b,0);
+  const t={v:s(g.ventas),o:s(g.otros),c:s(g.costo),op:s(g.op),i:s(g.imp)};
+  t.ub=t.v-t.c;t.uo=t.ub-t.op;t.ai=t.uo+t.o;t.un=t.ai-t.i;return {g,t};
+}
+function lineasER(er){const {g,t}=er,det=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]);
+  return [["Ventas y servicios",t.v,"g",det(g.ventas),"v"],["Costo de ventas",-t.c,"g",det(g.costo),"c"],["Utilidad bruta",t.ub,"t",[],"ub"],
+    ["Gastos operativos",-t.op,"g",det(g.op),"op"],["Utilidad operativa",t.uo,"t",[],"uo"],["Otros ingresos",t.o,"g",det(g.otros),"o"],
+    ["Impuestos",-t.i,"g",det(g.imp),"i"],["Utilidad neta",t.un,"f",[],"un"]]}
+function calcFlujo(d1,d2){const r={};METODOS.forEach(k=>r[k]={e:0,s:0});movsEntre(d1,d2).forEach(m=>{const k=r[m.metodo]?m.metodo:"Efectivo";m.tipo==="ingreso"?r[k].e+=enC(m):r[k].s+=enC(m)});return r}
+function calcSituacion(){const h=hoy();let caja=0;Object.values(S.movs).forEach(m=>{if(m.fecha<=h)caja+=(m.tipo==="ingreso"?1:-1)*enC(m)});
+  const cxc=Object.values(S.cxc).reduce((a,c)=>a+Math.max(0,saldo(c)),0),cxp=Object.values(S.cxp).reduce((a,c)=>a+Math.max(0,saldo(c)),0);
+  let vac=0,ag=0,ind=0;Object.values(S.emps).filter(e=>e.activo!==false).forEach(e=>{const p=prestaciones(e);if(p){vac+=p.vacMonto;ag+=p.ag;ind+=p.ind}});
+  return {caja,cxc,cxp,vac,ag,ind,neto:caja+cxc-cxp-vac-ag}}
+function calcNomAnio(y){const meses={};let T={bruto:0,inss:0,ir:0,pat:0,inatec:0,neto:0,costo:0};
+  Object.values(S.noms).filter(n=>(n.periodo||"").startsWith(y+"-")).forEach(n=>{const t=totNom(n.lineas||[]);const k=n.periodo;meses[k]=meses[k]||{bruto:0,inss:0,ir:0,pat:0,inatec:0,neto:0,costo:0};Object.keys(T).forEach(x=>{meses[k][x]+=t[x];T[x]+=t[x]})});
+  return {meses,T}}
+const pctV=(x,v)=>v>0?(x/v*100).toFixed(1)+" %":"—";
+
+/* ---------- Recordatorios ---------- */
+function recordatorios(){
+  const h=hoy(),mes=h.slice(0,7),y=+h.slice(0,4),out=[],pag=S.cfg.recPag||{};
+  const dm=+finMes(mes).slice(8);
+  const fechaDia=d=>mes+"-"+String(Math.min(Math.max(1,+d||1),dm)).padStart(2,"0");
+  const cuando=(k,f)=>k<0?"Venció el "+fechaCorta(f):k===0?"Vence hoy":k===1?"Vence mañana":"Vence el "+fechaCorta(f);
+  (S.cfg.recs||[]).forEach(r=>{if(pag[r.id]===mes)return;const f=fechaDia(r.dia),k=dias(h,f);if(k<=5)out.push({id:r.id,t:r.t,sub:(+r.monto?C(r.monto)+" · ":"")+cuando(k,f),k,venc:k<0,btn:+r.monto?"Pagado y anotar":"Marcar pagado"})});
+  const pm=addMes(mes,-1),np=Object.values(S.noms).filter(n=>n.periodo===pm),tp=totNom(np.reduce((a,n)=>a.concat(n.lineas||[]),[]));
+  if(S.cfg.diaINSS&&pag.inss!==mes){const f=fechaDia(S.cfg.diaINSS),k=dias(h,f);if(k<=5)out.push({id:"inss",t:"Pago al INSS · "+mesLbl(pm),sub:(np.length?C(tp.inss+tp.pat)+" (laboral + patronal) · ":"")+cuando(k,f),k,venc:k<0,btn:"Marcar pagado"})}
+  if(S.cfg.diaIR&&pag.ir!==mes){const f=fechaDia(S.cfg.diaIR),k=dias(h,f);if(k<=5)out.push({id:"ir",t:"IR retenido a la DGI · "+mesLbl(pm),sub:(np.length?C(tp.ir)+" · ":"")+cuando(k,f),k,venc:k<0,btn:"Marcar pagado"})}
+  const act=Object.values(S.emps).filter(e=>e.activo!==false);
+  if(act.length&&h>=y+"-11-15"&&h<=y+"-12-10"&&S.cfg.aguiPag!==String(y)){const est=act.reduce((a,e)=>{const p=prestaciones(e);return a+(p?p.ag:0)},0),f=y+"-12-10",k=dias(h,f);out.push({id:"agui",t:"Aguinaldo "+y,sub:"Estimado "+C(est)+" · pagar a más tardar el 10 de diciembre",k,venc:false,btn:"Marcar pagado"})}
+  if(act.length&&+h.slice(8)>=25&&!Object.values(S.noms).some(n=>n.periodo===mes))out.push({id:"plan",t:"Planilla de "+mesLbl(mes),sub:"Todavía no la generaste",k:dm-+h.slice(8),venc:false,btn:"Generar",act:"qaPlanilla"});
+  return out.sort((a,b)=>(b.venc-a.venc)||(a.k-b.k));
+}
+function vRecordatorios(){const R=recordatorios(),v=R.filter(r=>r.venc).length;
+  const body=R.length?`<div class="list flat">${R.map(r=>`<div class="item"><span class="av" style="--hc:var(${r.venc?"--h-pagar":"--h-panel"})">${ic("reloj")}</span><div class="main"><div class="t">${esc(r.t)}</div><div class="s">${esc(r.sub)}</div></div><button class="btn sm ${r.venc?"pri":""}" data-act="${r.act||"recPag"}" data-id="${r.id}">${r.btn}</button></div>`).join("")}</div>`
+    :`<div class="empty" style="padding:8px">No hay pagos pendientes en los próximos 5 días.</div>`;
+  return secP("recs","reloj","--h-panel","Recordatorios",R.length?R.length+" pendiente"+(R.length===1?"":"s"):"Sin pagos pendientes",body+`<div class="row" style="margin-top:10px"><button class="btn sm" data-act="irAjRec">Configurar recordatorios</button></div>`,v?v+" vencido"+(v===1?"":"s"):"")}
+function marcarRec(id){const mes=hoy().slice(0,7),pag={...(S.cfg.recPag||{})};
+  if(id==="agui"){putCfg({...S.cfg,aguiPag:hoy().slice(0,4)});toast("Aguinaldo marcado como pagado");return}
+  const r=(S.cfg.recs||[]).find(x=>x.id===id);
+  if(r&&+r.monto>0){const mid=uid();S.movs[mid]={id:mid,tipo:"gasto",monto:r2(r.monto),moneda:"NIO",fecha:hoy(),metodo:"Efectivo",categoria:catsOut().includes(r.cat)?r.cat:"Otros gastos",descripcion:r.t,creado:new Date().toISOString()}}
+  pag[id]=mes;putCfg({...S.cfg,recPag:pag});toast(r&&+r.monto>0?"Pagado y anotado en caja":"Marcado como pagado");
+}
+
+/* ---------- PDF: datos comunes y compartir ---------- */
+function pdfDoc(titulo,periodo){const c=S.cfg;return PDFDoc({negocio:c.negocio,ruc:c.ruc,tel:c.tel,dir:c.dir,prop:c.prop,logo:c.logo,logoW:c.logoW,logoH:c.logoH,titulo,periodo})}
+function slug(s){return String(s).normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"")}
+async function compartirPDF(nombre,bytes){
+  const f=new File([bytes],slug(nombre)+".pdf",{type:"application/pdf"});
+  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:nombre});return}}catch(e){if(e&&e.name==="AbortError")return}
+  try{const u=URL.createObjectURL(f);const a=document.createElement("a");a.href=u;a.download=f.name;a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);toast("PDF generado")}catch(e){toast("No se pudo generar el PDF")}
+}
+const NEG="#B4432F",POS="#11795A";
+function pdfER(d,P){const er=calcER(P.d1,P.d2),pv=P.prev(),erp=calcER(pv.d1,pv.d2),v=er.t.v;
+  d.kpis([{l:"Ventas",v:C(er.t.v)},{l:"Gastos totales",v:C(er.t.c+er.t.op+er.t.i),vc:NEG},{l:"Utilidad neta",v:C(er.t.un),vc:er.t.un>=0?POS:NEG},{l:"Margen neto",v:pctV(er.t.un,v)}]);
+  d.h1("Estado de resultados");
+  d.row("Concepto",pv.lbl,{b:true,sz:8,v2:"Período",lc:"#5E6B64",vc:"#5E6B64",vc2:"#5E6B64"});
+  lineasER(er).forEach(([n,val,tipo,det,key])=>{const pvv=lineasER(erp).find(x=>x[4]===key)[1];
+    if(tipo==="g"){d.row(n,C(pvv),{b:true,v2:C(val),vc:"#5E6B64",vc2:"#16201C"});det.forEach(([k,x])=>d.row(k+"  ("+pctV(x,v)+")",(()=>{const o=calcER(pv.d1,pv.d2).g;let s=0;Object.values(o).forEach(gg=>{if(gg[k])s=gg[k]});return C(s)})(),{ind:14,sz:8.5,v2:C(x),vc:"#8A958F",vc2:"#3A4540"}))}
+    else d.row(n+"  ("+pctV(val,v)+")",C(pvv),{b:true,fill:tipo==="f"?"#DCEFE6":"#EEF3EF",v2:C(val),vc:"#5E6B64",vc2:val>=0?POS:NEG,gap:19})});
+  d.p("Las cifras salen de los movimientos registrados en Caja (base de efectivo). La columna de la derecha muestra el período anterior para comparar.",8);
+}
+function pdfFlujo(d,P){const f=calcFlujo(P.d1,P.d2);d.h1("Flujo de efectivo por forma de pago");
+  const rows=METODOS.map(k=>[k,C(f[k].e),C(f[k].s),C(f[k].e-f[k].s)]);const te=METODOS.reduce((a,k)=>a+f[k].e,0),ts=METODOS.reduce((a,k)=>a+f[k].s,0);const t=["Total",C(te),C(ts),C(te-ts)];t._tot=true;rows.push(t);
+  d.table([{t:"Forma de pago",w:150},{t:"Entradas",w:110,al:"r"},{t:"Salidas",w:110,al:"r"},{t:"Neto",w:110,al:"r"}],rows)}
+function pdfSituacion(d){const s=calcSituacion();d.h1("Situación del negocio al "+fLarga(hoy()));
+  d.row("Efectivo y bancos según tus registros",C(s.caja));d.row("Cuentas por cobrar (te deben)",C(s.cxc));d.row("Cuentas por pagar (debés)","− "+C(s.cxp),{vc:NEG});
+  d.row("Vacaciones acumuladas de tu personal","− "+C(s.vac),{vc:NEG});d.row("Aguinaldo acumulado","− "+C(s.ag),{vc:NEG});
+  d.row("Posición neta estimada",C(s.neto),{b:true,fill:"#DCEFE6",vc:s.neto>=0?POS:NEG,gap:19});
+  d.p("Indemnización por antigüedad acumulada (solo se paga si el empleador termina el contrato): "+C(s.ind)+".",8)}
+function pdfNomAnio(d,y){const {meses,T}=calcNomAnio(y);d.h1("Nómina del año "+y);
+  const ks=Object.keys(meses).sort();if(!ks.length){d.p("No hay planillas registradas en "+y+".");return}
+  const rows=ks.map(k=>{const m=meses[k];return [mesLbl(k),C(m.bruto),C(m.inss),C(m.ir),C(m.pat),C(m.inatec),C(m.neto)]});const t=["Total",C(T.bruto),C(T.inss),C(T.ir),C(T.pat),C(T.inatec),C(T.neto)];t._tot=true;rows.push(t);
+  d.table([{t:"Mes",w:90},{t:"Bruto",w:75,al:"r"},{t:"INSS lab.",w:70,al:"r"},{t:"IR",w:65,al:"r"},{t:"INSS pat.",w:70,al:"r"},{t:"INATEC",w:60,al:"r"},{t:"Neto",w:75,al:"r"}],rows,{sz:8});
+  d.row("Total a enterar al INSS (laboral + patronal)",C(T.inss+T.pat),{b:true});d.row("IR retenido a enterar a la DGI",C(T.ir),{b:true});d.row("Costo total de la nómina",C(T.costo),{b:true,fill:"#EEF3EF"})}
+
+function generarPDF(k,id,col,i){
+  try{
+  if(k==="er"||k==="flujo"||k==="sit"||k==="nomanio"||k==="rep"){const P=periodoActual();
+    const tit={er:"Estado de resultados",flujo:"Flujo de efectivo",sit:"Situación del negocio",nomanio:"Nómina del año",rep:"Informe financiero"}[k];
+    const d=pdfDoc(tit,k==="sit"?"Al "+fLarga(hoy()):k==="nomanio"?"Año "+P.d1.slice(0,4):P.lbl);
+    if(k==="er"||k==="rep")pdfER(d,P);if(k==="flujo"||k==="rep")pdfFlujo(d,P);if(k==="sit"||k==="rep")pdfSituacion(d);if(k==="nomanio"||k==="rep")pdfNomAnio(d,P.d1.slice(0,4));
+    return compartirPDF(tit+" "+(k==="sit"?hoy():P.lbl),d.build())}
+  if(k==="panel"){const t=sumMes(S.mes),d=pdfDoc("Resumen del mes",mesLbl(S.mes));
+    d.kpis([{l:"Ingresos",v:C(t.i),vc:POS},{l:"Gastos",v:C(t.g),vc:NEG},{l:"Resultado",v:C(t.r),vc:t.r>=0?POS:NEG},{l:"Margen",v:pctV(t.r,t.i)}]);
+    const cats={};movsDe(S.mes).filter(m=>m.tipo==="gasto").forEach(m=>cats[m.categoria]=(cats[m.categoria]||0)+enC(m));
+    d.h1("Gastos por categoría");const cl=Object.entries(cats).sort((a,b)=>b[1]-a[1]);if(cl.length)d.bars(cl.map(([a,b])=>[a,b]),C);else d.p("Sin gastos este mes.");
+    const s=calcSituacion();d.h1("Cuentas");d.row("Te deben",C(s.cxc));d.row("Debés",C(s.cxp));
+    const noms=Object.values(S.noms).filter(n=>n.periodo===S.mes),tn=totNom(noms.reduce((a,n)=>a.concat(n.lineas||[]),[]));
+    d.h1("Nómina del mes");d.row("Planillas generadas",String(noms.length));d.row("Neto pagado a trabajadores",C(tn.neto));d.row("Costo total (con INSS patronal e INATEC)",C(tn.costo),{b:true});
+    const R=recordatorios();if(R.length){d.h1("Recordatorios pendientes");R.forEach(r=>d.row(r.t,r.sub,{sz:8.5}))}
+    return compartirPDF("Resumen "+mesLbl(S.mes),d.build())}
+  if(k==="caja"){const ms=movsDe(S.mes).sort((a,b)=>(a.fecha+(a.creado||"")).localeCompare(b.fecha+(b.creado||""))),t=sumMes(S.mes),d=pdfDoc("Libro de caja",mesLbl(S.mes));
+    d.kpis([{l:"Entradas",v:C(t.i),vc:POS},{l:"Salidas",v:C(t.g),vc:NEG},{l:"Saldo del mes",v:C(t.r),vc:t.r>=0?POS:NEG},{l:"Movimientos",v:String(ms.length)}]);
+    d.h1("Movimientos");let sal=0;const rows=ms.map(m=>{const v=enC(m);sal+=(m.tipo==="ingreso"?1:-1)*v;const r=[fechaCorta(m.fecha),(m.descripcion||m.categoria)+(m.moneda==="USD"?" ("+U(m.monto)+")":""),m.categoria,m.metodo,m.tipo==="ingreso"?C(v):"",m.tipo==="gasto"?C(v):"",C(sal)];r._c=[0,0,0,0,POS,NEG,0];return r});
+    const tt=["Total","","","",C(t.i),C(t.g),C(t.r)];tt._tot=true;rows.push(tt);
+    if(ms.length)d.table([{t:"Fecha",w:46},{t:"Descripción",w:150},{t:"Categoría",w:95},{t:"Forma",w:62},{t:"Entrada",w:72,al:"r"},{t:"Salida",w:72,al:"r"},{t:"Saldo",w:74,al:"r"}],rows,{sz:7.8});else d.p("No hay movimientos este mes.");
+    const ci={},co={};ms.forEach(m=>{const o=m.tipo==="ingreso"?ci:co;o[m.categoria]=(o[m.categoria]||0)+enC(m)});
+    d.h1("Resumen por categoría");Object.entries(ci).sort((a,b)=>b[1]-a[1]).forEach(([a,b])=>d.row(a,C(b),{vc:POS}));Object.entries(co).sort((a,b)=>b[1]-a[1]).forEach(([a,b])=>d.row(a,"− "+C(b),{vc:NEG}));
+    return compartirPDF("Libro de caja "+mesLbl(S.mes),d.build())}
+  if(k==="nomina"){const act=Object.values(S.emps).filter(e=>e.activo!==false).sort((a,b)=>(a.nombre||"").localeCompare(b.nombre||"")),d=pdfDoc("Personal y prestaciones","Al "+fLarga(hoy()));
+    const masa=act.reduce((a,e)=>a+(+e.salario||0),0);d.kpis([{l:"Trabajadores",v:act.length+" de "+MAX_EMP},{l:"Salarios mensuales",v:C(masa)},{l:"Costo con INSS e INATEC",v:C(masa*(1+(S.cfg.inssPat+S.cfg.inatec)/100))}]);
+    d.h1("Personal activo");d.table([{t:"Nombre",w:130},{t:"Cargo",w:95},{t:"Ingreso",w:65},{t:"Antigüedad",w:80},{t:"Salario",w:75,al:"r"},{t:"Mín. sector",w:75,al:"r"}],act.map(e=>{const p=prestaciones(e),mn=minimoDe(e.sector),r=[e.nombre,e.cargo||"",e.ingreso?fechaCorta(e.ingreso)+" "+e.ingreso.slice(2,4):"",p?antig(p.anios):"",C(e.salario),C(mn)];r._c=[0,0,0,0,+e.salario<mn?NEG:0,0];return r}),{sz:8});
+    d.h1("Prestaciones acumuladas");let tv=0,ta=0,ti=0;const rows=act.map(e=>{const p=prestaciones(e)||{vacDias:0,vacMonto:0,ag:0,ind:0};tv+=p.vacMonto;ta+=p.ag;ti+=p.ind;return [e.nombre,p.vacDias.toFixed(1),C(p.vacMonto),C(p.ag),C(p.ind),C(p.vacMonto+p.ag+p.ind)]});const t=["Total","",C(tv),C(ta),C(ti),C(tv+ta+ti)];t._tot=true;rows.push(t);
+    d.table([{t:"Trabajador",w:130},{t:"Vac. días",w:55,al:"r"},{t:"Vacaciones",w:75,al:"r"},{t:"Aguinaldo",w:75,al:"r"},{t:"Indemnización",w:85,al:"r"},{t:"Total",w:80,al:"r"}],rows,{sz:8});
+    d.p("Estimación con el salario actual. La indemnización (Art. 45, tope de 5 meses) solo se paga si el empleador termina el contrato. Una liquidación real usa el salario promedio de los últimos 6 meses.",8);
+    return compartirPDF("Personal y prestaciones "+hoy(),d.build())}
+  if(k==="planilla"){const n=S.noms[id];if(!n)return;const t=totNom(n.lineas||[]),d=pdfDoc("Planilla de pago",nomLbl(n));
+    d.kpis([{l:"Salarios brutos",v:C(t.bruto)},{l:"Neto a pagar",v:C(t.neto),vc:POS},{l:"Costo total",v:C(t.costo)}]);
+    d.h1("Detalle por trabajador");const rows=(n.lineas||[]).map(l=>[l.nombre,C(l.salario),l.he?String(l.he):"",C(l.pHE+l.otros),C(l.bruto),C(l.inss),C(l.ir),C(l.ded),C(l.neto)]);const tt=["Total","","","",C(t.bruto),C(t.inss),C(t.ir),C(t.ded),C(t.neto)];tt._tot=true;rows.push(tt);
+    d.table([{t:"Trabajador",w:110},{t:"Salario",w:62,al:"r"},{t:"H.E.",w:30,al:"r"},{t:"Extras",w:55,al:"r"},{t:"Bruto",w:62,al:"r"},{t:"INSS",w:55,al:"r"},{t:"IR",w:50,al:"r"},{t:"Deducc.",w:52,al:"r"},{t:"Neto",w:64,al:"r"}],rows,{sz:7.6});
+    d.h1("Aportes del empleador");d.row("INSS patronal ("+(n.tasas?n.tasas.pat:S.cfg.inssPat)+" %)",C(t.pat));d.row("INATEC ("+(n.tasas?n.tasas.inatec:S.cfg.inatec)+" %)",C(t.inatec));
+    d.row("Total al INSS (laboral + patronal)",C(t.inss+t.pat),{b:true});d.row("IR retenido a enterar a la DGI",C(t.ir),{b:true});d.row("Costo total del período",C(t.costo),{b:true,fill:"#EEF3EF"});
+    d.h1("Firmas de recibido");(n.lineas||[]).forEach(l=>{d.ensure(44);d.row(l.nombre+" · neto "+C(l.neto),"",{sz:8.5,gap:6});d.firmas(["Firma del trabajador","Cédula"])});
+    return compartirPDF("Planilla "+nomLbl(n),d.build())}
+  if(k==="colilla"){const n=S.noms[id];if(!n)return;const l=n.lineas[+i],e=S.emps[l.empId]||{},d=pdfDoc("Colilla de pago",nomLbl(n));
+    d.h1(l.nombre);d.p([l.cargo,e.cedula?"Cédula "+e.cedula:"",e.inss?"N.º INSS "+e.inss:""].filter(Boolean).join("  ·  ")||" ",9);
+    d.h1("Devengado");d.row("Salario del período",C(l.salario));d.row("Horas extra ("+l.he+" h al doble)",C(l.pHE));d.row("Otros ingresos",C(l.otros));d.row("Total devengado",C(l.bruto),{b:true,fill:"#EEF3EF"});
+    d.h1("Deducciones");d.row("INSS laboral",C(l.inss));d.row("IR salarial",C(l.ir));d.row("Otras deducciones",C(l.ded));d.row("Total deducciones",C(l.inss+l.ir+l.ded),{b:true,fill:"#F8E1DC",vc:NEG});
+    d.space(6);d.row("NETO A RECIBIR",C(l.neto),{b:true,sz:13,fill:"#DCEFE6",vc:POS,gap:24});
+    d.firmas(["Firma del empleador","Recibí conforme"]);
+    return compartirPDF("Colilla "+l.nombre+" "+nomLbl(n),d.build())}
+  if(k==="cxc"||k==="cxp"){const cx=k==="cxc",arr=Object.values(S[k]),h=hoy(),b=[0,0,0,0],ab=arr.filter(c=>estado(c)!=="pagado").sort((a,c)=>(a.vence||"9").localeCompare(c.vence||"9"));
+    ab.forEach(c=>{const dd=c.vence?dias(c.vence,h):0,s=saldo(c);if(dd<=0)b[0]+=s;else if(dd<=30)b[1]+=s;else if(dd<=60)b[2]+=s;else b[3]+=s});
+    const tit=cx?"Cuentas por cobrar":"Cuentas por pagar",d=pdfDoc(tit,"Al "+fLarga(h));
+    d.kpis([{l:"Al día",v:C(b[0])},{l:"1–30 días",v:C(b[1]),vc:b[1]?NEG:0},{l:"31–60 días",v:C(b[2]),vc:b[2]?NEG:0},{l:"Más de 60",v:C(b[3]),vc:b[3]?NEG:0}].map(x=>({...x,vc:x.vc||undefined})));
+    d.h1((cx?"Clientes":"Proveedores")+" con saldo");const rows=ab.map(c=>{const e=estado(c),r=[c.nombre,c.concepto||"",fechaCorta(c.fecha),c.vence?fechaCorta(c.vence):"",C(c.monto),C(c.monto-saldo(c)),C(saldo(c)),e==="vencido"?"Vencido "+dias(c.vence,h)+" d":"Pendiente"];r._c=[0,0,0,0,0,0,0,e==="vencido"?NEG:0];return r});
+    const tt=["Total","","","",C(ab.reduce((a,c)=>a+(+c.monto||0),0)),C(ab.reduce((a,c)=>a+(c.monto-saldo(c)),0)),C(b.reduce((a,x)=>a+x,0)),""];tt._tot=true;rows.push(tt);
+    if(ab.length)d.table([{t:cx?"Cliente":"Proveedor",w:105},{t:"Concepto",w:85},{t:"Fecha",w:45},{t:"Vence",w:45},{t:"Monto",w:65,al:"r"},{t:"Abonado",w:62,al:"r"},{t:"Saldo",w:65,al:"r"},{t:"Estado",w:62}],rows,{sz:7.6});else d.p(cx?"Nadie te debe nada.":"No tenés deudas pendientes.");
+    return compartirPDF(tit+" "+h,d.build())}
+  if(k==="edocta"){const c=S[col][id];if(!c)return;const cx=col==="cxc",d=pdfDoc("Estado de cuenta","Al "+fLarga(hoy()));
+    d.h1(c.nombre);d.p([c.concepto,c.contacto].filter(Boolean).join("  ·  ")||" ",9);
+    d.kpis([{l:"Monto original",v:C(c.monto)},{l:cx?"Abonado":"Pagado",v:C(c.monto-saldo(c)),vc:POS},{l:"Saldo pendiente",v:C(saldo(c)),vc:saldo(c)>0?NEG:POS}]);
+    d.row("Fecha de la factura",fLarga(c.fecha));if(c.vence)d.row("Fecha de vencimiento",fLarga(c.vence)+(estado(c)==="vencido"?"  (vencida hace "+dias(c.vence,hoy())+" días)":""),{vc:estado(c)==="vencido"?NEG:undefined});
+    d.h1(cx?"Abonos recibidos":"Pagos realizados");let s=+c.monto||0;const rows=[["","Monto original","",C(s)]].concat((c.abonos||[]).map(a=>{s-=+a.monto||0;return [fechaCorta(a.fecha),a.metodo||"",C(a.monto),C(s)]}));
+    d.table([{t:"Fecha",w:70},{t:"Detalle",w:150},{t:"Abono",w:100,al:"r"},{t:"Saldo",w:100,al:"r"}],rows);
+    if(saldo(c)>0)d.p(cx?"Saldo pendiente de pago: "+C(saldo(c))+". Gracias por su preferencia.":"Saldo pendiente: "+C(saldo(c))+".",9,"#16201C",true);
+    return compartirPDF("Estado de cuenta "+c.nombre,d.build())}
+  }catch(e){console.error(e);toast("No se pudo generar el PDF")}
+}
+
+/* ---------- Vista Reportes ---------- */
+function vReportes(){
+  const r=S.rp||{per:"mes"},P=periodoActual(),pv=P.prev(),er=calcER(P.d1,P.d2),erp=calcER(pv.d1,pv.d2),v=er.t.v;
+  const L=lineasER(er),Lp=lineasER(erp);
+  const erRows=L.map(([n,val,tipo,det,key])=>{const pvv=Lp.find(x=>x[4]===key)[1];const dlt=pvv?((val-pvv)/Math.abs(pvv)*100):null;
+    const cls=tipo==="g"?"g":tipo==="f"?"f":"t";
+    return `<div class="erl ${cls}"><span>${n}</span><span class="num ${val<0?"out-c":tipo!=="g"&&val>0?"in-c":""}">${C(val)}</span><span class="pc">${pctV(Math.abs(val),v)}</span></div>`+
+      det.map(([k,x])=>`<div class="erl d"><span>${esc(k)}</span><span class="num">${C(x)}</span><span class="pc">${pctV(x,v)}</span></div>`).join("")+
+      (tipo!=="g"?`<div class="erl cmp"><span>Período anterior: ${C(pvv)}</span><span>${dlt===null?"":(dlt>=0?"▲ ":"▼ ")+Math.abs(dlt).toFixed(1)+" %"}</span></div>`:"")}).join("");
+  const f=calcFlujo(P.d1,P.d2),s=calcSituacion(),y=P.d1.slice(0,4),na=calcNomAnio(y);
+  const pdfB=(k,l)=>`<button class="btn sm" data-act="pdf" data-k="${k}">${ic("pdf")} ${l||"PDF"}</button>`;
+  return `${heroMod("reportes","Reportes financieros",esc(P.lbl),C(er.t.un),[["Ventas",C(v)],["Margen neto",pctV(er.t.un,v)],["Utilidad bruta",C(er.t.ub)],["Gastos",C(er.t.c+er.t.op+er.t.i)]],"rep")}
+  <div class="seg" style="display:inline-flex;margin-bottom:10px">${[["mes","Mes"],["trim","Trimestre"],["anio","Año"],["rango","Rango"]].map(([k,l])=>`<button data-act="rpPer" data-k="${k}" class="${r.per===k?"on":""}">${l}</button>`).join("")}</div>
+  ${r.per==="rango"?`<form class="f two" id="fRango" style="margin-bottom:10px"><label>Desde<input type="date" id="rpD1" value="${P.d1}"></label><label>Hasta<input type="date" id="rpD2" value="${P.d2}"></label></form>`:`<div class="muted" style="font-size:12px;margin:-4px 0 10px">Usá las flechas de arriba para cambiar de ${r.per==="anio"?"año":r.per==="trim"?"trimestre":"mes"}.</div>`}
+  <div class="panel er">
+    <div class="spread" style="margin-bottom:6px"><b style="font-size:15px">Estado de resultados</b>${pdfB("er")}</div>
+    <div class="erl hd"><span>Concepto</span><span>Monto</span><span class="pc">% ventas</span></div>
+    ${erRows}
+    <div class="muted" style="font-size:11.5px;margin-top:8px">Calculado con los movimientos de Caja (base de efectivo). Compras e inventario y pagos a proveedores cuentan como costo de ventas.</div>
+  </div>
+  ${secP("flujo","caja","--h-caja","Flujo de efectivo","Neto "+C(METODOS.reduce((a,k)=>a+f[k].e-f[k].s,0))+" · por forma de pago",`<div class="tbl" style="box-shadow:none;border-bottom:1px solid var(--line)"><table><tr><th>Forma</th><th>Entradas</th><th>Salidas</th><th>Neto</th></tr>${METODOS.map(k=>`<tr><td>${k}</td><td>${C(f[k].e)}</td><td>${C(f[k].s)}</td><td>${C(f[k].e-f[k].s)}</td></tr>`).join("")}</table></div><div class="row" style="margin-top:10px">${pdfB("flujo")}</div>`)}
+  ${secP("sit","grafico","--h-cobrar","Situación del negocio","Posición neta "+C(s.neto),`<div class="lines">
+    <div class="spread"><span>Efectivo y bancos (según registros)</span><span class="num">${C(s.caja)}</span></div>
+    <div class="spread"><span>Te deben</span><span class="num in-c">${C(s.cxc)}</span></div>
+    <div class="spread"><span>Debés</span><span class="num out-c">− ${C(s.cxp)}</span></div>
+    <div class="spread"><span>Vacaciones acumuladas</span><span class="num out-c">− ${C(s.vac)}</span></div>
+    <div class="spread"><span>Aguinaldo acumulado</span><span class="num out-c">− ${C(s.ag)}</span></div>
+    <div class="spread b"><span>Posición neta estimada</span><span class="num">${C(s.neto)}</span></div></div>
+    <div class="muted" style="font-size:12px;margin-top:6px">Indemnización acumulada (solo si el empleador termina el contrato): ${C(s.ind)}.</div><div class="row" style="margin-top:10px">${pdfB("sit")}</div>`)}
+  ${secP("nanio","nomina","--h-nomina","Nómina del año "+y,"Costo "+C(na.T.costo)+" · INSS "+C(na.T.inss+na.T.pat),`<div class="lines">
+    <div class="spread"><span>Salarios brutos</span><span class="num">${C(na.T.bruto)}</span></div>
+    <div class="spread"><span>INSS laboral retenido</span><span class="num">${C(na.T.inss)}</span></div>
+    <div class="spread"><span>INSS patronal</span><span class="num">${C(na.T.pat)}</span></div>
+    <div class="spread"><span>IR retenido</span><span class="num">${C(na.T.ir)}</span></div>
+    <div class="spread"><span>INATEC</span><span class="num">${C(na.T.inatec)}</span></div>
+    <div class="spread b"><span>Costo total</span><span class="num">${C(na.T.costo)}</span></div></div><div class="row" style="margin-top:10px">${pdfB("nomanio")}</div>`)}
+  <button class="btn pri" data-act="pdf" data-k="rep" style="width:100%;margin-top:4px">${ic("pdf")} Informe financiero completo en PDF</button>`;
 }
 
 /* ---------- Arranque ---------- */
