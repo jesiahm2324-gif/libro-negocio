@@ -261,6 +261,18 @@ body.mods nav.tabs button.on::before{display:none}
 .sheet::before{content:"";display:block;width:42px;height:5px;border-radius:3px;background:var(--line);margin:-6px auto 14px}
 .sheet-bg{-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
 @media (prefers-reduced-motion:reduce){#main.enter>*{animation:none}.btn,.qb,.tile{transition:none}}
+.crow{gap:8px;padding:10px 12px}
+.crow .rmain{display:flex;align-items:center;gap:12px;flex:1;min-width:0;background:transparent;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer}
+.crow .rmain .s{white-space:normal;line-height:1.5}
+.crow .rside{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.crow .rside .btn{padding:5px 14px}
+.big-act{width:100%;margin:0 0 14px;padding:13px 16px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px}
+.big-act svg{width:19px;height:19px}
+.saldo-box{display:grid;gap:2px;margin:14px 0;padding:14px;border-radius:16px;background:color-mix(in srgb,var(--accent) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line))}
+.saldo-box span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.saldo-box b{font-size:26px;letter-spacing:-.02em}
+.saldo-box small{font-size:12px;color:var(--muted)}
+.chips .qamt{border:1px solid var(--line);cursor:pointer;color:var(--ink);padding:6px 12px}
 .hpdf{position:absolute;top:12px;right:12px;z-index:2;display:flex;align-items:center;gap:5px;padding:6px 11px 6px 9px;border-radius:999px;background:#ffffff26;border:1px solid #ffffff55;color:#fff;font-size:12.5px;font-weight:700;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 2px 0 #0003}
 .hpdf:active{transform:translateY(1px)}
 .hpdf svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
@@ -561,13 +573,14 @@ function vPanel(){
 function chipEstado(c){const e=estado(c);return e==="pagado"?`<span class="chip ok">Pagado</span>`:e==="vencido"?`<span class="chip bad">Vencido ${dias(c.vence,hoy())} d</span>`:`<span class="chip warn">Pendiente</span>`}
 
 function vCaja(){
+  const vinc={};Object.values(S.noms).forEach(n=>{if(n.movId)vinc[n.movId]="Planilla"});["cxc","cxp"].forEach(col=>Object.values(S[col]).forEach(c=>(c.abonos||[]).forEach(a=>{if(a.movId)vinc[a.movId]=col==="cxc"?"Cobro":"Pago"})));
   let ms=movsDe(S.mes);
   if(S.cajaFiltro!=="todo")ms=ms.filter(m=>m.tipo===S.cajaFiltro);
   ms.sort((a,b)=>(b.fecha+(b.creado||"")).localeCompare(a.fecha+(a.creado||"")));
   const t=sumMes(S.mes);
   const grupos={};ms.forEach(m=>(grupos[m.fecha]=grupos[m.fecha]||[]).push(m));
   const html=Object.keys(grupos).map(f=>{const g=grupos[f];const net=g.reduce((a,m)=>a+(m.tipo==="ingreso"?1:-1)*enC(m),0);
-    return `<div class="dayhead"><span>${fechaCorta(f).toUpperCase()}</span><span class="num">${net>=0?"+":""}${C(net)}</span></div>`+g.map(m=>`<button class="item" data-act="editMov" data-id="${m.id}"><span class="av" style="--hc:var(--h-${m.tipo==="ingreso"?"in":"out"})">${ic(m.tipo==="ingreso"?"in":"out")}</span><div class="main"><div class="t">${esc(m.descripcion||m.categoria)}${m.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${esc(m.categoria)} · ${esc(m.metodo)}${m.moneda==="USD"?" · "+U(m.monto):""}</div></div><span class="num ${m.tipo==="ingreso"?"in-c":"out-c"}">${m.tipo==="ingreso"?"+":"−"}${C(enC(m))}</span></button>`).join("")}).join("");
+    return `<div class="dayhead"><span>${fechaCorta(f).toUpperCase()}</span><span class="num">${net>=0?"+":""}${C(net)}</span></div>`+g.map(m=>`<button class="item" data-act="editMov" data-id="${m.id}"><span class="av" style="--hc:var(--h-${m.tipo==="ingreso"?"in":"out"})">${ic(m.tipo==="ingreso"?"in":"out")}</span><div class="main"><div class="t">${esc(m.descripcion||m.categoria)}${m.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${esc(m.categoria)} · ${esc(m.metodo)}${m.moneda==="USD"?" · "+U(m.monto):""}${vinc[m.id]?` <span class="chip neu">${vinc[m.id]}</span>`:""}</div></div><span class="num ${m.tipo==="ingreso"?"in-c":"out-c"}">${m.tipo==="ingreso"?"+":"−"}${C(enC(m))}</span></button>`).join("")}).join("");
   return `${heroMod("caja","Caja","Saldo de "+esc(mesLbl(S.mes)),C(t.r),[["Entró",C(t.i)],["Salió",C(t.g)]],"caja")}
   <div class="spread" style="margin:14px 0 10px"><div class="seg">${[["todo","Todo"],["ingreso","Ingresos"],["gasto","Gastos"]].map(([k,l])=>`<button data-act="cajaF" data-k="${k}" class="${S.cajaFiltro===k?"on":""}">${l}</button>`).join("")}</div><button class="btn sm" data-act="csv">Exportar CSV</button></div>
   <div class="list">${html||`<div class="empty">No hay movimientos en ${esc(mesLbl(S.mes))}. Tocá “+ Movimiento” para registrar una venta o un gasto.</div>`}</div>`;
@@ -600,8 +613,9 @@ function vCuentas(col){
   const h=hoy(),b=[0,0,0,0];
   abiertas.forEach(c=>{const d=c.vence?dias(c.vence,h):0;const s=saldo(c);if(d<=0)b[0]+=s;else if(d<=30)b[1]+=s;else if(d<=60)b[2]+=s;else b[3]+=s});
   const tot=b.reduce((a,x)=>a+x,0);
-  const row=c=>`<button class="item" data-act="verCuenta" data-col="${col}" data-id="${c.id}"><span class="av ini" style="--hc:var(--h-${cx?"cobrar":"pagar"})">${esc(inic(c.nombre))}</span><div class="main"><div class="t">${esc(c.nombre)}${c.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${esc(c.concepto||"")}${c.vence?" · vence "+fechaCorta(c.vence):""}</div></div>${chipEstado(c)}<span class="num">${C(estado(c)==="pagado"?c.monto:saldo(c))}</span></button>`;
+  const row=c=>{const ab=estado(c)!=="pagado";return `<div class="item crow"><button class="rmain" data-act="verCuenta" data-col="${col}" data-id="${c.id}"><span class="av ini" style="--hc:var(--h-${cx?"cobrar":"pagar"})">${esc(inic(c.nombre))}</span><div class="main"><div class="t">${esc(c.nombre)}${c.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${chipEstado(c)} ${esc(c.concepto||"")}${c.vence?" · vence "+fechaCorta(c.vence):""}</div></div></button><div class="rside"><span class="num">${C(ab?saldo(c):c.monto)}</span>${ab?`<button class="btn sm pri" data-act="abonar" data-col="${col}" data-id="${c.id}">${cx?"Cobrar":"Pagar"}</button>`:`<span class="muted" style="font-size:11px">${(c.abonos||[]).length} abono${(c.abonos||[]).length===1?"":"s"}</span>`}</div></div>`};
   return `${heroMod(cx?"cobrar":"pagar",cx?"Cuentas por cobrar":"Cuentas por pagar",cx?"Total que te deben":"Total que debés",C(tot),[["Al día",C(b[0])],["1–30 días",C(b[1]),b[1]>0],["31–60 días",C(b[2]),b[2]>0],["Más de 60",C(b[3]),b[3]>0]],col)}
+  ${abiertas.length?`<button class="btn pri big-act" data-act="elegirAbono" data-col="${col}">${ic(cx?"cobrar":"pagar")} Registrar ${cx?"cobro de un cliente":"pago a un proveedor"}</button>`:""}
   <h3>Abiertas (${abiertas.length})</h3><div class="list">${abiertas.length?abiertas.map(row).join(""):`<div class="empty">${cx?"Nadie te debe nada. Registrá aquí las ventas al crédito.":"No tenés deudas pendientes. Registrá aquí las facturas de proveedores."}</div>`}</div>
   ${cerradas.length?`<h3>Pagadas (${cerradas.length})</h3><div class="list">${cerradas.slice(0,20).map(row).join("")}</div>`:""}`;
 }
@@ -660,11 +674,11 @@ function vAjustes(){
   ${sec("rec","⏰","--m-nomina","Recordatorios de pagos",(c.recs||[]).length?(c.recs||[]).length+" pagos mensuales"+(c.diaINSS?" · INSS día "+c.diaINSS:""):"Alquiler, luz, INSS, IR…",`
     <div style="display:grid;gap:12px">
     <div class="muted" style="font-size:13px">Aparecen en el Panel 5 días antes de la fecha. Al marcarlos como pagados con monto, se anotan solos en Caja como gasto.</div>
-    ${(c.recs||[]).length?`<div class="list" style="box-shadow:none;border-bottom:1px solid var(--line)">${(c.recs||[]).map(r=>`<div class="item"><span class="av" style="--hc:var(--h-nomina)">${ic("reloj")}</span><div class="main"><div class="t">${esc(r.t)}</div><div class="s">Día ${r.dia} de cada mes${+r.monto?" · "+C(r.monto):""} · ${esc(r.cat||"")}</div></div><button class="btn sm" data-act="delRec" data-id="${r.id}">Quitar</button></div>`).join("")}</div>`:""}
-    <form class="f" id="fRec"><label>Pago a recordar<input id="rNom" maxlength="50" placeholder="Ej.: Alquiler del local" required></label>
-      <div class="two"><label>Día del mes<input id="rDia" type="number" min="1" max="31" value="5" required></label><label>Monto C$ (opcional)<input id="rMonto" type="number" step="0.01" min="0" inputmode="decimal"></label></div>
-      <label>Categoría al anotarlo en Caja<select id="rCat">${opts(catsOut(),"Alquiler")}</select></label>
-      <div class="actions"><button class="btn pri" type="submit">Agregar recordatorio</button></div></form>
+    ${(c.recs||[]).length?`<div class="list" style="box-shadow:none;border-bottom:1px solid var(--line)">${(c.recs||[]).map(r=>`<div class="item"><span class="av" style="--hc:var(--h-nomina)">${ic("reloj")}</span><div class="main"><div class="t">${esc(r.t)}</div><div class="s">Día ${r.dia} de cada mes${+r.monto?" · "+C(r.monto):""} · ${esc(r.cat||"")}</div></div><div class="row" style="gap:6px;flex-wrap:nowrap"><button class="btn sm" data-act="editRec" data-id="${r.id}">Editar</button><button class="btn sm" data-act="delRec" data-id="${r.id}">Quitar</button></div></div>`).join("")}</div>`:""}
+    ${(()=>{const er=(c.recs||[]).find(r=>r.id===S.editRec);return `<form class="f" id="fRec">${er?`<b style="font-size:14px">Editando: ${esc(er.t)}</b>`:""}<label>Pago a recordar<input id="rNom" maxlength="50" placeholder="Ej.: Alquiler del local" value="${esc(er?er.t:"")}" required></label>
+      <div class="two"><label>Día del mes<input id="rDia" type="number" min="1" max="31" value="${er?er.dia:5}" required></label><label>Monto C$ (opcional)<input id="rMonto" type="number" step="0.01" min="0" inputmode="decimal" value="${er&&+er.monto?er.monto:""}"></label></div>
+      <label>Categoría al anotarlo en Caja<select id="rCat">${opts(catsOut(),er?er.cat:"Alquiler")}</select></label>
+      <div class="actions">${er?`<button type="button" class="btn" data-act="cancelRec">Cancelar</button>`:""}<button class="btn pri" type="submit">${er?"Guardar cambios":"Agregar recordatorio"}</button></div></form>`})()}
     <form class="f" id="fDias" style="border-top:1px solid var(--line);padding-top:12px"><b style="font-size:14px">Planilla: INSS e IR</b>
       <div class="muted" style="font-size:12px">Escribí el día del mes en que pagás al INSS y declarás el IR retenido, según tu calendario con INSS y DGI. Dejalo vacío si no querés el aviso.</div>
       <div class="two"><label>Día de pago INSS<input id="dInss" type="number" min="1" max="31" value="${esc(c.diaINSS||"")}"></label><label>Día de declaración IR<input id="dIr" type="number" min="1" max="31" value="${esc(c.diaIR||"")}"></label></div>
@@ -786,7 +800,10 @@ function formNom(n){
       if(!per){toast("Elegí el mes");return}
       const id=isNew?per+"-"+tipo:n.id;
       if(isNew&&S.noms[id]){toast("Esa planilla ya existe. Abrila para editarla.");return}
-      put("noms",id,{...n,periodo:per,tipo,lineas:calc(),tasas:{lab:S.cfg.inssLab,pat:S.cfg.inssPat,inatec:S.cfg.inatec}});
+      const lineas=calc();let sync=false;
+      if(n.movId&&S.movs[n.movId]){const nt=totNom(lineas).costo;if(Math.abs(nt-(+S.movs[n.movId].monto||0))>0.004){S.movs[n.movId]={...S.movs[n.movId],monto:nt};sync=true}}
+      put("noms",id,{...n,periodo:per,tipo,lineas,tasas:{lab:S.cfg.inssLab,pat:S.cfg.inssPat,inatec:S.cfg.inatec}});
+      if(sync)setTimeout(()=>toast("Planilla guardada y gasto en Caja actualizado"),50);
       closeModal();S.nomTab="plan";render();toast("Planilla guardada")};
   });
 }
@@ -807,7 +824,7 @@ function verNom(n){
   </div>
   <div class="actions"><button class="btn danger" data-act="armDel">Eliminar</button><button class="btn" data-act="editNom" data-id="${n.id}">Editar</button><button class="btn" data-act="pdf" data-k="planilla" data-id="${n.id}">${ic("pdf")} PDF</button>
   ${n.movId&&S.movs[n.movId]?'<span class="chip ok" style="align-self:center">Registrada en caja</span>':`<button class="btn pri" data-act="nomCaja" data-id="${n.id}">Registrar en caja</button>`}</div>`,root=>{
-    armDelete(root,()=>{del("noms",n.id);closeModal();toast("Planilla eliminada")});
+    armDelete(root,()=>{const mv=n.movId&&S.movs[n.movId];if(mv)delete S.movs[n.movId];del("noms",n.id);closeModal();toast(mv?"Planilla eliminada (y su gasto en Caja)":"Planilla eliminada")});
   });
 }
 
@@ -849,13 +866,60 @@ function formCuenta(col,c){
   });
 }
 
+function origenMov(mid){if(!mid)return null;
+  const n=Object.values(S.noms).find(x=>x.movId===mid);if(n)return {t:"nom",n};
+  for(const col of ["cxc","cxp"])for(const c of Object.values(S[col])){const ix=(c.abonos||[]).findIndex(a=>a.movId===mid);if(ix>=0)return {t:"ab",col,c,ix}}
+  return null}
+function verMovVinculado(m,o){
+  const nom=o.t==="nom",cx=o.col==="cxc";
+  openModal(`<div class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">Movimiento vinculado</div>
+  <h2 style="margin:4px 0 2px">${esc(m.descripcion||m.categoria)}</h2><div class="muted" style="font-size:13px">${fechaCorta(m.fecha)} · ${esc(m.categoria)} · ${esc(m.metodo)}</div>
+  <div class="saldo-box"><span>${m.tipo==="ingreso"?"Ingreso":"Gasto"}</span><b class="num">${C(enC(m))}</b></div>
+  <div class="notice" style="margin:0 0 12px"><b>${nom?"Viene de una planilla.":cx?"Viene de un cobro a un cliente.":"Viene de un pago a un proveedor."}</b> Para que todo quede cuadrado, se corrige desde ${nom?"la planilla: al editarla, este gasto se actualiza solo":"el abono: al corregirlo, se actualizan juntos la cuenta y Caja"}.</div>
+  <div class="actions"><button class="btn" data-act="close">Cerrar</button>${nom?`<button class="btn pri" data-act="verNomBack" data-id="${o.n.id}">Abrir planilla</button>`:`<button class="btn" data-act="verCuenta" data-col="${o.col}" data-id="${o.c.id}">Ver cuenta</button><button class="btn pri" data-act="editAbono" data-col="${o.col}" data-id="${o.c.id}" data-i="${o.ix}">Corregir ${cx?"cobro":"pago"}</button>`}</div>`)}
+function registrarAbono(col,id,monto,fecha,metodo,enCaja,ix){
+  const c=S[col][id],cx=col==="cxc";if(!c)return false;monto=r2(monto);
+  const edit=ix!==undefined&&ix!==null&&c.abonos&&c.abonos[ix],prev=edit?c.abonos[ix]:null,s=saldo(c)+(prev?+prev.monto||0:0);
+  if(!(monto>0)){toast("Escribí un monto mayor a cero");return false}
+  if(monto>s+0.005){toast("El monto es mayor que el saldo ("+C(s)+")");return false}
+  const ab={monto,fecha:fecha||hoy(),metodo:metodo||"Efectivo"};
+  const datosMov={tipo:cx?"ingreso":"gasto",monto,moneda:"NIO",fecha:ab.fecha,metodo:ab.metodo,categoria:cx?"Cobro a clientes":"Pago a proveedores",descripcion:(cx?"Cobro: ":"Pago: ")+c.nombre+(c.concepto?" · "+c.concepto:"")};
+  if(enCaja){if(prev&&prev.movId&&S.movs[prev.movId]){ab.movId=prev.movId;S.movs[prev.movId]={...S.movs[prev.movId],...datosMov}}
+    else{const mid=uid();ab.movId=mid;S.movs[mid]={id:mid,...datosMov,creado:new Date().toISOString()}}}
+  else if(prev&&prev.movId&&S.movs[prev.movId])delete S.movs[prev.movId];
+  const abonos=[...(c.abonos||[])];if(edit)abonos[ix]=ab;else abonos.push(ab);
+  put(col,id,{...c,abonos});
+  toast(edit?(cx?"Cobro":"Pago")+" corregido":(cx?"Cobro":"Pago")+" de "+C(monto)+" registrado"+(monto>=s-0.005?" · cuenta saldada":""));return true;
+}
+function formAbono(col,c,ix){
+  const cx=col==="cxc",a=ix!=null&&c.abonos?c.abonos[ix]:null,s=saldo(c)+(a?+a.monto||0:0);
+  openModal(`<div class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">${a?(cx?"Corregir cobro":"Corregir pago"):cx?"Registrar cobro":"Registrar pago"}</div>
+  <h2 style="margin:4px 0 2px">${esc(c.nombre)}</h2><div class="muted" style="font-size:13px">${esc(c.concepto||"")}${c.vence?" · vence "+fechaCorta(c.vence):""}</div>
+  <div class="saldo-box"><span>${a?"Saldo antes de este abono":"Saldo pendiente"}</span><b class="num">${C(s)}</b>${(c.abonos||[]).length?`<small>${c.abonos.length} abono${c.abonos.length===1?"":"s"} anterior${c.abonos.length===1?"":"es"} · ${C(c.monto-s)} de ${C(c.monto)}</small>`:""}</div>
+  <form class="f" id="fAb2">
+    <label>¿Cuánto ${cx?"te pagó":"pagaste"}? (C$)<input id="bM" type="number" step="0.01" min="0.01" max="${s}" inputmode="decimal" placeholder="0.00" value="${a?a.monto:""}" required></label>
+    <div class="chips">${[["Todo el saldo",s],["La mitad",r2(s/2)]].map(([l,v])=>`<button type="button" class="ch qamt" data-v="${v}">${l} · ${C(v)}</button>`).join("")}</div>
+    <div class="two"><label>Fecha<input id="bF" type="date" value="${a?a.fecha:hoy()}" required></label><label>Forma de pago<select id="bMet">${opts(METODOS,a?a.metodo:"Efectivo")}</select></label></div>
+    <label class="chk"><input type="checkbox" id="bCaja" ${!a||(a.movId&&S.movs[a.movId])?"checked":""}> Anotar también en Caja como ${cx?"ingreso":"gasto"}</label>
+    <div class="actions"><button type="button" class="btn" data-act="${a?"verCuenta":"close"}" data-col="${col}" data-id="${c.id}">Cancelar</button><button class="btn pri" type="submit">${a?"Guardar corrección":"Registrar "+(cx?"cobro":"pago")}</button></div>
+  </form>`,root=>{
+    root.querySelectorAll(".qamt").forEach(b=>b.onclick=()=>{root.querySelector("#bM").value=b.dataset.v});
+    root.querySelector("#fAb2").onsubmit=e=>{e.preventDefault();if(registrarAbono(col,c.id,root.querySelector("#bM").value,root.querySelector("#bF").value,root.querySelector("#bMet").value,root.querySelector("#bCaja").checked,a?ix:null)){if(a)verCuenta(col,S[col][c.id]);else closeModal()}};
+    const m=root.querySelector("#bM");if(m&&window.innerWidth>700)m.focus();
+  });
+}
+function elegirAbono(col){const cx=col==="cxc",ab=Object.values(S[col]).filter(c=>estado(c)!=="pagado").sort((a,b)=>(a.vence||"9").localeCompare(b.vence||"9"));
+  if(ab.length===1){formAbono(col,ab[0]);return}
+  openModal(`<h2>${cx?"¿Qué cliente te pagó?":"¿A qué proveedor le pagaste?"}</h2>
+  <div class="list">${ab.map(c=>`<button class="item" data-act="abonar" data-col="${col}" data-id="${c.id}"><span class="av ini" style="--hc:var(--h-${cx?"cobrar":"pagar"})">${esc(inic(c.nombre))}</span><div class="main"><div class="t">${esc(c.nombre)}</div><div class="s">${chipEstado(c)} ${esc(c.concepto||"")}</div></div><span class="num">${C(saldo(c))}</span></button>`).join("")}</div>
+  <div class="actions" style="margin-top:12px"><button class="btn" data-act="close">Cancelar</button></div>`)}
 function verCuenta(col,c){
   const cx=col==="cxc",s=saldo(c);
   openModal(`<div class="spread"><h2 style="margin:0">${esc(c.nombre)}</h2>${chipEstado(c)}</div>
   <div class="muted" style="font-size:14px;margin-top:4px">${esc(c.concepto||"")}${c.contacto?" · "+esc(c.contacto):""}</div>
   <div class="facts"><div><span>Monto</span><span class="num">${C(c.monto)}</span></div><div><span>Saldo</span><span class="num">${C(s)}</span></div><div><span>Fecha</span><span>${fechaCorta(c.fecha)}</span></div><div><span>Vence</span><span>${c.vence?fechaCorta(c.vence):"—"}</span></div></div>
   <h3>${cx?"Cobros recibidos":"Pagos realizados"}</h3>
-  <div class="list">${(c.abonos||[]).length?c.abonos.map(a=>`<div class="item"><div class="main"><div class="t">${fechaCorta(a.fecha)}</div><div class="s">${esc(a.metodo||"")}</div></div><span class="num">${C(a.monto)}</span></div>`).join(""):`<div class="empty">Sin abonos todavía.</div>`}</div>
+  <div class="list">${(c.abonos||[]).length?c.abonos.map((a,ix)=>`<div class="item"><div class="main"><div class="t">${fechaCorta(a.fecha)} ${fechaRef().slice(0,4)!==a.fecha.slice(0,4)?a.fecha.slice(0,4):""}</div><div class="s">${esc(a.metodo||"")}${a.movId&&S.movs[a.movId]?" · anotado en caja":""}</div></div><span class="num">${C(a.monto)}</span><button class="btn sm" data-act="editAbono" data-col="${col}" data-id="${c.id}" data-i="${ix}">Editar</button><button class="btn sm" data-act="delAbono" data-col="${col}" data-id="${c.id}" data-i="${ix}" aria-label="Borrar abono">×</button></div>`).join(""):`<div class="empty">Sin abonos todavía.</div>`}</div>
   ${s>0.005?`<h3>Registrar ${cx?"cobro":"pago"}</h3><form class="f" id="fAb">
     <div class="two"><label>Monto C$<input id="aM" type="number" step="0.01" min="0.01" max="${s}" value="${s}" required></label><label>Fecha<input id="aF" type="date" value="${hoy()}" required></label></div>
     <label>Método<select id="aMet">${opts(METODOS,"Efectivo")}</select></label>
@@ -863,13 +927,7 @@ function verCuenta(col,c){
     <div class="actions"><button class="btn pri" type="submit">Registrar ${cx?"cobro":"pago"}</button></div></form>`:""}
   <div class="actions" style="margin-top:14px"><button class="btn" data-act="close">Cerrar</button><button class="btn" data-act="editCuenta" data-col="${col}" data-id="${c.id}">Editar</button><button class="btn" data-act="pdf" data-k="edocta" data-col="${col}" data-id="${c.id}">${ic("pdf")} Estado de cuenta</button></div>`,root=>{
     const f=root.querySelector("#fAb");if(!f)return;
-    f.onsubmit=e=>{e.preventDefault();const monto=r2(root.querySelector("#aM").value),fecha=root.querySelector("#aF").value,metodo=root.querySelector("#aMet").value;
-      if(monto<=0)return;
-      const ab={monto,fecha,metodo};
-      if(root.querySelector("#aCaja").checked){const mid=uid();ab.movId=mid;
-        put("movs",mid,{tipo:cx?"ingreso":"gasto",monto,moneda:"NIO",fecha,metodo,categoria:cx?"Cobro a clientes":"Pago a proveedores",descripcion:(cx?"Cobro: ":"Pago: ")+c.nombre+(c.concepto?" · "+c.concepto:""),creado:new Date().toISOString()})}
-      const nc={...c,abonos:[...(c.abonos||[]),ab]};put(col,c.id,nc);
-      toast(cx?"Cobro registrado":"Pago registrado");verCuenta(col,S[col][c.id])};
+    f.onsubmit=e=>{e.preventDefault();if(registrarAbono(col,c.id,root.querySelector("#aM").value,root.querySelector("#aF").value,root.querySelector("#aMet").value,root.querySelector("#aCaja").checked))verCuenta(col,S[col][c.id])};
   });
 }
 
@@ -889,7 +947,8 @@ document.addEventListener("click",ev=>{
     case "nomT":S.nomTab=el.dataset.k;render();break;
     case "irNom":S.tab="nomina";S.nomTab="plan";render();window.scrollTo(0,0);break;
     case "nuevoMov":formMov();break;
-    case "editMov":formMov(S.movs[id]);break;
+    case "editMov":{const m=S.movs[id],o=origenMov(id);if(o)verMovVinculado(m,o);else formMov(m);break}
+    case "editAbono":{const c=S[el.dataset.col][id];if(c)formAbono(el.dataset.col,c,+el.dataset.i);break}
     case "nuevoEmp":formEmp();break;
     case "verEmp":verEmp(S.emps[id]);break;
     case "editEmp":formEmp(S.emps[id]);break;
@@ -908,6 +967,12 @@ document.addEventListener("click",ev=>{
       COLS.forEach(c=>Object.values(S[c]).filter(x=>x.ejemplo).forEach(x=>del(c,x.id)));toast("Ejemplos borrados");break;
     case "csv":exportCsv();break;
     case "waId":pedirCodigo();break;
+    case "abonar":{const c=S[el.dataset.col][id];if(c)formAbono(el.dataset.col,c);break}
+    case "elegirAbono":elegirAbono(el.dataset.col);break;
+    case "delAbono":{if(!el.dataset.armed){el.dataset.armed="1";el.textContent="¿Borrar?";el.classList.add("danger");break}
+      const col=el.dataset.col,c=S[col][id],ix=+el.dataset.i,a=(c.abonos||[])[ix];if(!a)break;
+      if(a.movId&&S.movs[a.movId])delete S.movs[a.movId];
+      put(col,id,{...c,abonos:c.abonos.filter((_,k)=>k!==ix)});toast("Abono borrado"+(a.movId?" (y quitado de Caja)":""));verCuenta(col,S[col][id]);break}
     case "pdf":generarPDF(el.dataset.k,el.dataset.id,el.dataset.col,el.dataset.i);break;
     case "irReportes":S.tab="reportes";closeModal();render();window.scrollTo(0,0);break;
     case "rpPer":S.rp={...(S.rp||{}),per:el.dataset.k};render();break;
@@ -915,6 +980,8 @@ document.addEventListener("click",ev=>{
     case "irAjRec":AJ.add("rec");LSG("ln_aj",JSON.stringify([...AJ]));S.tab="ajustes";render();setTimeout(()=>{const x=document.getElementById("aj-rec");if(x)x.scrollIntoView({behavior:"smooth"})},60);break;
     case "quitarLogo":putCfg({...S.cfg,logo:"",logoW:0,logoH:0});toast("Logo quitado");break;
     case "delCat":{const t=el.dataset.t,key=t==="in"?"catsIn":"catsOut";putCfg({...S.cfg,[key]:(S.cfg[key]||[]).filter(c=>c.n!==el.dataset.n)});toast("Categoría quitada");break}
+    case "editRec":S.editRec=id;render();setTimeout(()=>{const f=document.getElementById("fRec");if(f)f.scrollIntoView({behavior:"smooth",block:"center"})},60);break;
+    case "cancelRec":S.editRec=null;render();break;
     case "delRec":putCfg({...S.cfg,recs:(S.cfg.recs||[]).filter(r=>r.id!==el.dataset.id)});toast("Recordatorio quitado");break;
     case "qaVenta":formMov(null,"ingreso");break;
     case "qaGasto":formMov(null,"gasto");break;
@@ -953,7 +1020,9 @@ document.addEventListener("submit",async ev=>{
     if(catsIn().concat(catsOut()).some(x=>x.toLowerCase()===n.toLowerCase())){toast("Esa categoría ya existe");return}
     const key=t==="in"?"catsIn":"catsOut";putCfg({...S.cfg,[key]:[...(S.cfg[key]||[]),{n,g}]});toast("Categoría agregada");return}
   if(ev.target.id==="fRec"){ev.preventDefault();const t=$("#rNom").value.trim(),dia=Math.min(31,Math.max(1,+$("#rDia").value||1));if(!t)return;
-    putCfg({...S.cfg,recs:[...(S.cfg.recs||[]),{id:uid(),t,monto:r2($("#rMonto").value),dia,cat:$("#rCat").value}]});toast("Recordatorio agregado");return}
+    const datos={t,monto:r2($("#rMonto").value),dia,cat:$("#rCat").value};
+    if(S.editRec&&(S.cfg.recs||[]).some(r=>r.id===S.editRec)){const idE=S.editRec;S.editRec=null;putCfg({...S.cfg,recs:S.cfg.recs.map(r=>r.id===idE?{...r,...datos}:r)});toast("Recordatorio actualizado");return}
+    putCfg({...S.cfg,recs:[...(S.cfg.recs||[]),{id:uid(),...datos}]});toast("Recordatorio agregado");return}
   if(ev.target.id==="fDias"){ev.preventDefault();const v=x=>{const n=+$(x).value;return n>=1&&n<=31?String(Math.round(n)):""};putCfg({...S.cfg,diaINSS:v("#dInss"),diaIR:v("#dIr")});toast("Fechas guardadas");return}
   if(ev.target.id==="fRest"){ev.preventDefault();
     const d=leerRespaldo($("#rTxt").value);
