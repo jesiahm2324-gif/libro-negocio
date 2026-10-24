@@ -96,6 +96,9 @@ const addM=(base,n)=>{const [y,m,d]=base.split("-").map(Number);const x=new Date
 const dd=(a,b)=>Math.round((new Date(a+"T00:00")-new Date(b+"T00:00"))/864e5);
 const devFmt=d=>d.slice(0,4)+"-"+d.slice(4);
 const APP_URL=new URL("./",location.href).href;
+const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const STANDALONE=window.navigator.standalone===true||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);
+const avisoSafari=()=>IOS&&!STANDALONE?`<div class="panel" style="border-color:var(--gold);background:var(--gold-soft);font-size:14px;margin-bottom:12px"><b>Estás dentro de Safari.</b> Para usar el Admin como app: ☰ → Compartir → <b>Agregar a pantalla de inicio</b>, dejá activado <b>“Abrir como app web”</b> y abrilo desde el ícono de la llave.</div>`:"";
 let toastT;function toast(t){clearTimeout(toastT);let e=$("toast");if(!e){e=document.createElement("div");e.id="toast";e.className="toast";e.setAttribute("role","status");document.body.appendChild(e)}e.textContent=t;e.hidden=false;toastT=setTimeout(()=>e.hidden=true,2600)}
 async function copy(t,ok){try{await navigator.clipboard.writeText(t);toast(ok)}catch(e){toast("No se pudo copiar. Mantené presionado el texto para copiarlo.")}}
 
@@ -113,7 +116,7 @@ const saveReg=()=>LS("ln_reg",JSON.stringify(reg));
 
 function lock(){
   $("m").innerHTML=`<div class="lockbox"><div class="eyebrow">Libro del Negocio</div><h1>Administrador</h1><p class="sub">Generador de códigos de activación</p>
-  <form class="panel" id="fl"><label>Contraseña de administrador<input id="pw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required></label><div class="err" id="er"></div><button class="btn pri full" id="go" type="submit">Entrar</button></form></div>`;
+  ${avisoSafari()}<form class="panel" id="fl"><label>Contraseña de administrador<input id="pw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required></label><div class="err" id="er"></div><button class="btn pri full" id="go" type="submit">Entrar</button></form></div>`;
   $("fl").onsubmit=async e=>{e.preventDefault();$("go").textContent="Verificando…";$("er").textContent="";
     const pw=$("pw").value.trim();let saved=null;try{saved=JSON.parse(LS("ln_blob")||"null")}catch(x){}
     for(const b of [saved,BLOB]){if(!b)continue;try{PRV=await dec(b,pw);main();return}catch(x){}}

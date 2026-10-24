@@ -176,6 +176,9 @@ const COLS=["movs","emps","noms","cxc","cxp"];
 const LS_KEY="libro-negocio-local-v1";
 const PUB={"kty": "EC", "x": "m6EBUX0bNX_zX6LsrI1UfWDfsy8GPRQJNcjHkWlONzQ", "y": "HLwSBYV4YKTsoCxJxX_peYwxW2tV1ziTTm2w2DTiRBI", "crv": "P-256"};
 
+const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const STANDALONE=window.navigator.standalone===true||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);
+function avisoSafari(){return IOS&&!STANDALONE?`<div class="notice" style="margin-top:0;margin-bottom:14px"><b>Estás usando la app dentro de Safari.</b> Para usarla como app: tocá ☰ → Compartir → <b>Agregar a pantalla de inicio</b>, dejá activado <b>“Abrir como app web”</b> y abrila desde el ícono. Lo que actives aquí no pasa a la app instalada.</div>`:""}
 /* ---------- Licencia por teléfono (mismo sistema que Mi Tambo) ---------- */
 const LSG=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){return null}};
 let pubKey=null;
@@ -291,7 +294,7 @@ function renderGate(){
   if(S.gate==="cargando"){$("#main").innerHTML=`<p class="muted" style="margin-top:40px">Verificando acceso…</p>`;return}
   const l=S.lic||{},id=devFmt(devId());
   const msg=S.gate==="vencido"?`Tu acceso venció el <b>${esc(fechaCorta(l.e))} ${esc(l.e.slice(0,4))}</b>. Tus datos siguen guardados en este teléfono. Pedí la renovación enviando tu ID.`:`Para usar la app necesitás un código de activación. Enviá tu ID a quien te dio la app y pegá aquí el código que te devuelva.`;
-  $("#main").innerHTML=`<h2 style="margin-top:28px">${S.gate==="vencido"?"Acceso vencido":"Activá tu acceso"}</h2>
+  $("#main").innerHTML=`<div style="height:18px"></div>${avisoSafari()}<h2 style="margin-top:10px">${S.gate==="vencido"?"Acceso vencido":"Activá tu acceso"}</h2>
   <div class="panel" style="display:grid;gap:12px">
     <p style="margin:0">${msg}</p>
     <div><div class="muted" style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase">Tu ID de este teléfono</div>
@@ -318,7 +321,7 @@ function render(){
   const fabs={panel:["+ Movimiento","nuevoMov"],caja:["+ Movimiento","nuevoMov"],nomina:S.nomTab==="emps"?["+ Empleado","nuevoEmp"]:["+ Planilla","nuevaNom"],cobrar:["+ Cuenta por cobrar","nuevaCxc"],pagar:["+ Cuenta por pagar","nuevaCxp"]};
   const f=fabs[S.tab];fab.hidden=!f;if(f){fab.textContent=f[0];fab.dataset.act=f[1]}
   const v={panel:vPanel,caja:vCaja,nomina:vNomina,cobrar:()=>vCuentas("cxc"),pagar:()=>vCuentas("cxp"),ajustes:vAjustes}[S.tab];
-  $("#main").innerHTML=v()+modoAviso();
+  $("#main").innerHTML=(avisoSafari()?`<div style="height:14px"></div>`+avisoSafari():"")+v()+modoAviso();
 }
 function modoAviso(){
   if(S.mode==="sinGuardar")return `<div class="notice"><b>Sin guardar.</b> Este navegador no permite guardar datos. Descargá un respaldo en Ajustes antes de cerrar.</div>`;
