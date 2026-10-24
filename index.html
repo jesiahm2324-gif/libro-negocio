@@ -284,6 +284,18 @@ body.pv-on{overflow:hidden}
 .pv-page span{font-size:11.5px;color:var(--muted)}
 .pv-bar{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding:10px max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));background:var(--surface);border-top:1px solid var(--line)}
 .pv-bar .btn{flex:1;min-width:140px;padding:12px 14px;font-size:15px}
+.mhero.cmp{padding:14px 14px 12px;margin:12px 0 12px}
+.mhero.cmp .bn{font-size:27px;margin:8px 0 0}
+.mhero.cmp .mh-ch{grid-template-columns:1fr 1fr;margin-top:10px}
+.hact{position:relative;z-index:1;margin-top:10px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:14px;border:1px solid #ffffff66;background:#ffffffe6;color:var(--mc);font-weight:700;font-size:14.5px;cursor:pointer;box-shadow:0 3px 0 #0003}
+.hact:active{transform:translateY(2px);box-shadow:none}
+.hact svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2}
+.crow{padding:9px 12px}
+.crow .rmain .s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.6}
+.crow .rside{gap:4px}
+.crow .rside .num{font-size:14px}
+.crow .rside .btn{padding:4px 13px;font-size:12.5px}
+.crow .av{width:34px;height:34px}
 .hpdf{position:absolute;top:12px;right:12px;z-index:2;display:flex;align-items:center;gap:5px;padding:6px 11px 6px 9px;border-radius:999px;background:#ffffff26;border:1px solid #ffffff55;color:#fff;font-size:12.5px;font-weight:700;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 2px 0 #0003}
 .hpdf:active{transform:translateY(1px)}
 .hpdf svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
@@ -514,8 +526,8 @@ function render(){
 function modoAviso(){
   if(S.mode==="sinGuardar")return `<div class="notice"><b>Sin guardar.</b> Este navegador no permite guardar datos. Descargá un respaldo en Ajustes antes de cerrar.</div>`;
   let out="";
-  if(S.lic&&S.lic.st==="ok"&&S.lic.e){const r=dias(fechaRef(),S.lic.e);if(r<=15)out+=`<div class="notice"><b>Tu acceso vence ${r===0?"hoy":"en "+r+(r===1?" día":" días")}</b> (${fechaCorta(S.lic.e)}). Pedí un código nuevo y cargalo en Ajustes.</div>`}
-  if(!hayDatos()||S.tab==="ajustes")return out;
+  if(S.tab==="panel"&&S.lic&&S.lic.st==="ok"&&S.lic.e){const r=dias(fechaRef(),S.lic.e);if(r<=15)out+=`<div class="notice"><b>Tu acceso vence ${r===0?"hoy":"en "+r+(r===1?" día":" días")}</b> (${fechaCorta(S.lic.e)}). Pedí un código nuevo y cargalo en Ajustes.</div>`}
+  if(!hayDatos()||S.tab!=="panel")return out;
   const u=S.cfg.ultimoRespaldo;
   if(!u||dias(u,hoy())>30)out+=`<div class="notice"><b>${u?"Respaldo atrasado.":"Sin respaldo."}</b> Tus datos viven solo en este teléfono. <button class="btn sm" data-act="irRespaldo" style="margin-left:6px">Hacer respaldo</button></div>`;
   return out;
@@ -526,14 +538,14 @@ const ICO={
  in:'<path d="M12 19V5M5 12l7-7 7 7"/>',out:'<path d="M12 5v14M19 12l-7 7-7-7"/>',
  caja:'<path d="M3 7h18v12H3zM3 11h18M16 15h2"/>',nomina:'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5M16 6.5a3 3 0 0 1 0 5.6M18 14.5c1.4.8 2.3 2.4 2.5 4.5"/>',
  cobrar:'<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>',pagar:'<path d="M12 20V8M7 13l5-5 5 5M5 4h14"/>',
- planilla:'<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4"/>',reloj:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+ planilla:'<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4"/>',reloj:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',check:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 3 3 5-6"/>',
  pdf:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M12 11v6M9.5 14.5 12 17l2.5-2.5"/>',
  grafico:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',reportes:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
  logo:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-8 8"/>'};
 const secP=(k,ico,col,tit,sub,body,alerta)=>`<div class="acc ${AJ.has(k)?"op":""}" id="aj-${k}"><button class="ah" data-act="ajSec" data-k="${k}" aria-expanded="${AJ.has(k)}"><span class="ai" style="background:var(${col});color:#fff">${ic(ico)}</span><span class="at"><b>${tit}</b><small>${alerta?`<span class="chip bad">${alerta}</span> `:""}${sub}</small></span><span class="chev">›</span></button><div class="ab">${body}</div></div>`;
 const ic=k=>`<svg viewBox="0 0 24 24" aria-hidden="true">${ICO[k]}</svg>`;
 const inic=n=>String(n||"?").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();
-function heroMod(mod,eb,lbl,big,chips,pdf){return `<div class="mhero" style="--mc:var(--h-${mod})">${pdf?`<button class="hpdf" data-act="pdf" data-k="${pdf}" aria-label="Descargar PDF">${ic("pdf")}PDF</button>`:""}<div class="mh-top"><span class="mh-ic">${ic(mod)}</span><div><div class="eb">${eb}</div><div class="lb">${lbl}</div></div></div><div class="bn num">${big}</div>${chips&&chips.length?`<div class="mh-ch">${chips.map(([l,v,w])=>`<div class="${w?"w":""}"><span>${l}</span><b class="num">${v}</b></div>`).join("")}</div>`:""}</div>`}
+function heroMod(mod,eb,lbl,big,chips,pdf,extra){return `<div class="mhero ${extra?"cmp":""}" style="--mc:var(--h-${mod})">${pdf?`<button class="hpdf" data-act="pdf" data-k="${pdf}" aria-label="Descargar PDF">${ic("pdf")}PDF</button>`:""}<div class="mh-top"><span class="mh-ic">${ic(mod)}</span><div><div class="eb">${eb}</div><div class="lb">${lbl}</div></div></div><div class="bn num">${big}</div>${chips&&chips.length?`<div class="mh-ch">${chips.map(([l,v,w])=>`<div class="${w?"w":""}"><span>${l}</span><b class="num">${v}</b></div>`).join("")}</div>`:""}${extra||""}</div>`}
 function vPanel(){
   const t=sumMes(S.mes);
   const cxc=Object.values(S.cxc),cxp=Object.values(S.cxp);
@@ -617,21 +629,28 @@ function vNomina(){
 function nomLbl(n){return mesLbl(n.periodo)+(n.tipo==="Q1"?" · 1ª quincena":n.tipo==="Q2"?" · 2ª quincena":" · mensual")}
 
 function vCuentas(col){
-  const cx=col==="cxc";
+  const cx=col==="cxc",mod=cx?"cobrar":"pagar";
   const arr=Object.values(S[col]);
   const abiertas=arr.filter(c=>estado(c)!=="pagado").sort((a,b)=>(a.vence||"9").localeCompare(b.vence||"9"));
   const cerradas=arr.filter(c=>estado(c)==="pagado").sort((a,b)=>(b.vence||"").localeCompare(a.vence||""));
   const h=hoy(),b=[0,0,0,0];
   abiertas.forEach(c=>{const d=c.vence?dias(c.vence,h):0;const s=saldo(c);if(d<=0)b[0]+=s;else if(d<=30)b[1]+=s;else if(d<=60)b[2]+=s;else b[3]+=s});
-  const tot=b.reduce((a,x)=>a+x,0);
-  const row=c=>{const ab=estado(c)!=="pagado";return `<div class="item crow"><button class="rmain" data-act="verCuenta" data-col="${col}" data-id="${c.id}"><span class="av ini" style="--hc:var(--h-${cx?"cobrar":"pagar"})">${esc(inic(c.nombre))}</span><div class="main"><div class="t">${esc(c.nombre)}${c.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${chipEstado(c)} ${esc(c.concepto||"")}${c.vence?" · vence "+fechaCorta(c.vence):""}</div></div></button><div class="rside"><span class="num">${C(ab?saldo(c):c.monto)}</span>${ab?`<button class="btn sm pri" data-act="abonar" data-col="${col}" data-id="${c.id}">${cx?"Cobrar":"Pagar"}</button>`:`<span class="muted" style="font-size:11px">${(c.abonos||[]).length} abono${(c.abonos||[]).length===1?"":"s"}</span>`}</div></div>`};
-  return `${heroMod(cx?"cobrar":"pagar",cx?"Cuentas por cobrar":"Cuentas por pagar",cx?"Total que te deben":"Total que debés",C(tot),[["Al día",C(b[0])],["1–30 días",C(b[1]),b[1]>0],["31–60 días",C(b[2]),b[2]>0],["Más de 60",C(b[3]),b[3]>0]],col)}
-  ${abiertas.length?`<button class="btn pri big-act" data-act="elegirAbono" data-col="${col}">${ic(cx?"cobrar":"pagar")} Registrar ${cx?"cobro de un cliente":"pago a un proveedor"}</button>`:""}
-  <h3>Abiertas (${abiertas.length})</h3><div class="list">${abiertas.length?abiertas.map(row).join(""):`<div class="empty">${cx?"Nadie te debe nada. Registrá aquí las ventas al crédito.":"No tenés deudas pendientes. Registrá aquí las facturas de proveedores."}</div>`}</div>
-  ${cerradas.length?`<h3>Pagadas (${cerradas.length})</h3><div class="list">${cerradas.slice(0,20).map(row).join("")}</div>`:""}`;
+  const tot=b.reduce((a,x)=>a+x,0),venc=b[1]+b[2]+b[3],nv=abiertas.filter(c=>estado(c)==="vencido").length;
+  const row=c=>{const ab=estado(c)!=="pagado";return `<div class="item crow"><button class="rmain" data-act="verCuenta" data-col="${col}" data-id="${c.id}"><span class="av ini" style="--hc:var(--h-${mod})">${esc(inic(c.nombre))}</span><div class="main"><div class="t">${esc(c.nombre)}${c.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${chipEstado(c)} ${c.vence?"vence "+fechaCorta(c.vence):esc(c.concepto||"")}</div></div></button><div class="rside"><span class="num">${C(ab?saldo(c):c.monto)}</span>${ab?`<button class="btn sm pri" data-act="abonar" data-col="${col}" data-id="${c.id}">${cx?"Cobrar":"Pagar"}</button>`:`<span class="muted" style="font-size:11px">${(c.abonos||[]).length} abono${(c.abonos||[]).length===1?"":"s"}</span>`}</div></div>`};
+  const accion=abiertas.length?`<button class="hact" data-act="elegirAbono" data-col="${col}">${ic(mod)} Registrar ${cx?"cobro":"pago"}</button>`:"";
+  return `${heroMod(mod,cx?"Cuentas por cobrar":"Cuentas por pagar",cx?"Total que te deben":"Total que debés",C(tot),[[cx?"Clientes con saldo":"Proveedores con saldo",String(abiertas.length)],["Vencido",C(venc),venc>0]],col,accion)}
+  ${secP(col+"-ab",mod,"--h-"+mod,"Abiertas ("+abiertas.length+")",abiertas.length?(cx?"Te deben ":"Debés ")+C(tot):"Sin saldos pendientes",abiertas.length?`<div class="list flat">${abiertas.map(row).join("")}</div>`:`<div class="empty" style="padding:8px">${cx?"Nadie te debe nada. Registrá aquí las ventas al crédito con “+ Cuenta por cobrar”.":"No tenés deudas pendientes. Registrá las facturas de proveedores con “+ Cuenta por pagar”."}</div>`,nv?nv+" vencida"+(nv===1?"":"s"):"")}
+  ${secP(col+"-ag","reloj","--h-panel","Antigüedad de saldos",venc>0?"Vencido "+C(venc):"Todo al día",`<div class="lines">
+    <div class="spread"><span>Al día</span><span class="num">${C(b[0])}</span></div>
+    <div class="spread"><span>Vencido 1–30 días</span><span class="num ${b[1]?"out-c":""}">${C(b[1])}</span></div>
+    <div class="spread"><span>Vencido 31–60 días</span><span class="num ${b[2]?"out-c":""}">${C(b[2])}</span></div>
+    <div class="spread"><span>Vencido más de 60 días</span><span class="num ${b[3]?"out-c":""}">${C(b[3])}</span></div>
+    <div class="spread b"><span>Total</span><span class="num">${C(tot)}</span></div></div>`,"")}
+  ${cerradas.length?secP(col+"-pg","check","--h-caja","Pagadas ("+cerradas.length+")",cx?"Cuentas cobradas por completo":"Cuentas pagadas por completo",`<div class="list flat">${cerradas.slice(0,30).map(row).join("")}</div>`,""):""}`;
 }
 
 let AJ=new Set();try{AJ=new Set(JSON.parse(LSG("ln_aj")||"[]"))}catch(e){}
+if(!AJ.has("_ini1")){["cxc-ab","cxp-ab","_ini1"].forEach(k=>AJ.add(k));LSG("ln_aj",JSON.stringify([...AJ]))}
 function ajSec(k,on){if(on===undefined)on=!AJ.has(k);on?AJ.add(k):AJ.delete(k);LSG("ln_aj",JSON.stringify([...AJ]));const el=document.getElementById("aj-"+k);if(el){el.classList.toggle("op",on);const b=el.querySelector(".ah");if(b)b.setAttribute("aria-expanded",on)}}
 function vAjustes(){
   const c=S.cfg;
