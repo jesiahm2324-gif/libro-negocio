@@ -67,6 +67,10 @@ body.mods .tint .tl{color:var(--tc)}
 .acc .ah{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:transparent;border:0;text-align:left;color:var(--ink)}
 .acc .ai{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:17px;font-weight:700;color:var(--accent-ink);flex-shrink:0;font-family:var(--f-body)}
 .acc .at{flex:1;min-width:0}.acc .at b{display:block;font-size:16px}.acc .at small{display:block;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc .ai svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2}
+.acc .ab .list.flat{box-shadow:none;border:0;border-radius:0;margin:-12px -14px -14px;background:transparent}
+.acc .ab .list.flat .s{white-space:normal}
+.chart{margin-bottom:12px}
 .acc .chev{font-size:24px;color:var(--muted);transition:transform .15s}
 .acc .ab{display:none;padding:12px 14px 14px;border-top:1px solid var(--line)}
 .acc.op .ab{display:block}.acc.op .chev{transform:rotate(90deg)}
@@ -474,7 +478,8 @@ const ICO={
  in:'<path d="M12 19V5M5 12l7-7 7 7"/>',out:'<path d="M12 5v14M19 12l-7 7-7-7"/>',
  caja:'<path d="M3 7h18v12H3zM3 11h18M16 15h2"/>',nomina:'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5M16 6.5a3 3 0 0 1 0 5.6M18 14.5c1.4.8 2.3 2.4 2.5 4.5"/>',
  cobrar:'<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>',pagar:'<path d="M12 20V8M7 13l5-5 5 5M5 4h14"/>',
- planilla:'<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4"/>'};
+ planilla:'<path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4"/>',reloj:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>'};
+const secP=(k,ico,col,tit,sub,body,alerta)=>`<div class="acc ${AJ.has(k)?"op":""}" id="aj-${k}"><button class="ah" data-act="ajSec" data-k="${k}" aria-expanded="${AJ.has(k)}"><span class="ai" style="background:var(${col});color:#fff">${ic(ico)}</span><span class="at"><b>${tit}</b><small>${alerta?`<span class="chip bad">${alerta}</span> `:""}${sub}</small></span><span class="chev">›</span></button><div class="ab">${body}</div></div>`;
 const ic=k=>`<svg viewBox="0 0 24 24" aria-hidden="true">${ICO[k]}</svg>`;
 const inic=n=>String(n||"?").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();
 function heroMod(mod,eb,lbl,big,chips){return `<div class="mhero" style="--mc:var(--h-${mod})"><div class="mh-top"><span class="mh-ic">${ic(mod)}</span><div><div class="eb">${eb}</div><div class="lb">${lbl}</div></div></div><div class="bn num">${big}</div>${chips&&chips.length?`<div class="mh-ch">${chips.map(([l,v,w])=>`<div class="${w?"w":""}"><span>${l}</span><b class="num">${v}</b></div>`).join("")}</div>`:""}</div>`}
@@ -521,10 +526,8 @@ function vPanel(){
   </div>
   <h3>Últimos 6 meses</h3>
   <div class="panel chart">${svg}<div class="row" style="font-size:12px;margin-top:6px"><span class="row" style="gap:6px"><span class="dot" style="background:var(--in)"></span>Ingresos</span><span class="row" style="gap:6px"><span class="dot" style="background:var(--out)"></span>Gastos</span></div></div>
-  <div class="duo">
-    <div><h3>Gastos por categoría</h3><div class="panel">${cl.length?`<div class="bars">${cl.map(([k,v])=>`<div class="bar"><span>${esc(k)}</span><span class="num">${C(v)}</span><div class="track"><div class="fill" style="width:${(v/cmax*100).toFixed(1)}%"></div></div></div>`).join("")}</div>`:`<div class="empty">Sin gastos este mes.</div>`}</div></div>
-    <div><h3>Vence en 7 días o antes</h3><div class="list">${prox.length?prox.map(c=>`<button class="item" data-act="verCuenta" data-col="${c.k}" data-id="${c.id}"><span class="av" style="--hc:var(--h-${c.k==="cxc"?"cobrar":"pagar"})">${ic(c.k==="cxc"?"cobrar":"pagar")}</span><div class="main"><div class="t">${esc(c.nombre)}</div><div class="s">${c.k==="cxc"?"Cobrar":"Pagar"} · ${fechaCorta(c.vence)}</div></div>${chipEstado(c)}<span class="num">${C(saldo(c))}</span></button>`).join(""):`<div class="empty">Nada por vencer esta semana.</div>`}</div></div>
-  </div>`;
+  ${secP("gcat","out","--h-pagar","Gastos por categoría",cl.length?cl.length+" categoría"+(cl.length===1?"":"s")+" · mayor: "+esc(cl[0][0]):"Sin gastos este mes",cl.length?`<div class="bars">${cl.map(([k,v])=>`<div class="bar"><span>${esc(k)}</span><span class="num">${C(v)}</span><div class="track"><div class="fill" style="width:${(v/cmax*100).toFixed(1)}%"></div></div></div>`).join("")}</div>`:`<div class="empty" style="padding:8px">Sin gastos este mes.</div>`,"")}
+  ${secP("venc","reloj","--h-caja","Vence en 7 días o antes",prox.length?prox.length+" cuenta"+(prox.length===1?"":"s")+" · "+C(prox.reduce((a,c)=>a+saldo(c),0)):"Nada por vencer esta semana",prox.length?`<div class="list flat">${prox.map(c=>`<button class="item" data-act="verCuenta" data-col="${c.k}" data-id="${c.id}"><span class="av" style="--hc:var(--h-${c.k==="cxc"?"cobrar":"pagar"})">${ic(c.k==="cxc"?"cobrar":"pagar")}</span><div class="main"><div class="t">${esc(c.nombre)}</div><div class="s">${chipEstado(c)} ${c.k==="cxc"?"Cobrar":"Pagar"} · ${fechaCorta(c.vence)}</div></div><span class="num">${C(saldo(c))}</span></button>`).join("")}</div>`:`<div class="empty" style="padding:8px">Nada por vencer esta semana.</div>`,prox.some(c=>estado(c)==="vencido")?"Hay vencidas":"")}`;
 }
 function chipEstado(c){const e=estado(c);return e==="pagado"?`<span class="chip ok">Pagado</span>`:e==="vencido"?`<span class="chip bad">Vencido ${dias(c.vence,hoy())} d</span>`:`<span class="chip warn">Pendiente</span>`}
 
