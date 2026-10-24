@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#13201B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Libro Admin">
+<title>Libro del Negocio Admin</title>
+<link rel="manifest" href="admin.webmanifest">
+<link rel="apple-touch-icon" href="admin-180.png">
+<link rel="icon" type="image/png" href="admin-180.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Panel del propietario: una columna, formulario arriba, registro de clientes abajo */
+:root{
+  --bg:#F3F5F2; --surface:#FFFFFF; --sunk:#E7ECE6; --line:#D5DDD4;
+  --ink:#16201C; --muted:#5E6B64; --accent:#0E6B57; --accent-ink:#FFFFFF; --accent-soft:#D9EDE6;
+  --gold:#9A6A00; --gold-soft:#FBF0D3; --out:#B4432F; --bad-soft:#F8E1DC; --wa:#1E9E55;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#101614; --surface:#18201D; --sunk:#0C110F; --line:#2A3531;
+  --ink:#E6EEEA; --muted:#93A39B; --accent:#4CC4A4; --accent-ink:#06231C; --accent-soft:#163A31;
+  --gold:#E8B64A; --gold-soft:#3A2F12; --out:#F08A74; --bad-soft:#3D1F19; --wa:#3CCB7A; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+main{max-width:600px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(60px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+h1{font-family:var(--f-display);font-size:26px;margin:4px 0 2px;letter-spacing:-.01em}
+h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:24px 0 8px;font-weight:600}
+.sub{color:var(--muted);font-size:14px;margin:0 0 12px}
+.eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+form,.stack{display:grid;gap:12px}
+label{display:grid;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+input,select,textarea{font:inherit;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:11px 12px;font-size:16px;color:var(--ink);width:100%;min-width:0;font-weight:400}
+#d{font-family:var(--f-num);letter-spacing:.08em;text-transform:uppercase}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 16px;font-weight:600;font-size:14px}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.wa{background:var(--wa);color:#fff;border-color:var(--wa)}
+.btn.danger{color:var(--out);border-color:var(--out)}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn.full{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.spread{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.err{color:var(--out);font-weight:600;font-size:14px}
+.hint{color:var(--muted);font-size:13px}
+.code{font-family:var(--f-num);font-size:12px;background:var(--sunk);border-radius:8px;padding:10px;word-break:break-all;user-select:all;-webkit-user-select:all}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kp>div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;min-width:0}
+.kp .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.kp .v{font-family:var(--f-num);font-size:22px}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.cli{border-top:1px solid var(--line);padding:12px 14px}
+.cli:first-child{border-top:0}
+.cli .head{display:flex;gap:10px;align-items:center;background:transparent;border:0;padding:0;width:100%;text-align:left}
+.cli .main{flex:1;min-width:0}
+.cli .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cli .s{font-size:13px;color:var(--muted)}
+.cli .acts{display:none;margin-top:10px}
+.cli.op .acts{display:flex}
+.chip{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.ok{background:var(--accent-soft);color:var(--accent)}.warn{background:var(--gold-soft);color:var(--gold)}.bad{background:var(--bad-soft);color:var(--out)}.neu{background:var(--sunk);color:var(--muted)}
+.empty{padding:20px 14px;text-align:center;color:var(--muted);font-size:14px}
+details.panel summary{cursor:pointer;font-weight:600;list-style:none}
+details.panel summary::-webkit-details-marker{display:none}
+details.panel[open] summary{margin-bottom:10px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;max-width:90%}
+.lockbox{max-width:420px;margin:12vh auto 0}
+</style>
+</head>
+<body>
+<main id="m"></main>
+<script>
+(function(){
+"use strict";
+const BLOB={"s": "WYB20mrn+xx6CHEq1725lA==", "iv": "U+cqALgo14P9OVby", "ct": "tdyJuLWdrd78cAz1so8cSJ5phPH4/8atbNxZnP2IOR46A/MP2zL3ZFukpPvEEH8F3jJgBF8Nw5xM6HwSjC+vH2WAMrFxZx62XnFdAJFBBTfOXQbZeXgzPs5s5mTI6WDW7i/p9pdzFxc5uejoboLrdO3YVpSyVS+dlNRRXIVKFaoafYugNKRCqZ+jG9ykT1LetMLWqxIR+aT9T6GOKkd00MSEFHZJcuIvr2ZSilIxKpALwKG0RBbrkk1sxv5RAmrW"};
+const $=i=>document.getElementById(i);
+const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){return null}};
+const b64=u=>{let s="";new Uint8Array(u).forEach(x=>s+=String.fromCharCode(x));return btoa(s)};
+const unb=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+const b64u=u=>b64(u).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ymd=x=>x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0");
+const today=()=>ymd(new Date());
+const MES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const fmt=d=>{if(!d)return"";const [y,m,dd]=d.split("-");return (+dd)+" "+MES[+m-1]+" "+y};
+const addM=(base,n)=>{const [y,m,d]=base.split("-").map(Number);const x=new Date(y,m-1,d);x.setMonth(x.getMonth()+n);if(x.getDate()!==d)x.setDate(0);return ymd(x)};
+const dd=(a,b)=>Math.round((new Date(a+"T00:00")-new Date(b+"T00:00"))/864e5);
+const devFmt=d=>d.slice(0,4)+"-"+d.slice(4);
+const APP_URL=new URL("./",location.href).href;
+let toastT;function toast(t){clearTimeout(toastT);let e=$("toast");if(!e){e=document.createElement("div");e.id="toast";e.className="toast";e.setAttribute("role","status");document.body.appendChild(e)}e.textContent=t;e.hidden=false;toastT=setTimeout(()=>e.hidden=true,2600)}
+async function copy(t,ok){try{await navigator.clipboard.writeText(t);toast(ok)}catch(e){toast("No se pudo copiar. Mantené presionado el texto para copiarlo.")}}
+
+async function dec(blob,pass){const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pass),"PBKDF2",false,["deriveKey"]);
+  const k=await crypto.subtle.deriveKey({name:"PBKDF2",salt:unb(blob.s),iterations:600000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["decrypt"]);
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:unb(blob.iv)},k,unb(blob.ct));return JSON.parse(new TextDecoder().decode(pt))}
+async function enc(jwk,pass){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const km=await crypto.subtle.importKey("raw",new TextEncoder().encode(pass),"PBKDF2",false,["deriveKey"]);
+  const k=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:600000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt"]);
+  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},k,new TextEncoder().encode(JSON.stringify(jwk)));return{s:b64(salt),iv:b64(iv),ct:b64(new Uint8Array(ct))}}
+
+let PRV=null,reg=[],open=null,q="";
+const loadReg=()=>{try{reg=JSON.parse(LS("ln_reg")||"[]")||[]}catch(e){reg=[]}};
+const saveReg=()=>LS("ln_reg",JSON.stringify(reg));
+
+function lock(){
+  $("m").innerHTML=`<div class="lockbox"><div class="eyebrow">Libro del Negocio</div><h1>Administrador</h1><p class="sub">Generador de códigos de activación</p>
+  <form class="panel" id="fl"><label>Contraseña de administrador<input id="pw" type="password" autocomplete="current-password" required></label><div class="err" id="er"></div><button class="btn pri full" id="go" type="submit">Entrar</button></form></div>`;
+  $("fl").onsubmit=async e=>{e.preventDefault();$("go").textContent="Verificando…";$("er").textContent="";
+    try{const b=JSON.parse(LS("ln_blob")||"null")||BLOB;PRV=await dec(b,$("pw").value.trim());main()}
+    catch(x){$("go").textContent="Entrar";$("er").textContent="Contraseña incorrecta."}};
+}
+
+function status(e){if(!e)return["Sin vencimiento","ok"];const d=dd(e,today());return d<0?["Vencido","bad"]:d<=15?["Vence en "+d+" d","warn"]:["Activo · "+d+" d","ok"]}
+
+function main(){loadReg();
+  $("m").innerHTML=`<div class="eyebrow">Libro del Negocio · Admin</div><h1>Códigos de activación</h1>
+  <p class="sub">Generá el código para cada cliente con el ID de su teléfono y definí hasta cuándo tiene acceso.</p>
+  <div class="kp" id="kp"></div>
+  <h2 id="ft">Nuevo código o renovación</h2>
+  <form class="panel" id="fg">
+    <label>Nombre del cliente o negocio<input id="n" maxlength="60" placeholder="Ej.: Pulpería La Esperanza" required></label>
+    <label>ID del teléfono (lo envía el cliente)<input id="d" placeholder="XXXX-XXXX" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" required></label>
+    <label>Tiempo de acceso<select id="t">
+      <option value="1">1 mes</option><option value="3">3 meses</option><option value="6">6 meses</option><option value="12" selected>1 año</option><option value="24">2 años</option><option value="0">Sin vencimiento</option><option value="x">Elegir fecha exacta</option>
+    </select></label>
+    <input type="date" id="x" hidden>
+    <div class="hint" id="vf"></div>
+    <div class="err" id="er"></div>
+    <button class="btn pri full" type="submit">Generar código</button>
+  </form>
+  <div id="out"></div>
+  <h2 id="ch">Clientes (${reg.length})</h2>
+  <input id="q" placeholder="Buscar por nombre o ID" autocomplete="off" value="${esc(q)}">
+  <div class="list" id="lst" style="margin-top:8px"></div>
+  <h2>Invitar</h2>
+  <div class="panel stack">
+    <div class="hint">Mensaje con el enlace de la app y los pasos para instalarla. Mandalo antes del código: el cliente instala la app, te envía su ID y vos le devolvés el código.</div>
+    <div class="code" id="appUrl">${esc(APP_URL)}</div>
+    <div class="row"><button class="btn wa" id="inv">Enviar invitación por WhatsApp</button><button class="btn" id="invc">Copiar invitación</button></div>
+  </div>
+  <h2>Registro y contraseña</h2>
+  <details class="panel"><summary>Respaldo, importar y cambiar contraseña ›</summary>
+    <div class="stack">
+      <div class="hint">El registro de clientes vive solo en este teléfono. Copiá el respaldo y guardalo en Notas.</div>
+      <div class="row"><button class="btn" id="ex">Copiar respaldo del registro</button></div>
+      <label>Importar registro (pegá el respaldo)<textarea id="imt" rows="2"></textarea></label>
+      <div class="row"><button class="btn" id="im">Importar</button></div>
+      <label>Nueva contraseña (mínimo 12 caracteres)<input id="np" type="password" autocomplete="new-password"></label>
+      <div class="row"><button class="btn" id="pwc">Cambiar contraseña en este teléfono</button></div>
+      <div class="hint">Si instalás esta página como app, sus datos quedan separados de Safari. Usala siempre desde el mismo ícono.</div>
+      <div class="row"><button class="btn danger" id="out2">Cerrar sesión</button></div>
+    </div>
+  </details>`;
+  const exp=()=>{const v=$("t").value,cur=reg.find(r=>r.d===cleanId());const base=cur&&cur.e&&cur.e>today()?cur.e:today();return v==="0"?"":v==="x"?$("x").value:addM(base,+v)};
+  const vf=()=>{$("x").hidden=$("t").value!=="x";const e=exp(),cur=reg.find(r=>r.d===cleanId());
+    $("vf").textContent=$("t").value==="0"?"El acceso no vence.":e?("Vence el "+fmt(e)+(cur&&cur.e&&cur.e>today()&&$("t").value!=="x"?" (se suma a lo que le quedaba)":"")):"";};
+  $("t").onchange=vf;$("x").onchange=vf;$("d").oninput=vf;vf();
+  $("fg").onsubmit=async e=>{e.preventDefault();$("er").textContent="";
+    const n=$("n").value.trim(),d=cleanId(),ex=exp();
+    if(!n){$("er").textContent="Escribí el nombre.";return}
+    if(!/^[A-Z0-9]{8}$/.test(d)){$("er").textContent="El ID debe tener 8 letras o números (XXXX-XXXX).";return}
+    if($("t").value==="x"&&(!ex||ex<today())){$("er").textContent="Elegí una fecha futura.";return}
+    const p=b64u(new TextEncoder().encode(JSON.stringify({n,d,e:ex})));
+    const key=await crypto.subtle.importKey("jwk",PRV,{name:"ECDSA",namedCurve:"P-256"},false,["sign"]);
+    const sg=await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},key,new TextEncoder().encode(p));
+    const code=p+"."+b64u(sg);
+    reg=reg.filter(r=>r.d!==d);const r={n,d,e:ex,code,at:today()};reg.push(r);saveReg();
+    $("fg").reset();$("t").value="12";vf();$("ft").textContent="Nuevo código o renovación";
+    show(r);list();kp()};
+  $("q").oninput=()=>{q=$("q").value;list()};
+  const invTxt=()=>`Hola, te invito a usar *Libro del Negocio* para llevar la caja, la nómina y las cuentas de tu negocio.
+
+1. Abrí este enlace en Safari (iPhone) o Chrome (Android): ${APP_URL}
+2. Instalala: en iPhone tocá Compartir → "Agregar a pantalla de inicio". En Android tocá ⋮ → "Instalar app" o "Agregar a pantalla principal".
+3. Abrí la app desde el ícono nuevo. Te va a mostrar tu ID: mandámelo para enviarte tu código de activación.`;
+  $("inv").onclick=()=>{location.href="https://wa.me/?text="+encodeURIComponent(invTxt())};
+  $("invc").onclick=()=>copy(invTxt(),"Invitación copiada");
+  $("ex").onclick=()=>copy(JSON.stringify(reg),"Respaldo copiado. Pegalo en Notas.");
+  $("im").onclick=()=>{try{const a=JSON.parse($("imt").value);if(!Array.isArray(a))throw 0;const mp={};[...reg,...a].forEach(r=>{if(r&&r.d&&r.code)mp[r.d]=r});reg=Object.values(mp);saveReg();toast("Registro importado");main()}catch(e){toast("El texto no es un registro válido")}};
+  $("pwc").onclick=async()=>{const p=$("np").value.trim();if(p.length<12){toast("Usá al menos 12 caracteres");return}LS("ln_blob",JSON.stringify(await enc(PRV,p)));$("np").value="";toast("Contraseña cambiada en este teléfono. Anotala.")};
+  $("out2").onclick=()=>{PRV=null;lock()};
+  kp();list();
+}
+const cleanId=()=>($("d").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+function kp(){const a=reg.filter(r=>!r.e||dd(r.e,today())>15).length,p=reg.filter(r=>r.e&&dd(r.e,today())>=0&&dd(r.e,today())<=15).length,v=reg.filter(r=>r.e&&dd(r.e,today())<0).length;
+  $("kp").innerHTML=`<div><div class="l">Activos</div><div class="v">${a}</div></div><div><div class="l">Por vencer</div><div class="v">${p}</div></div><div><div class="l">Vencidos</div><div class="v">${v}</div></div>`}
+function msgCode(r){return `Tu código de activación de Libro del Negocio (${r.n})${r.e?", válido hasta el "+fmt(r.e):", sin vencimiento"}:
+
+${r.code}
+
+Copialo completo y pegalo en la app, en "Código de activación".`}
+function show(r){const [t,k]=status(r.e);
+  $("out").innerHTML=`<h2>Código generado</h2><div class="panel stack">
+    <div class="spread"><b>${esc(r.n)}</b><span class="chip ${k}">${t}</span></div>
+    <div class="hint">ID ${devFmt(r.d)} · ${r.e?"vence el "+fmt(r.e):"sin vencimiento"}</div>
+    <div class="code">${esc(r.code)}</div>
+    <div class="row"><button class="btn wa" id="wa">Enviar por WhatsApp</button><button class="btn" id="cp">Copiar código</button></div></div>`;
+  $("wa").onclick=()=>{location.href="https://wa.me/?text="+encodeURIComponent(msgCode(r))};
+  $("cp").onclick=()=>copy(r.code,"Código copiado");
+  $("out").scrollIntoView({behavior:"smooth",block:"start"})}
+function list(){
+  if($("ch"))$("ch").textContent="Clientes ("+reg.length+")";
+  const L=[...reg].sort((a,b)=>(a.e||"9999").localeCompare(b.e||"9999")).filter(r=>!q||(r.n+" "+r.d+" "+devFmt(r.d)).toLowerCase().includes(q.toLowerCase()));
+  $("lst").innerHTML=L.map(r=>{const [t,k]=status(r.e);return `<div class="cli ${open===r.d?"op":""}"><button class="head" data-o="${r.d}"><div class="main"><div class="t">${esc(r.n)}</div><div class="s">${devFmt(r.d)} · ${r.e?"vence "+fmt(r.e):"sin vencimiento"}</div></div><span class="chip ${k}">${t}</span></button>
+    <div class="acts row"><button class="btn sm" data-re="${r.d}">Renovar</button><button class="btn sm" data-sh="${r.d}">Ver código</button><button class="btn sm danger" data-rm="${r.d}">Quitar</button></div></div>`}).join("")||`<div class="empty">${reg.length?"Sin resultados.":"Todavía no generaste códigos. Cuando un cliente te mande su ID, completá el formulario de arriba."}</div>`;
+  $("lst").querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{open=open===b.dataset.o?null:b.dataset.o;list()});
+  $("lst").querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{const r=reg.find(x=>x.d===b.dataset.re);$("n").value=r.n;$("d").value=devFmt(r.d);$("t").value="12";$("t").onchange();$("ft").textContent="Renovar a "+r.n;$("fg").scrollIntoView({behavior:"smooth"})});
+  $("lst").querySelectorAll("[data-sh]").forEach(b=>b.onclick=()=>show(reg.find(x=>x.d===b.dataset.sh)));
+  $("lst").querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{if(!b.dataset.armed){b.dataset.armed="1";b.textContent="Tocá de nuevo para quitar";return}reg=reg.filter(x=>x.d!==b.dataset.rm);saveReg();toast("Quitado. El código entregado sigue sirviendo hasta su fecha.");main()});
+}
+lock();
+})();
+</script>
+</body>
+</html>

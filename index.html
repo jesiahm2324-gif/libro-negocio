@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E6B57">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Libro Negocio">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-180.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Libro del Negocio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: libro contable de bolsillo — cabecera con mes, contenido en una columna, barra de pestañas fija abajo */
+:root{
+  --bg:#F3F5F2; --surface:#FFFFFF; --sunk:#E7ECE6; --line:#D5DDD4;
+  --ink:#16201C; --muted:#5E6B64; --accent:#0E6B57; --accent-ink:#FFFFFF; --accent-soft:#D9EDE6;
+  --in:#11795A; --out:#B4432F; --warn:#9A6A00; --warn-soft:#FBF0D3; --bad-soft:#F8E1DC;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-num:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101614; --surface:#18201D; --sunk:#0C110F; --line:#2A3531;
+  --ink:#E6EEEA; --muted:#93A39B; --accent:#4CC4A4; --accent-ink:#06231C; --accent-soft:#163A31;
+  --in:#5BD1A5; --out:#F08A74; --warn:#E8B64A; --warn-soft:#3A2F12; --bad-soft:#3D1F19; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101614; --surface:#18201D; --sunk:#0C110F; --line:#2A3531;
+  --ink:#E6EEEA; --muted:#93A39B; --accent:#4CC4A4; --accent-ink:#06231C; --accent-soft:#163A31;
+  --in:#5BD1A5; --out:#F08A74; --warn:#E8B64A; --warn-soft:#3A2F12; --bad-soft:#3D1F19; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 120px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+header.top .in{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;display:flex;align-items:center;gap:12px;justify-content:space-between}
+.brand{font-family:var(--f-display);font-weight:700;font-size:19px;letter-spacing:-.01em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brand small{display:block;font-family:var(--f-body);font-weight:500;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mesnav{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.mesnav span{font-weight:600;min-width:112px;text-align:center;font-size:14px}
+h2{font-family:var(--f-display);font-size:22px;margin:22px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px;font-weight:600}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums;white-space:nowrap}
+.in-c{color:var(--in)} .out-c{color:var(--out)} .muted{color:var(--muted)}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px;font-weight:600;font-size:14px}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.danger{color:var(--out);border-color:var(--out)}
+.btn.sm{padding:6px 12px;font-size:13px}
+.icon{border:0;background:transparent;width:36px;height:36px;border-radius:50%;font-size:20px;color:var(--muted)}
+.icon:hover{background:var(--sunk)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.kpi{background:var(--surface);padding:12px;min-width:0}
+.kpi .l{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.kpi .v{font-family:var(--f-num);font-size:17px;margin-top:4px;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:420px){.kpi .v{font-size:14px}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:520px){.duo{grid-template-columns:1fr}}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.item{display:flex;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);width:100%;text-align:left;background:transparent;border-left:0;border-right:0;border-bottom:0}
+.item:first-child{border-top:0}
+button.item:hover{background:var(--sunk)}
+.item .main{flex:1;min-width:0}
+.item .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .s{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dayhead{display:flex;justify-content:space-between;padding:8px 14px;background:var(--sunk);font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.04em}
+.chip{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;letter-spacing:.03em;white-space:nowrap}
+.chip.ok{background:var(--accent-soft);color:var(--accent)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--out)}
+.chip.neu{background:var(--sunk);color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.notice{background:var(--warn-soft);color:var(--ink);border-radius:var(--r);padding:10px 14px;font-size:13px;margin-top:14px}
+.notice b{color:var(--warn)}
+.empty{padding:22px 14px;text-align:center;color:var(--muted);font-size:14px}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;font-size:13px}
+.bar .track{grid-column:1/-1;height:8px;background:var(--sunk);border-radius:4px;overflow:hidden}
+.bar .fill{height:100%;background:var(--out);border-radius:4px}
+.chart svg{width:100%;height:auto;display:block}
+.aging{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.aging div{background:var(--sunk);border-radius:8px;padding:8px;min-width:0}
+.aging .l{font-size:11px;color:var(--muted)}
+.aging .v{font-family:var(--f-num);font-size:13px;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:420px){.aging{grid-template-columns:repeat(2,1fr)}}
+.seg{display:flex;background:var(--sunk);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabs .in{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr)}
+nav.tabs button{border:0;background:transparent;padding:8px 2px 10px;font-size:11px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px}
+nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
+nav.tabs button.on{color:var(--accent)}
+.fab{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:7;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:14px 20px;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,.22)}
+.sheet-bg{position:fixed;inset:0;background:rgba(10,16,14,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:640px;max-height:92%;overflow:auto;border-radius:18px 18px 0 0;padding:18px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px))}
+@media (min-width:700px){.sheet-bg{align-items:center}.sheet{border-radius:18px}}
+.sheet h2{margin-top:0}
+form.f{display:grid;gap:12px}
+.f label{display:grid;gap:4px;font-size:13px;font-weight:600;color:var(--muted)}
+.f input,.f select,.f textarea{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;font-size:16px;color:var(--ink);width:100%;min-width:0;font-weight:400}
+.f .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f .chk{display:flex;align-items:center;gap:8px;color:var(--ink);font-weight:500}
+.f .chk input{width:auto}
+.actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--sunk)}
+td{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+td:first-child{font-family:var(--f-body)}
+tr.tot td{font-weight:600;background:var(--sunk)}
+.empcard{border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:8px}
+.empcard .g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.empcard .g label{font-size:11px}
+.lines{display:grid;gap:4px;font-size:14px}
+.lines .spread{padding:4px 0;border-bottom:1px dashed var(--line)}
+.lines .spread.b{font-weight:700;border-bottom:0;border-top:1px solid var(--ink);padding-top:8px}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:6px 14px;font-size:13px;margin-top:8px}
+.facts div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--line);padding:3px 0;min-width:0}
+@media (max-width:420px){.facts{grid-template-columns:1fr}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(140px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;max-width:90%}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .18s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+
+</head>
+<body>
+<header class="top"><div class="in">
+  <div class="brand" id="brand">Libro del Negocio<small>Registro contable · Nicaragua</small></div>
+  <div class="mesnav" id="mesnav">
+    <button class="icon" data-act="mes" data-d="-1" aria-label="Mes anterior">‹</button>
+    <span id="meslbl"></span>
+    <button class="icon" data-act="mes" data-d="1" aria-label="Mes siguiente">›</button>
+  </div>
+</div></header>
+<main class="wrap" id="main"></main>
+<button class="fab" id="fab" hidden></button>
+<nav class="tabs"><div class="in" id="tabs"></div></nav>
+<div id="modal"></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- Constantes legales Nicaragua 2026 ---------- */
+const IR_TABLA=[[0,100000,0,0],[100000,200000,0,.15],[200000,350000,15000,.20],[350000,500000,45000,.25],[500000,Infinity,82500,.30]];
+const MINIMOS=[
+ ["comercio","Comercio, restaurantes, hoteles, transporte, electricidad y agua",11350.08],
+ ["servicios","Servicios comunales, sociales y personales (incl. doméstico)",8674.94],
+ ["manufactura","Industria manufacturera",8320.48],
+ ["mipyme","Micro y pequeña industria artesanal y turística",6519.58],
+ ["construccion","Construcción, financieras y seguros",13848.23],
+ ["agro","Agropecuario",6188.02],
+ ["pesca","Pesca",9409.09],
+ ["minas","Minas y canteras",11113.46],
+ ["zf","Zonas francas",9986.54],
+ ["gobierno","Gobierno central y municipal",7716.70]];
+const DEF_CFG={negocio:"Mi Negocio",inssLab:7,inssPat:21.5,inatec:2,tc:36.62};
+const CAT_IN=["Ventas","Servicios","Cobro a clientes","Otros ingresos"];
+const CAT_OUT=["Compras / inventario","Alquiler","Servicios básicos","Nómina","Impuestos","Transporte","Mantenimiento","Pago a proveedores","Publicidad","Otros gastos"];
+const METODOS=["Efectivo","Banco","Transferencia","Tarjeta"];
+const MESES=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const MAX_EMP=10;
+const COLS=["movs","emps","noms","cxc","cxp"];
+const LS_KEY="libro-negocio-local-v1";
+const PUB={"kty": "EC", "x": "m6EBUX0bNX_zX6LsrI1UfWDfsy8GPRQJNcjHkWlONzQ", "y": "HLwSBYV4YKTsoCxJxX_peYwxW2tV1ziTTm2w2DTiRBI", "crv": "P-256"};
+
+/* ---------- Licencia por teléfono (mismo sistema que Mi Tambo) ---------- */
+const LSG=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){return null}};
+let pubKey=null;
+function b64uToBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";const bin=atob(s);return Uint8Array.from(bin,c=>c.charCodeAt(0))}
+function devId(){let d=LSG("ln_dev");if(!d||!/^[A-Z0-9]{8}$/.test(d)){const A="ABCDEFGHJKMNPQRSTUVWXYZ23456789",r=crypto.getRandomValues(new Uint8Array(8));d=[...r].map(x=>A[x%A.length]).join("");LSG("ln_dev",d)}return d}
+const devFmt=d=>d.slice(0,4)+"-"+d.slice(4);
+function fechaRef(){const t=hoy(),seen=LSG("ln_seen")||"";if(seen>t)return seen;LSG("ln_seen",t);return t}
+async function licCheck(code){
+  try{code=String(code||"").replace(/\s+/g,"");const [p,sg]=code.split(".");if(!p||!sg)return{st:"bad"};
+    pubKey=pubKey||await crypto.subtle.importKey("jwk",{...PUB,ext:true},{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
+    if(!await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},pubKey,b64uToBytes(sg),new TextEncoder().encode(p)))return{st:"bad"};
+    const d=JSON.parse(new TextDecoder().decode(b64uToBytes(p)));
+    if(d.d!==devId())return{st:"dev",n:d.n};
+    const t=fechaRef();if(d.e&&t>d.e)return{st:"exp",n:d.n,e:d.e};
+    return{st:"ok",n:d.n||"",e:d.e||""}}
+  catch(e){return{st:"bad"}}}
+async function licInit(){const c=LSG("ln_lic");S.lic=c?await licCheck(c):{st:"none"};S.gate=S.lic.st==="ok"?"ok":S.lic.st==="exp"?"vencido":"sin"}
+function licMsg(r){return r.st==="dev"?"Este código fue generado para otro teléfono. Enviá el ID que aparece en tu pantalla.":r.st==="exp"?"Este código ya venció ("+fechaCorta(r.e)+" "+r.e.slice(0,4)+"). Pedí uno nuevo.":"Código no válido. Revisá que lo pegaste completo."}
+function pedirCodigo(){const id=devFmt(devId());location.href="https://wa.me/?text="+encodeURIComponent("Hola, solicito el código de activación de Libro del Negocio. Mi ID es: "+id)}
+function copiarId(){const id=devFmt(devId());try{navigator.clipboard.writeText(id).then(()=>toast("ID copiado"),()=>toast("Tu ID es "+id))}catch(e){toast("Tu ID es "+id)}}
+
+/* ---------- Utilidades ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt0=new Intl.NumberFormat("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const C=n=>"C$ "+fmt0.format(Math.round((+n||0)*100)/100);
+const U=n=>"US$ "+fmt0.format(+n||0);
+const r2=n=>Math.round((+n||0)*100)/100;
+function hoy(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+const parseD=s=>{const [y,m,d]=String(s).split("-").map(Number);return new Date(y,(m||1)-1,d||1)};
+const dias=(a,b)=>Math.round((parseD(b)-parseD(a))/86400000);
+const mesLbl=m=>{const [y,mm]=m.split("-");return MESES[+mm-1]+" "+y};
+const mesCorto=m=>MESES[+m.split("-")[1]-1].slice(0,3);
+const addMes=(m,d)=>{let [y,mm]=m.split("-").map(Number);mm+=d;while(mm<1){mm+=12;y--}while(mm>12){mm-=12;y++}return y+"-"+String(mm).padStart(2,"0")};
+const fechaCorta=s=>{const d=parseD(s);return d.getDate()+" "+MESES[d.getMonth()].slice(0,3)};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+
+/* ---------- Estado y almacenamiento ---------- */
+const S={tab:"panel",mes:hoy().slice(0,7),cajaFiltro:"todo",cuentasTab:"cxc",nomTab:"emps",cfg:{...DEF_CFG},mode:"cargando"};
+COLS.forEach(c=>S[c]={});
+let db=null,downloads=null;
+
+function loadLocal(){try{const raw=localStorage.getItem(LS_KEY);if(raw){const o=JSON.parse(raw);COLS.forEach(c=>S[c]=o[c]||{});S.cfg={...DEF_CFG,...(o.cfg||{})}}}catch(e){}}
+function snapshot(){const o={cfg:S.cfg};COLS.forEach(c=>o[c]=S[c]);return o}
+function saveLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify(snapshot()));S.mode="local"}catch(e){S.mode="sinGuardar";toast("No se pudo guardar en este teléfono. Descargá un respaldo en Ajustes.")}}
+
+function put(col,id,data){
+  const clean=JSON.parse(JSON.stringify(data));delete clean.id;
+  S[col][id]={id,...clean};saveLocal();render();
+}
+function del(col,id){delete S[col][id];saveLocal();render()}
+function putCfg(cfg){S.cfg={...DEF_CFG,...cfg};saveLocal();render()}
+function hayDatos(){return COLS.some(c=>Object.keys(S[c]).length)}
+async function guardarArchivo(filename,data,ok){
+  try{const type=filename.endsWith(".csv")?"text/csv":"application/json";const f=new File([data],filename,{type});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:filename});ok&&ok();return}}
+  catch(e){if(e&&e.name==="AbortError")return}
+  try{const b=new Blob([data],{type:filename.endsWith(".csv")?"text/csv;charset=utf-8":"application/json"});const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);ok&&ok();return}catch(e){}
+  try{await navigator.clipboard.writeText(data);toast("No se pudo descargar aquí. Copié el contenido: pegalo en Notas.");ok&&ok()}
+  catch(e){toast("No se pudo descargar ni copiar en esta vista")}
+}
+
+/* ---------- Cálculos ---------- */
+const enC=m=>m.moneda==="USD"?(+m.monto||0)*(+S.cfg.tc||0):(+m.monto||0);
+const movsDe=mes=>Object.values(S.movs).filter(m=>(m.fecha||"").slice(0,7)===mes);
+function sumMes(mes){let i=0,g=0;movsDe(mes).forEach(m=>{m.tipo==="ingreso"?i+=enC(m):g+=enC(m)});return {i,g,r:i-g}}
+function saldo(c){return r2((+c.monto||0)-(c.abonos||[]).reduce((a,b)=>a+(+b.monto||0),0))}
+function estado(c){const s=saldo(c);if(s<=0.005)return "pagado";if(c.vence&&c.vence<hoy())return "vencido";return "pendiente"}
+function irAnual(r){for(const [a,b,base,p] of IR_TABLA){if(r<=b)return r<=a?0:base+(r-a)*p}return 0}
+function minimoDe(sector){const x=MINIMOS.find(m=>m[0]===sector);return x?x[2]:0}
+function calcLinea(emp,he,otros,ded,tipo){
+  const q=tipo!=="M",div=q?2:1,per=q?24:12;
+  const sal=(+emp.salario||0)/div;
+  const vh=(+emp.salario||0)/30/8;
+  const pHE=(+he||0)*vh*2;
+  const bruto=sal+pHE+(+otros||0);
+  const inss=bruto*S.cfg.inssLab/100;
+  const ir=irAnual((bruto-inss)*per)/per;
+  const neto=bruto-inss-ir-(+ded||0);
+  const pat=bruto*S.cfg.inssPat/100,inatec=bruto*S.cfg.inatec/100;
+  return {empId:emp.id,nombre:emp.nombre,cargo:emp.cargo||"",salario:r2(sal),he:+he||0,pHE:r2(pHE),otros:r2(otros),bruto:r2(bruto),inss:r2(inss),ir:r2(ir),ded:r2(ded),neto:r2(neto),pat:r2(pat),inatec:r2(inatec)};
+}
+function totNom(lines){const t={bruto:0,inss:0,ir:0,ded:0,neto:0,pat:0,inatec:0};lines.forEach(l=>Object.keys(t).forEach(k=>t[k]+=l[k]||0));Object.keys(t).forEach(k=>t[k]=r2(t[k]));t.costo=r2(t.bruto+t.pat+t.inatec);return t}
+function prestaciones(e){
+  const h=hoy(),sal=+e.salario||0;
+  if(!e.ingreso)return null;
+  const d=Math.max(0,dias(e.ingreso,h));
+  const anios=d/365;
+  const vacAcum=Math.max(0,(d/30)*2.5-(+e.vacTomadas||0));
+  const y=+h.slice(0,4);
+  let ini=(h>=y+"-12-01")?y+"-12-01":(y-1)+"-12-01";
+  if(e.ingreso>ini)ini=e.ingreso;
+  const dAg=Math.min(360,Math.max(0,dias(ini,h)));
+  const ag=sal*dAg/360;
+  let ind=anios<=3?anios*sal:3*sal+(anios-3)*sal*20/30;
+  ind=Math.min(ind,5*sal);
+  return {anios,vacDias:vacAcum,vacMonto:vacAcum*sal/30,ag,ind,iniAg:ini};
+}
+function antig(a){const y=Math.floor(a),m=Math.floor((a-y)*12);return (y?y+(y===1?" año":" años"):"")+(y&&m?" ":"")+(m||!y?m+(m===1?" mes":" meses"):"")}
+
+/* ---------- Render ---------- */
+const TABS=[
+ ["panel","Panel",'<path d="M4 13h6V4H4zM14 20h6V11h-6zM4 20h6v-3H4zM14 7h6V4h-6z"/>'],
+ ["caja","Caja",'<path d="M3 7h18v12H3zM3 11h18M7 15h3"/>'],
+ ["nomina","Nómina",'<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.8-3.2 3-5 5.5-5s4.7 1.8 5.5 5M16 6.5a3 3 0 0 1 0 5.6M18 14.5c1.4.8 2.3 2.4 2.5 4.5"/>'],
+ ["cobrar","Cobrar",'<path d="M12 4v12M7 11l5 5 5-5M5 20h14"/>'],
+ ["pagar","Pagar",'<path d="M12 20V8M7 13l5-5 5 5M5 4h14"/>'],
+ ["ajustes","Ajustes",'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>']];
+
+function renderGate(){
+  $("#brand").innerHTML="Libro del Negocio<small>Registro contable · Nicaragua</small>";
+  $("#mesnav").hidden=true;$("#fab").hidden=true;document.querySelector("nav.tabs").hidden=true;
+  if(S.gate==="cargando"){$("#main").innerHTML=`<p class="muted" style="margin-top:40px">Verificando acceso…</p>`;return}
+  const l=S.lic||{},id=devFmt(devId());
+  const msg=S.gate==="vencido"?`Tu acceso venció el <b>${esc(fechaCorta(l.e))} ${esc(l.e.slice(0,4))}</b>. Tus datos siguen guardados en este teléfono. Pedí la renovación enviando tu ID.`:`Para usar la app necesitás un código de activación. Enviá tu ID a quien te dio la app y pegá aquí el código que te devuelva.`;
+  $("#main").innerHTML=`<h2 style="margin-top:28px">${S.gate==="vencido"?"Acceso vencido":"Activá tu acceso"}</h2>
+  <div class="panel" style="display:grid;gap:12px">
+    <p style="margin:0">${msg}</p>
+    <div><div class="muted" style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase">Tu ID de este teléfono</div>
+    <div class="num" style="font-size:30px;letter-spacing:.06em;margin-top:2px;user-select:all;-webkit-user-select:all">${id}</div></div>
+    <div class="row"><button class="btn pri" data-act="waId">Enviar mi ID por WhatsApp</button><button class="btn" data-act="copyId">Copiar mi ID</button></div>
+  </div>
+  <h3>Código de activación</h3>
+  <form class="f panel" id="fCode">
+    <label>Pegá aquí el código que te enviaron<textarea id="codeIn" rows="3" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea></label>
+    <div id="codeMsg"></div>
+    <div class="actions"><button class="btn pri" type="submit">Activar</button></div>
+  </form>
+  ${S.gate==="vencido"&&hayDatos()?`<h3>Tus datos</h3><div class="panel spread"><span style="font-size:14px">Podés descargar un respaldo aunque el acceso esté vencido.</span><button class="btn sm" data-act="respaldo">Descargar respaldo</button></div>`:""}
+  <p class="muted" style="font-size:13px;margin-top:16px">Importante: abrí la app desde el ícono instalado en tu pantalla de inicio antes de enviar tu ID. El código solo funciona en este teléfono.</p>`;
+}
+function render(){
+  if(S.gate!=="ok"){renderGate();return}
+  document.querySelector("nav.tabs").hidden=false;
+  $("#brand").innerHTML=esc(S.cfg.negocio||"Mi Negocio")+"<small>Libro del negocio · Nicaragua</small>";
+  $("#meslbl").textContent=mesLbl(S.mes);
+  $("#mesnav").hidden=!(S.tab==="panel"||S.tab==="caja");
+  $("#tabs").innerHTML=TABS.map(([k,l,ic])=>`<button data-act="tab" data-k="${k}" class="${S.tab===k?"on":""}" aria-label="${l}"><svg viewBox="0 0 24 24">${ic}</svg>${l}</button>`).join("");
+  const fab=$("#fab");
+  const fabs={panel:["+ Movimiento","nuevoMov"],caja:["+ Movimiento","nuevoMov"],nomina:S.nomTab==="emps"?["+ Empleado","nuevoEmp"]:["+ Planilla","nuevaNom"],cobrar:["+ Cuenta por cobrar","nuevaCxc"],pagar:["+ Cuenta por pagar","nuevaCxp"]};
+  const f=fabs[S.tab];fab.hidden=!f;if(f){fab.textContent=f[0];fab.dataset.act=f[1]}
+  const v={panel:vPanel,caja:vCaja,nomina:vNomina,cobrar:()=>vCuentas("cxc"),pagar:()=>vCuentas("cxp"),ajustes:vAjustes}[S.tab];
+  $("#main").innerHTML=v()+modoAviso();
+}
+function modoAviso(){
+  if(S.mode==="sinGuardar")return `<div class="notice"><b>Sin guardar.</b> Este navegador no permite guardar datos. Descargá un respaldo en Ajustes antes de cerrar.</div>`;
+  let out="";
+  if(S.lic&&S.lic.st==="ok"&&S.lic.e){const r=dias(fechaRef(),S.lic.e);if(r<=15)out+=`<div class="notice"><b>Tu acceso vence ${r===0?"hoy":"en "+r+(r===1?" día":" días")}</b> (${fechaCorta(S.lic.e)}). Pedí un código nuevo y cargalo en Ajustes.</div>`}
+  if(!hayDatos()||S.tab==="ajustes")return out;
+  const u=S.cfg.ultimoRespaldo;
+  if(!u||dias(u,hoy())>30)out+=`<div class="notice"><b>${u?"Respaldo atrasado.":"Sin respaldo."}</b> Tus datos viven solo en este teléfono. <button class="btn sm" data-act="tab" data-k="ajustes" style="margin-left:6px">Hacer respaldo</button></div>`;
+  return out;
+}
+function hayEjemplos(){return COLS.some(c=>Object.values(S[c]).some(x=>x.ejemplo))}
+
+function vPanel(){
+  const t=sumMes(S.mes);
+  const cxc=Object.values(S.cxc),cxp=Object.values(S.cxp);
+  const pc=cxc.reduce((a,c)=>a+Math.max(0,saldo(c)),0),pp=cxp.reduce((a,c)=>a+Math.max(0,saldo(c)),0);
+  const vc=cxc.filter(c=>estado(c)==="vencido").reduce((a,c)=>a+saldo(c),0),vp=cxp.filter(c=>estado(c)==="vencido").reduce((a,c)=>a+saldo(c),0);
+  const noms=Object.values(S.noms).filter(n=>n.periodo===S.mes);
+  const costoNom=noms.reduce((a,n)=>a+totNom(n.lineas||[]).costo,0);
+  // 6 meses
+  const ms=[];for(let i=5;i>=0;i--)ms.push(addMes(S.mes,-i));
+  const data=ms.map(m=>({m,...sumMes(m)}));
+  const max=Math.max(1,...data.map(d=>Math.max(d.i,d.g)));
+  const W=340,H=150,pl=8,pb=22,cw=(W-pl*2)/6,bw=Math.min(16,cw/3);
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Ingresos y gastos de los últimos seis meses">`;
+  for(let k=0;k<=2;k++){const y=8+(H-pb-8)*k/2;svg+=`<line x1="${pl}" x2="${W-pl}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-width="1"/>`}
+  data.forEach((d,i)=>{const x=pl+cw*i+cw/2,h1=(H-pb-8)*d.i/max,h2=(H-pb-8)*d.g/max,base=H-pb;
+    svg+=`<rect x="${x-bw-1}" y="${base-h1}" width="${bw}" height="${h1}" rx="3" fill="var(--in)"/><rect x="${x+1}" y="${base-h2}" width="${bw}" height="${h2}" rx="3" fill="var(--out)"/>`;
+    svg+=`<text x="${x}" y="${H-6}" text-anchor="middle" font-size="11" fill="${d.m===S.mes?"var(--ink)":"var(--muted)"}" font-weight="${d.m===S.mes?700:400}" font-family="IBM Plex Sans, sans-serif">${mesCorto(d.m)}</text>`});
+  svg+="</svg>";
+  // categorías
+  const cats={};movsDe(S.mes).filter(m=>m.tipo==="gasto").forEach(m=>cats[m.categoria]=(cats[m.categoria]||0)+enC(m));
+  const cl=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,6),cmax=cl.length?cl[0][1]:1;
+  // próximos
+  const h=hoy(),lim=new Date(parseD(h).getTime()+7*86400000);
+  const prox=[...cxc.map(c=>({...c,k:"cxc"})),...cxp.map(c=>({...c,k:"cxp"}))].filter(c=>estado(c)!=="pagado"&&c.vence&&parseD(c.vence)<=lim).sort((a,b)=>a.vence.localeCompare(b.vence)).slice(0,6);
+  return `
+  ${hayEjemplos()?`<div class="notice"><b>Datos de ejemplo.</b> Lo que ves marcado como ejemplo es para mostrar cómo funciona. Borralo en Ajustes cuando empieces a registrar lo tuyo.</div>`:""}
+  <h2>Resumen de ${esc(mesLbl(S.mes))}</h2>
+  <div class="kpis">
+    <div class="kpi"><div class="l">Ingresos</div><div class="v in-c">${C(t.i)}</div></div>
+    <div class="kpi"><div class="l">Gastos</div><div class="v out-c">${C(t.g)}</div></div>
+    <div class="kpi"><div class="l">Resultado</div><div class="v ${t.r>=0?"in-c":"out-c"}">${C(t.r)}</div></div>
+  </div>
+  <div class="duo" style="margin-top:10px">
+    <button class="panel item" style="border:1px solid var(--line);border-radius:var(--r);display:block" data-act="tab" data-k="cobrar"><div class="muted" style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Te deben</div><div class="num" style="font-size:18px;margin-top:2px">${C(pc)}</div><div style="font-size:13px;margin-top:2px">${vc>0?`<span class="chip bad">Vencido ${C(vc)}</span>`:`<span class="chip ok">Nada vencido</span>`}</div></button>
+    <button class="panel item" style="border:1px solid var(--line);border-radius:var(--r);display:block" data-act="tab" data-k="pagar"><div class="muted" style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Debés</div><div class="num" style="font-size:18px;margin-top:2px">${C(pp)}</div><div style="font-size:13px;margin-top:2px">${vp>0?`<span class="chip bad">Vencido ${C(vp)}</span>`:`<span class="chip ok">Nada vencido</span>`}</div></button>
+  </div>
+  <h3>Últimos 6 meses</h3>
+  <div class="panel chart">${svg}<div class="row" style="font-size:12px;margin-top:6px"><span class="row" style="gap:6px"><span class="dot" style="background:var(--in)"></span>Ingresos</span><span class="row" style="gap:6px"><span class="dot" style="background:var(--out)"></span>Gastos</span></div></div>
+  <div class="duo">
+    <div><h3>Gastos por categoría</h3><div class="panel">${cl.length?`<div class="bars">${cl.map(([k,v])=>`<div class="bar"><span>${esc(k)}</span><span class="num">${C(v)}</span><div class="track"><div class="fill" style="width:${(v/cmax*100).toFixed(1)}%"></div></div></div>`).join("")}</div>`:`<div class="empty">Sin gastos este mes.</div>`}</div></div>
+    <div><h3>Vence en 7 días o antes</h3><div class="list">${prox.length?prox.map(c=>`<button class="item" data-act="verCuenta" data-col="${c.k}" data-id="${c.id}"><div class="main"><div class="t">${esc(c.nombre)}</div><div class="s">${c.k==="cxc"?"Cobrar":"Pagar"} · ${fechaCorta(c.vence)}</div></div>${chipEstado(c)}<span class="num">${C(saldo(c))}</span></button>`).join(""):`<div class="empty">Nada por vencer esta semana.</div>`}</div></div>
+  </div>
+  <h3>Nómina del mes</h3>
+  <div class="panel spread"><div><div class="num" style="font-size:18px">${C(costoNom)}</div><div class="muted" style="font-size:13px">Costo total con INSS patronal e INATEC · ${noms.length} planilla${noms.length===1?"":"s"}</div></div><button class="btn sm" data-act="irNom">Ver nómina</button></div>`;
+}
+function chipEstado(c){const e=estado(c);return e==="pagado"?`<span class="chip ok">Pagado</span>`:e==="vencido"?`<span class="chip bad">Vencido ${dias(c.vence,hoy())} d</span>`:`<span class="chip warn">Pendiente</span>`}
+
+function vCaja(){
+  let ms=movsDe(S.mes);
+  if(S.cajaFiltro!=="todo")ms=ms.filter(m=>m.tipo===S.cajaFiltro);
+  ms.sort((a,b)=>(b.fecha+(b.creado||"")).localeCompare(a.fecha+(a.creado||"")));
+  const t=sumMes(S.mes);
+  const grupos={};ms.forEach(m=>(grupos[m.fecha]=grupos[m.fecha]||[]).push(m));
+  const html=Object.keys(grupos).map(f=>{const g=grupos[f];const net=g.reduce((a,m)=>a+(m.tipo==="ingreso"?1:-1)*enC(m),0);
+    return `<div class="dayhead"><span>${fechaCorta(f).toUpperCase()}</span><span class="num">${net>=0?"+":""}${C(net)}</span></div>`+g.map(m=>`<button class="item" data-act="editMov" data-id="${m.id}"><span class="dot" style="background:var(--${m.tipo==="ingreso"?"in":"out"})"></span><div class="main"><div class="t">${esc(m.descripcion||m.categoria)}${m.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${esc(m.categoria)} · ${esc(m.metodo)}${m.moneda==="USD"?" · "+U(m.monto):""}</div></div><span class="num ${m.tipo==="ingreso"?"in-c":"out-c"}">${m.tipo==="ingreso"?"+":"−"}${C(enC(m))}</span></button>`).join("")}).join("");
+  return `<h2>Caja · ${esc(mesLbl(S.mes))}</h2>
+  <div class="kpis"><div class="kpi"><div class="l">Entró</div><div class="v in-c">${C(t.i)}</div></div><div class="kpi"><div class="l">Salió</div><div class="v out-c">${C(t.g)}</div></div><div class="kpi"><div class="l">Saldo del mes</div><div class="v">${C(t.r)}</div></div></div>
+  <div class="spread" style="margin:14px 0 10px"><div class="seg">${[["todo","Todo"],["ingreso","Ingresos"],["gasto","Gastos"]].map(([k,l])=>`<button data-act="cajaF" data-k="${k}" class="${S.cajaFiltro===k?"on":""}">${l}</button>`).join("")}</div><button class="btn sm" data-act="csv">Exportar CSV</button></div>
+  <div class="list">${html||`<div class="empty">No hay movimientos en ${esc(mesLbl(S.mes))}. Tocá “+ Movimiento” para registrar una venta o un gasto.</div>`}</div>`;
+}
+
+function vNomina(){
+  const emps=Object.values(S.emps).sort((a,b)=>(a.nombre||"").localeCompare(b.nombre||""));
+  const act=emps.filter(e=>e.activo!==false);
+  let body="";
+  if(S.nomTab==="emps"){
+    body=`<div class="muted" style="font-size:13px;margin-bottom:8px">${act.length} de ${MAX_EMP} trabajadores activos</div><div class="list">${emps.length?emps.map(e=>{const p=prestaciones(e),min=minimoDe(e.sector);const bajo=min&&(+e.salario<min);
+      return `<button class="item" data-act="verEmp" data-id="${e.id}"><div class="main"><div class="t">${esc(e.nombre)}${e.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${esc(e.cargo||"Sin cargo")}${p?" · "+antig(p.anios):""}</div></div>${e.activo===false?'<span class="chip neu">Inactivo</span>':bajo?'<span class="chip bad">Bajo el mínimo</span>':""}<span class="num">${C(e.salario)}</span></button>`}).join(""):`<div class="empty">Todavía no hay empleados. Agregá hasta ${MAX_EMP} trabajadores con su salario y fecha de ingreso.</div>`}</div>`;
+  }else{
+    const noms=Object.values(S.noms).sort((a,b)=>b.id.localeCompare(a.id));
+    body=`<div class="list">${noms.length?noms.map(n=>{const t=totNom(n.lineas||[]);return `<button class="item" data-act="verNom" data-id="${n.id}"><div class="main"><div class="t">${esc(nomLbl(n))}${n.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${(n.lineas||[]).length} trabajadores · neto ${C(t.neto)}</div></div>${n.movId?'<span class="chip ok">En caja</span>':'<span class="chip warn">Sin registrar</span>'}<span class="num">${C(t.costo)}</span></button>`}).join(""):`<div class="empty">Aún no hay planillas. Creá la planilla del mes y la app calcula INSS, IR, INATEC y el neto a pagar.</div>`}</div>`;
+  }
+  return `<h2>Nómina</h2><div class="seg" style="display:inline-flex;margin-bottom:12px">${[["emps","Empleados"],["plan","Planillas"]].map(([k,l])=>`<button data-act="nomT" data-k="${k}" class="${S.nomTab===k?"on":""}">${l}</button>`).join("")}</div>${body}
+  <h3>Cómo se calcula</h3><div class="panel" style="font-size:13px;line-height:1.55">INSS laboral ${S.cfg.inssLab}% del salario bruto. IR salarial con la tabla progresiva anual sobre el salario neto de INSS, proyectado a 12 meses (o 24 quincenas). Horas extra pagadas al doble del valor hora (salario ÷ 30 ÷ 8). El empleador aporta INSS patronal ${S.cfg.inssPat}% e INATEC ${S.cfg.inatec}%. Prestaciones: vacaciones de 15 días por semestre, aguinaldo de un mes por año (se paga en los primeros 10 días de diciembre) e indemnización por antigüedad del Art. 45 (tope de 5 meses).</div>`;
+}
+function nomLbl(n){return mesLbl(n.periodo)+(n.tipo==="Q1"?" · 1ª quincena":n.tipo==="Q2"?" · 2ª quincena":" · mensual")}
+
+function vCuentas(col){
+  const cx=col==="cxc";
+  const arr=Object.values(S[col]);
+  const abiertas=arr.filter(c=>estado(c)!=="pagado").sort((a,b)=>(a.vence||"9").localeCompare(b.vence||"9"));
+  const cerradas=arr.filter(c=>estado(c)==="pagado").sort((a,b)=>(b.vence||"").localeCompare(a.vence||""));
+  const h=hoy(),b=[0,0,0,0];
+  abiertas.forEach(c=>{const d=c.vence?dias(c.vence,h):0;const s=saldo(c);if(d<=0)b[0]+=s;else if(d<=30)b[1]+=s;else if(d<=60)b[2]+=s;else b[3]+=s});
+  const tot=b.reduce((a,x)=>a+x,0);
+  const row=c=>`<button class="item" data-act="verCuenta" data-col="${col}" data-id="${c.id}"><div class="main"><div class="t">${esc(c.nombre)}${c.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${esc(c.concepto||"")}${c.vence?" · vence "+fechaCorta(c.vence):""}</div></div>${chipEstado(c)}<span class="num">${C(estado(c)==="pagado"?c.monto:saldo(c))}</span></button>`;
+  return `<h2>${cx?"Cuentas por cobrar":"Cuentas por pagar"}</h2>
+  <div class="panel"><div class="muted" style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">${cx?"Total que te deben":"Total que debés"}</div><div class="num" style="font-size:22px">${C(tot)}</div>
+  <div class="aging"><div><div class="l">Al día</div><div class="v">${C(b[0])}</div></div><div><div class="l">1–30 días</div><div class="v">${C(b[1])}</div></div><div><div class="l">31–60 días</div><div class="v">${C(b[2])}</div></div><div><div class="l">Más de 60</div><div class="v">${C(b[3])}</div></div></div></div>
+  <h3>Abiertas (${abiertas.length})</h3><div class="list">${abiertas.length?abiertas.map(row).join(""):`<div class="empty">${cx?"Nadie te debe nada. Registrá aquí las ventas al crédito.":"No tenés deudas pendientes. Registrá aquí las facturas de proveedores."}</div>`}</div>
+  ${cerradas.length?`<h3>Pagadas (${cerradas.length})</h3><div class="list">${cerradas.slice(0,20).map(row).join("")}</div>`:""}`;
+}
+
+function vAjustes(){
+  const c=S.cfg;
+  return `<h2>Ajustes</h2>
+  <form class="f panel" id="fCfg">
+    <label>Nombre del negocio<input id="cNeg" value="${esc(c.negocio)}" required></label>
+    <div class="two"><label>INSS laboral %<input id="cLab" type="number" step="0.01" value="${c.inssLab}"></label><label>INSS patronal %<input id="cPat" type="number" step="0.01" value="${c.inssPat}"></label></div>
+    <div class="two"><label>INATEC %<input id="cIna" type="number" step="0.01" value="${c.inatec}"></label><label>Tipo de cambio C$ por US$<input id="cTc" type="number" step="0.0001" value="${c.tc}"></label></div>
+    <div class="muted" style="font-size:12px">Con 10 trabajadores o menos aplica el INSS patronal de 21.5%. Verificá el tipo de cambio oficial del BCN.</div>
+    <div class="actions"><button class="btn pri" type="submit">Guardar ajustes</button></div>
+  </form>
+  <h3>Tabla de IR salarial (anual)</h3>
+  <div class="tbl"><table><tr><th>Desde</th><th>Hasta</th><th>Impuesto base</th><th>% sobre exceso</th></tr>${IR_TABLA.map(([a,b,base,p])=>`<tr><td class="num">${C(a)}</td><td>${b===Infinity?"En adelante":C(b)}</td><td>${C(base)}</td><td>${p*100}%</td></tr>`).join("")}</table></div>
+  <h3>Salario mínimo vigente (desde 1 mar 2026)</h3>
+  <div class="tbl"><table><tr><th>Sector</th><th>Mensual</th></tr>${MINIMOS.map(m=>`<tr><td style="white-space:normal">${esc(m[1])}</td><td>${C(m[2])}</td></tr>`).join("")}</table></div>
+  <div class="muted" style="font-size:12px;margin-top:6px">Zonas francas desde 1 ene 2026. Revisá estos valores en cada ajuste anual del MITRAB.</div>
+  <h3>Tu acceso</h3>
+  <div class="panel" style="display:grid;gap:10px">
+    <div class="facts" style="margin:0"><div><span>A nombre de</span><span>${esc((S.lic&&S.lic.n)||"—")}</span></div><div><span>Vence</span><span>${S.lic&&S.lic.e?esc(fechaCorta(S.lic.e))+" "+esc(S.lic.e.slice(0,4)):"Sin vencimiento"}</span></div><div><span>ID del teléfono</span><span class="num">${devFmt(devId())}</span></div></div>
+    <div class="row"><button class="btn sm" data-act="waId">Pedir renovación por WhatsApp</button></div>
+    <form class="f" id="fCode"><label>Cargar código nuevo (renovación)<textarea id="codeIn" rows="2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea></label><div id="codeMsg"></div><div class="actions"><button class="btn" type="submit">Activar código</button></div></form>
+  </div>
+  <h3>Respaldo de tus datos</h3>
+  <div class="panel" style="display:grid;gap:10px">
+    <div style="font-size:14px">Tus datos se guardan solo en este teléfono o navegador. Descargá un respaldo seguido y guardalo en Archivos, Drive o WhatsApp. Con ese archivo recuperás todo en otro teléfono.</div>
+    <div class="muted" style="font-size:13px">${S.cfg.ultimoRespaldo?"Último respaldo: "+fechaCorta(S.cfg.ultimoRespaldo)+" "+S.cfg.ultimoRespaldo.slice(0,4):"Todavía no hiciste un respaldo"}</div>
+    <div class="row"><button class="btn pri" data-act="respaldo">Descargar respaldo</button></div>
+    <form class="f" id="fRest">
+      <label>Restaurar desde archivo<input type="file" id="rFile" accept=".json,application/json"></label>
+      <label>…o pegá el texto del respaldo<textarea id="rTxt" rows="2"></textarea></label>
+      <div id="rMsg"></div>
+      <div class="actions"><button class="btn" type="submit" id="rBtn">Restaurar</button></div>
+    </form>
+  </div>
+  ${hayEjemplos()?`<h3>Datos de ejemplo</h3><div class="panel spread"><span style="font-size:14px">Borrar todos los registros marcados como ejemplo.</span><button class="btn danger sm" data-act="borrarEj" id="bEj">Borrar ejemplos</button></div>`:""}
+  <p class="muted" style="font-size:12px;margin-top:18px">Esta app es una herramienta de registro y cálculo. Confirmá declaraciones al INSS y a la DGI con tu contador.</p>`;
+}
+
+/* ---------- Modales ---------- */
+function openModal(html,mount){
+  $("#modal").innerHTML=`<div class="sheet-bg" data-act="bg"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
+  const first=$("#modal").querySelector("input,select,textarea");
+  if(mount)mount($("#modal"));
+  if(first&&window.innerWidth>700)first.focus();
+}
+function closeModal(){$("#modal").innerHTML=""}
+function opts(arr,sel){return arr.map(o=>{const [v,l]=Array.isArray(o)?o:[o,o];return `<option value="${esc(v)}" ${v===sel?"selected":""}>${esc(l)}</option>`}).join("")}
+function delBtn(){return `<button type="button" class="btn danger" data-act="armDel">Eliminar</button>`}
+
+function formMov(m){
+  const n=!m;m=m||{tipo:"ingreso",fecha:hoy(),moneda:"NIO",metodo:"Efectivo",categoria:"Ventas"};
+  openModal(`<h2>${n?"Nuevo movimiento":"Editar movimiento"}</h2>
+  <form class="f" id="fMov">
+    <div class="seg" style="justify-self:start"><button type="button" data-t="ingreso" class="${m.tipo==="ingreso"?"on":""}">Ingreso</button><button type="button" data-t="gasto" class="${m.tipo==="gasto"?"on":""}">Gasto</button></div>
+    <div class="two"><label>Monto<input id="mMonto" type="number" step="0.01" min="0.01" inputmode="decimal" value="${m.monto||""}" required></label><label>Moneda<select id="mMon">${opts([["NIO","Córdobas C$"],["USD","Dólares US$"]],m.moneda)}</select></label></div>
+    <div class="two"><label>Fecha<input id="mFecha" type="date" value="${m.fecha}" required></label><label>Método<select id="mMet">${opts(METODOS,m.metodo)}</select></label></div>
+    <label>Categoría<select id="mCat"></select></label>
+    <label>Descripción<input id="mDesc" value="${esc(m.descripcion||"")}" placeholder="Ej.: Venta de mostrador"></label>
+    <div class="actions">${n?"":delBtn()}<button type="button" class="btn" data-act="close">Cancelar</button><button class="btn pri" type="submit">Guardar</button></div>
+  </form>`,root=>{
+    let tipo=m.tipo;const cat=root.querySelector("#mCat");
+    const fill=()=>{const list=tipo==="ingreso"?CAT_IN:CAT_OUT;cat.innerHTML=opts(list,list.includes(m.categoria)?m.categoria:list[0])};fill();
+    root.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{tipo=b.dataset.t;root.querySelectorAll("[data-t]").forEach(x=>x.classList.toggle("on",x===b));fill()});
+    root.querySelector("#fMov").onsubmit=e=>{e.preventDefault();
+      const id=m.id||uid();
+      put("movs",id,{...m,tipo,monto:r2(root.querySelector("#mMonto").value),moneda:root.querySelector("#mMon").value,fecha:root.querySelector("#mFecha").value,metodo:root.querySelector("#mMet").value,categoria:cat.value,descripcion:root.querySelector("#mDesc").value.trim(),creado:m.creado||new Date().toISOString()});
+      closeModal();toast(n?"Movimiento guardado":"Cambios guardados")};
+    armDelete(root,()=>{del("movs",m.id);closeModal();toast("Movimiento eliminado")});
+  });
+}
+
+function armDelete(root,fn){const b=root.querySelector('[data-act="armDel"]');if(!b)return;b.onclick=e=>{e.stopPropagation();if(b.dataset.armed){fn()}else{b.dataset.armed="1";b.textContent="Tocá de nuevo para eliminar"}}}
+
+function formEmp(e){
+  const n=!e;
+  if(n&&Object.values(S.emps).filter(x=>x.activo!==false).length>=MAX_EMP){toast("Llegaste al máximo de "+MAX_EMP+" trabajadores activos");return}
+  e=e||{sector:"comercio",ingreso:hoy(),activo:true,vacTomadas:0};
+  openModal(`<h2>${n?"Nuevo empleado":"Editar empleado"}</h2>
+  <form class="f" id="fEmp">
+    <label>Nombre completo<input id="eNom" value="${esc(e.nombre||"")}" required></label>
+    <div class="two"><label>Cédula<input id="eCed" value="${esc(e.cedula||"")}" placeholder="001-010190-0001A"></label><label>N.º INSS<input id="eInss" value="${esc(e.inss||"")}"></label></div>
+    <div class="two"><label>Cargo<input id="eCargo" value="${esc(e.cargo||"")}"></label><label>Fecha de ingreso<input id="eIng" type="date" value="${e.ingreso}" required></label></div>
+    <label>Sector (salario mínimo)<select id="eSec">${opts(MINIMOS.map(m=>[m[0],m[1]+" — "+C(m[2])]),e.sector)}</select></label>
+    <div class="two"><label>Salario mensual C$<input id="eSal" type="number" step="0.01" min="0" inputmode="decimal" value="${e.salario||""}" required></label><label>Vacaciones ya tomadas (días)<input id="eVac" type="number" step="0.5" min="0" value="${e.vacTomadas||0}"></label></div>
+    <div id="eWarn"></div>
+    <label class="chk"><input id="eAct" type="checkbox" ${e.activo!==false?"checked":""}> Trabajador activo</label>
+    <div class="actions">${n?"":delBtn()}<button type="button" class="btn" data-act="close">Cancelar</button><button class="btn pri" type="submit">Guardar</button></div>
+  </form>`,root=>{
+    const chk=()=>{const min=minimoDe(root.querySelector("#eSec").value),s=+root.querySelector("#eSal").value;root.querySelector("#eWarn").innerHTML=s&&s<min?`<div class="notice" style="margin:0"><b>Bajo el mínimo.</b> El salario mínimo de este sector es ${C(min)} al mes.</div>`:""};
+    root.querySelector("#eSec").onchange=chk;root.querySelector("#eSal").oninput=chk;chk();
+    root.querySelector("#fEmp").onsubmit=ev=>{ev.preventDefault();
+      const act=root.querySelector("#eAct").checked;
+      if(act&&e.activo===false&&Object.values(S.emps).filter(x=>x.activo!==false).length>=MAX_EMP){toast("Ya tenés "+MAX_EMP+" trabajadores activos");return}
+      const id=e.id||uid();
+      put("emps",id,{...e,nombre:root.querySelector("#eNom").value.trim(),cedula:root.querySelector("#eCed").value.trim(),inss:root.querySelector("#eInss").value.trim(),cargo:root.querySelector("#eCargo").value.trim(),ingreso:root.querySelector("#eIng").value,sector:root.querySelector("#eSec").value,salario:r2(root.querySelector("#eSal").value),vacTomadas:+root.querySelector("#eVac").value||0,activo:act});
+      closeModal();toast("Empleado guardado")};
+    armDelete(root,()=>{del("emps",e.id);closeModal();toast("Empleado eliminado")});
+  });
+}
+
+function verEmp(e){
+  const p=prestaciones(e),min=minimoDe(e.sector);
+  openModal(`<div class="spread"><h2 style="margin:0">${esc(e.nombre)}</h2>${e.activo===false?'<span class="chip neu">Inactivo</span>':'<span class="chip ok">Activo</span>'}</div>
+  <div class="muted" style="font-size:14px;margin-top:4px">${esc(e.cargo||"Sin cargo")}${e.cedula?" · Cédula "+esc(e.cedula):""}${e.inss?" · INSS "+esc(e.inss):""}</div>
+  <div class="facts">
+    <div><span>Salario mensual</span><span class="num">${C(e.salario)}</span></div>
+    <div><span>Mínimo del sector</span><span class="num ${+e.salario<min?"out-c":""}">${C(min)}</span></div>
+    <div><span>Ingreso</span><span>${e.ingreso?fechaCorta(e.ingreso)+" "+e.ingreso.slice(0,4):"—"}</span></div>
+    <div><span>Antigüedad</span><span>${p?antig(p.anios):"—"}</span></div>
+  </div>
+  ${p?`<h3>Prestaciones acumuladas a hoy</h3><div class="lines">
+    <div class="spread"><span>Vacaciones pendientes (${p.vacDias.toFixed(1)} días)</span><span class="num">${C(p.vacMonto)}</span></div>
+    <div class="spread"><span>Aguinaldo desde ${fechaCorta(p.iniAg)} ${p.iniAg.slice(0,4)}</span><span class="num">${C(p.ag)}</span></div>
+    <div class="spread"><span>Indemnización Art. 45 (si el empleador termina el contrato)</span><span class="num">${C(p.ind)}</span></div>
+    <div class="spread b"><span>Total estimado</span><span class="num">${C(p.vacMonto+p.ag+p.ind)}</span></div></div>
+    <p class="muted" style="font-size:12px">Estimación sobre el salario actual. Una liquidación real usa el salario promedio de los últimos 6 meses.</p>`:""}
+  <div class="actions"><button class="btn" data-act="close">Cerrar</button><button class="btn pri" data-act="editEmp" data-id="${e.id}">Editar</button></div>`);
+}
+
+function formNom(n){
+  const act=Object.values(S.emps).filter(e=>e.activo!==false).sort((a,b)=>(a.nombre||"").localeCompare(b.nombre||""));
+  if(!n&&!act.length){toast("Primero agregá empleados");S.nomTab="emps";render();return}
+  const isNew=!n;
+  n=n||{periodo:hoy().slice(0,7),tipo:"M",lineas:[]};
+  const prev={};(n.lineas||[]).forEach(l=>prev[l.empId]=l);
+  const emps=isNew?act:act.concat(Object.values(S.emps).filter(e=>prev[e.id]&&e.activo===false));
+  openModal(`<h2>${isNew?"Nueva planilla":"Editar planilla"}</h2>
+  <form class="f" id="fNom">
+    <div class="two"><label>Mes<input id="nPer" type="month" value="${n.periodo}" required ${isNew?"":"disabled"}></label><label>Periodo<select id="nTipo" ${isNew?"":"disabled"}>${opts([["M","Mensual"],["Q1","1ª quincena"],["Q2","2ª quincena"]],n.tipo)}</select></label></div>
+    ${emps.map(e=>{const l=prev[e.id]||{};return `<div class="empcard" data-emp="${e.id}"><div class="spread"><strong>${esc(e.nombre)}</strong><span class="num muted" data-neto>—</span></div>
+      <div class="g"><label>Horas extra<input type="number" min="0" step="0.5" data-f="he" value="${l.he||0}"></label><label>Otros ingresos C$<input type="number" min="0" step="0.01" data-f="otros" value="${l.otros||0}"></label><label>Deducciones C$<input type="number" min="0" step="0.01" data-f="ded" value="${l.ded||0}"></label></div></div>`}).join("")}
+    <div class="lines panel" id="nTot"></div>
+    <div class="actions"><button type="button" class="btn" data-act="close">Cancelar</button><button class="btn pri" type="submit">Guardar planilla</button></div>
+  </form>`,root=>{
+    const calc=()=>{const tipo=root.querySelector("#nTipo").value;const lines=[];
+      root.querySelectorAll("[data-emp]").forEach(card=>{const e=S.emps[card.dataset.emp];const g=f=>+card.querySelector(`[data-f="${f}"]`).value||0;const l=calcLinea(e,g("he"),g("otros"),g("ded"),tipo);lines.push(l);card.querySelector("[data-neto]").textContent="Neto "+C(l.neto)});
+      const t=totNom(lines);
+      root.querySelector("#nTot").innerHTML=`<div class="spread"><span>Salarios brutos</span><span class="num">${C(t.bruto)}</span></div><div class="spread"><span>INSS laboral retenido</span><span class="num">${C(t.inss)}</span></div><div class="spread"><span>IR retenido</span><span class="num">${C(t.ir)}</span></div><div class="spread"><span>Neto a pagar</span><span class="num">${C(t.neto)}</span></div><div class="spread"><span>INSS patronal + INATEC</span><span class="num">${C(t.pat+t.inatec)}</span></div><div class="spread b"><span>Costo total</span><span class="num">${C(t.costo)}</span></div>`;
+      return lines};
+    root.querySelector("#fNom").oninput=calc;root.querySelector("#nTipo").onchange=calc;calc();
+    root.querySelector("#fNom").onsubmit=ev=>{ev.preventDefault();
+      const per=root.querySelector("#nPer").value,tipo=root.querySelector("#nTipo").value;
+      if(!per){toast("Elegí el mes");return}
+      const id=isNew?per+"-"+tipo:n.id;
+      if(isNew&&S.noms[id]){toast("Esa planilla ya existe. Abrila para editarla.");return}
+      put("noms",id,{...n,periodo:per,tipo,lineas:calc(),tasas:{lab:S.cfg.inssLab,pat:S.cfg.inssPat,inatec:S.cfg.inatec}});
+      closeModal();S.nomTab="plan";render();toast("Planilla guardada")};
+  });
+}
+
+function verNom(n){
+  const t=totNom(n.lineas||[]);
+  openModal(`<h2>${esc(nomLbl(n))}</h2>
+  <div class="tbl"><table><tr><th>Trabajador</th><th>Bruto</th><th>INSS</th><th>IR</th><th>Deducc.</th><th>Neto</th></tr>
+  ${(n.lineas||[]).map((l,i)=>`<tr><td><button class="btn sm" data-act="colilla" data-id="${n.id}" data-i="${i}">${esc(l.nombre)}</button></td><td>${C(l.bruto)}</td><td>${C(l.inss)}</td><td>${C(l.ir)}</td><td>${C(l.ded)}</td><td>${C(l.neto)}</td></tr>`).join("")}
+  <tr class="tot"><td>Total</td><td>${C(t.bruto)}</td><td>${C(t.inss)}</td><td>${C(t.ir)}</td><td>${C(t.ded)}</td><td>${C(t.neto)}</td></tr></table></div>
+  <p class="muted" style="font-size:12px">Tocá un nombre para ver su colilla de pago.</p>
+  <div class="lines panel">
+    <div class="spread"><span>Neto a trabajadores</span><span class="num">${C(t.neto)}</span></div>
+    <div class="spread"><span>Al INSS (laboral ${C(t.inss)} + patronal ${C(t.pat)})</span><span class="num">${C(t.inss+t.pat)}</span></div>
+    <div class="spread"><span>A la DGI (IR retenido)</span><span class="num">${C(t.ir)}</span></div>
+    <div class="spread"><span>INATEC</span><span class="num">${C(t.inatec)}</span></div>
+    <div class="spread b"><span>Costo total del periodo</span><span class="num">${C(t.costo)}</span></div>
+  </div>
+  <div class="actions"><button class="btn danger" data-act="armDel">Eliminar</button><button class="btn" data-act="editNom" data-id="${n.id}">Editar</button>
+  ${n.movId&&S.movs[n.movId]?'<span class="chip ok" style="align-self:center">Registrada en caja</span>':`<button class="btn pri" data-act="nomCaja" data-id="${n.id}">Registrar en caja</button>`}</div>`,root=>{
+    armDelete(root,()=>{del("noms",n.id);closeModal();toast("Planilla eliminada")});
+  });
+}
+
+function colilla(n,i){
+  const l=n.lineas[i];
+  const txt=`${S.cfg.negocio}\nColilla de pago · ${nomLbl(n)}\n${l.nombre}${l.cargo?" · "+l.cargo:""}\n\nSalario: ${C(l.salario)}\nHoras extra (${l.he} h): ${C(l.pHE)}\nOtros ingresos: ${C(l.otros)}\nTotal devengado: ${C(l.bruto)}\n\nINSS laboral: -${C(l.inss)}\nIR: -${C(l.ir)}\nOtras deducciones: -${C(l.ded)}\n\nNETO A RECIBIR: ${C(l.neto)}`;
+  openModal(`<div class="muted" style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600">${esc(S.cfg.negocio)} · Colilla de pago</div>
+  <h2 style="margin-top:4px">${esc(l.nombre)}</h2><div class="muted" style="font-size:14px;margin:-6px 0 12px">${esc(l.cargo)} · ${esc(nomLbl(n))}</div>
+  <h3 style="margin-top:0">Devengado</h3><div class="lines">
+   <div class="spread"><span>Salario del periodo</span><span class="num">${C(l.salario)}</span></div>
+   <div class="spread"><span>Horas extra (${l.he} h al doble)</span><span class="num">${C(l.pHE)}</span></div>
+   <div class="spread"><span>Otros ingresos</span><span class="num">${C(l.otros)}</span></div>
+   <div class="spread b"><span>Total devengado</span><span class="num">${C(l.bruto)}</span></div></div>
+  <h3>Deducciones</h3><div class="lines">
+   <div class="spread"><span>INSS laboral</span><span class="num">${C(l.inss)}</span></div>
+   <div class="spread"><span>IR salarial</span><span class="num">${C(l.ir)}</span></div>
+   <div class="spread"><span>Otras deducciones</span><span class="num">${C(l.ded)}</span></div></div>
+  <div class="panel spread" style="margin-top:14px;background:var(--accent-soft);border-color:var(--accent)"><strong>Neto a recibir</strong><span class="num" style="font-size:20px">${C(l.neto)}</span></div>
+  <div class="actions"><button class="btn" data-act="verNomBack" data-id="${n.id}">Volver</button><button class="btn pri" id="cpy">Copiar colilla</button></div>`,root=>{
+    root.querySelector("#cpy").onclick=()=>{try{navigator.clipboard.writeText(txt).then(()=>toast("Colilla copiada"),()=>toast("No se pudo copiar"))}catch(e){toast("No se pudo copiar")}};
+  });
+}
+
+function formCuenta(col,c){
+  const cx=col==="cxc",n=!c;c=c||{fecha:hoy(),vence:"",abonos:[]};
+  openModal(`<h2>${n?(cx?"Nueva cuenta por cobrar":"Nueva cuenta por pagar"):"Editar cuenta"}</h2>
+  <form class="f" id="fCta">
+    <label>${cx?"Cliente":"Proveedor"}<input id="kNom" value="${esc(c.nombre||"")}" required></label>
+    <label>Concepto / N.º factura<input id="kCon" value="${esc(c.concepto||"")}"></label>
+    <label>Monto total C$<input id="kMonto" type="number" step="0.01" min="0.01" inputmode="decimal" value="${c.monto||""}" required></label>
+    <div class="two"><label>Fecha<input id="kF" type="date" value="${c.fecha}" required></label><label>Vence<input id="kV" type="date" value="${c.vence||""}"></label></div>
+    <label>Teléfono / contacto<input id="kTel" value="${esc(c.contacto||"")}"></label>
+    <div class="actions">${n?"":delBtn()}<button type="button" class="btn" data-act="close">Cancelar</button><button class="btn pri" type="submit">Guardar</button></div>
+  </form>`,root=>{
+    root.querySelector("#fCta").onsubmit=e=>{e.preventDefault();const id=c.id||uid();
+      put(col,id,{...c,nombre:root.querySelector("#kNom").value.trim(),concepto:root.querySelector("#kCon").value.trim(),monto:r2(root.querySelector("#kMonto").value),fecha:root.querySelector("#kF").value,vence:root.querySelector("#kV").value,contacto:root.querySelector("#kTel").value.trim()});
+      closeModal();toast("Cuenta guardada")};
+    armDelete(root,()=>{del(col,c.id);closeModal();toast("Cuenta eliminada")});
+  });
+}
+
+function verCuenta(col,c){
+  const cx=col==="cxc",s=saldo(c);
+  openModal(`<div class="spread"><h2 style="margin:0">${esc(c.nombre)}</h2>${chipEstado(c)}</div>
+  <div class="muted" style="font-size:14px;margin-top:4px">${esc(c.concepto||"")}${c.contacto?" · "+esc(c.contacto):""}</div>
+  <div class="facts"><div><span>Monto</span><span class="num">${C(c.monto)}</span></div><div><span>Saldo</span><span class="num">${C(s)}</span></div><div><span>Fecha</span><span>${fechaCorta(c.fecha)}</span></div><div><span>Vence</span><span>${c.vence?fechaCorta(c.vence):"—"}</span></div></div>
+  <h3>${cx?"Cobros recibidos":"Pagos realizados"}</h3>
+  <div class="list">${(c.abonos||[]).length?c.abonos.map(a=>`<div class="item"><div class="main"><div class="t">${fechaCorta(a.fecha)}</div><div class="s">${esc(a.metodo||"")}</div></div><span class="num">${C(a.monto)}</span></div>`).join(""):`<div class="empty">Sin abonos todavía.</div>`}</div>
+  ${s>0.005?`<h3>Registrar ${cx?"cobro":"pago"}</h3><form class="f" id="fAb">
+    <div class="two"><label>Monto C$<input id="aM" type="number" step="0.01" min="0.01" max="${s}" value="${s}" required></label><label>Fecha<input id="aF" type="date" value="${hoy()}" required></label></div>
+    <label>Método<select id="aMet">${opts(METODOS,"Efectivo")}</select></label>
+    <label class="chk"><input type="checkbox" id="aCaja" checked> Anotar también en caja como ${cx?"ingreso":"gasto"}</label>
+    <div class="actions"><button class="btn pri" type="submit">Registrar ${cx?"cobro":"pago"}</button></div></form>`:""}
+  <div class="actions" style="margin-top:14px"><button class="btn" data-act="close">Cerrar</button><button class="btn" data-act="editCuenta" data-col="${col}" data-id="${c.id}">Editar</button></div>`,root=>{
+    const f=root.querySelector("#fAb");if(!f)return;
+    f.onsubmit=e=>{e.preventDefault();const monto=r2(root.querySelector("#aM").value),fecha=root.querySelector("#aF").value,metodo=root.querySelector("#aMet").value;
+      if(monto<=0)return;
+      const ab={monto,fecha,metodo};
+      if(root.querySelector("#aCaja").checked){const mid=uid();ab.movId=mid;
+        put("movs",mid,{tipo:cx?"ingreso":"gasto",monto,moneda:"NIO",fecha,metodo,categoria:cx?"Cobro a clientes":"Pago a proveedores",descripcion:(cx?"Cobro: ":"Pago: ")+c.nombre+(c.concepto?" · "+c.concepto:""),creado:new Date().toISOString()})}
+      const nc={...c,abonos:[...(c.abonos||[]),ab]};put(col,c.id,nc);
+      toast(cx?"Cobro registrado":"Pago registrado");verCuenta(col,S[col][c.id])};
+  });
+}
+
+/* ---------- Eventos ---------- */
+let toastT;
+function toast(msg){clearTimeout(toastT);let t=$("#toast");if(!t){t=document.createElement("div");t.id="toast";t.className="toast";t.setAttribute("role","status");document.body.appendChild(t)}t.textContent=msg;t.hidden=false;toastT=setTimeout(()=>t.hidden=true,2600)}
+
+document.addEventListener("click",ev=>{
+  const el=ev.target.closest("[data-act]");if(!el)return;
+  const a=el.dataset.act,id=el.dataset.id;
+  if(a==="bg"){if(ev.target===el)closeModal();return}
+  switch(a){
+    case "tab":S.tab=el.dataset.k;closeModal();render();window.scrollTo(0,0);break;
+    case "mes":S.mes=addMes(S.mes,+el.dataset.d);render();break;
+    case "close":closeModal();break;
+    case "cajaF":S.cajaFiltro=el.dataset.k;render();break;
+    case "nomT":S.nomTab=el.dataset.k;render();break;
+    case "irNom":S.tab="nomina";S.nomTab="plan";render();window.scrollTo(0,0);break;
+    case "nuevoMov":formMov();break;
+    case "editMov":formMov(S.movs[id]);break;
+    case "nuevoEmp":formEmp();break;
+    case "verEmp":verEmp(S.emps[id]);break;
+    case "editEmp":formEmp(S.emps[id]);break;
+    case "nuevaNom":formNom();break;
+    case "verNom":case "verNomBack":verNom(S.noms[id]);break;
+    case "editNom":formNom(S.noms[id]);break;
+    case "colilla":colilla(S.noms[id],+el.dataset.i);break;
+    case "nomCaja":{const n=S.noms[id],t=totNom(n.lineas||[]),mid=uid();
+      put("movs",mid,{tipo:"gasto",monto:t.costo,moneda:"NIO",fecha:hoy(),metodo:"Banco",categoria:"Nómina",descripcion:"Planilla "+nomLbl(n)+" (neto, INSS, IR e INATEC)",creado:new Date().toISOString()});
+      put("noms",id,{...n,movId:mid});toast("Planilla anotada en caja");verNom(S.noms[id]);break}
+    case "nuevaCxc":formCuenta("cxc");break;
+    case "nuevaCxp":formCuenta("cxp");break;
+    case "verCuenta":verCuenta(el.dataset.col,S[el.dataset.col][id]);break;
+    case "editCuenta":formCuenta(el.dataset.col,S[el.dataset.col][id]);break;
+    case "borrarEj":if(!el.dataset.armed){el.dataset.armed="1";el.textContent="Tocá de nuevo para confirmar";break}
+      COLS.forEach(c=>Object.values(S[c]).filter(x=>x.ejemplo).forEach(x=>del(c,x.id)));toast("Ejemplos borrados");break;
+    case "csv":exportCsv();break;
+    case "waId":pedirCodigo();break;
+    case "copyId":copiarId();break;
+    case "respaldo":{const h=hoy();const data=JSON.stringify({app:"libro-negocio",v:1,fecha:new Date().toISOString(),data:{...snapshot(),cfg:{...S.cfg,ultimoRespaldo:h}}});
+      guardarArchivo("respaldo-negocio-"+h+".json",data,()=>{S.cfg={...S.cfg,ultimoRespaldo:h};saveLocal();render();toast("Respaldo listo")});break}
+  }
+});
+let pendRest=null;
+function leerRespaldo(txt){
+  try{const j=JSON.parse(txt),d=j.data||j;if(!d||typeof d!=="object"||!COLS.some(c=>d[c]))throw 0;return d}catch(e){return null}
+}
+document.addEventListener("change",ev=>{
+  if(ev.target.id!=="rFile")return;const f=ev.target.files[0];if(!f)return;
+  f.text().then(t=>{$("#rTxt").value=t;pendRest=null;$("#rMsg").innerHTML="";$("#rBtn").textContent="Restaurar"});
+});
+document.addEventListener("submit",async ev=>{
+  if(ev.target.id==="fCode"){ev.preventDefault();
+    const v=$("#codeIn").value.replace(/\s+/g,""),r=await licCheck(v);
+    if(r.st!=="ok"){$("#codeMsg").innerHTML=`<div class="notice" style="margin:0"><b>No se activó.</b> ${esc(licMsg(r))}</div>`;return}
+    LSG("ln_lic",v);S.lic=r;S.gate="ok";
+    if(r.n&&S.cfg.negocio===DEF_CFG.negocio)putCfg({...S.cfg,negocio:r.n});
+    render();toast(r.e?"Acceso activo hasta el "+fechaCorta(r.e)+" "+r.e.slice(0,4):"Acceso activo sin vencimiento");return}
+  if(ev.target.id==="fRest"){ev.preventDefault();
+    const d=leerRespaldo($("#rTxt").value);
+    if(!d){$("#rMsg").innerHTML=`<div class="notice" style="margin:0"><b>No es un respaldo válido.</b> Elegí el archivo .json que descargaste de esta app.</div>`;return}
+    if(pendRest!==$("#rTxt").value){pendRest=$("#rTxt").value;
+      const n=COLS.reduce((a,c)=>a+Object.keys(d[c]||{}).length,0);
+      $("#rMsg").innerHTML=`<div class="notice" style="margin:0"><b>Atención.</b> Esto reemplaza los datos de este teléfono por el respaldo (${n} registros). Tocá “Confirmar” para seguir.</div>`;
+      $("#rBtn").textContent="Confirmar";return}
+    COLS.forEach(c=>S[c]=d[c]||{});S.cfg={...DEF_CFG,...(d.cfg||{})};pendRest=null;saveLocal();render();toast("Respaldo restaurado");return}
+  if(ev.target.id!=="fCfg")return;ev.preventDefault();
+  putCfg({negocio:$("#cNeg").value.trim()||"Mi Negocio",inssLab:+$("#cLab").value||0,inssPat:+$("#cPat").value||0,inatec:+$("#cIna").value||0,tc:+$("#cTc").value||0});
+  toast("Ajustes guardados");
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+async function exportCsv(){
+  const rows=[["Fecha","Tipo","Categoría","Descripción","Método","Moneda","Monto","Monto C$"]];
+  movsDe(S.mes).sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(m=>rows.push([m.fecha,m.tipo,m.categoria,m.descripcion||"",m.metodo,m.moneda,m.monto,r2(enC(m))]));
+  const csv="﻿"+rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(",")).join("\n");
+  guardarArchivo("caja-"+S.mes+".csv",csv);
+}
+
+/* ---------- Arranque ---------- */
+S.mode="local";S.gate="cargando";loadLocal();render();
+licInit().then(render);
+document.addEventListener("visibilitychange",async()=>{if(document.visibilityState==="visible"){const was=S.gate;await licInit();if(S.gate!==was||S.gate!=="ok")render()}});
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+})();
+</script>
+</body>
+</html>
