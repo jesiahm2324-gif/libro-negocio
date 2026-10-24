@@ -63,6 +63,14 @@ body.mods #main h2::before{content:"";display:inline-block;width:10px;height:10p
 body.mods .tint{background:color-mix(in srgb,var(--tc) 11%,var(--surface))!important;border-color:color-mix(in srgb,var(--tc) 38%,var(--line))!important}
 body.mods .tint .tl{color:var(--tc)}
 .tint.t-cobrar{--tc:var(--m-cobrar)} .tint.t-pagar{--tc:var(--m-pagar)} .tint.t-nomina{--tc:var(--m-nomina)} .tint.t-caja{--tc:var(--m-caja)}
+.acc{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.acc .ah{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:transparent;border:0;text-align:left;color:var(--ink)}
+.acc .ai{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:17px;font-weight:700;color:var(--accent-ink);flex-shrink:0;font-family:var(--f-body)}
+.acc .at{flex:1;min-width:0}.acc .at b{display:block;font-size:16px}.acc .at small{display:block;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc .chev{font-size:24px;color:var(--muted);transition:transform .15s}
+.acc .ab{display:none;padding:12px 14px 14px;border-top:1px solid var(--line)}
+.acc.op .ab{display:block}.acc.op .chev{transform:rotate(90deg)}
+@media (prefers-reduced-motion:reduce){.acc .chev{transition:none}}
 .temas{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .tema{border:2px solid var(--line);border-radius:12px;padding:10px;background:var(--surface);text-align:left;display:grid;gap:8px}
 .tema.on{border-color:var(--accent)}
@@ -381,7 +389,7 @@ function modoAviso(){
   if(S.lic&&S.lic.st==="ok"&&S.lic.e){const r=dias(fechaRef(),S.lic.e);if(r<=15)out+=`<div class="notice"><b>Tu acceso vence ${r===0?"hoy":"en "+r+(r===1?" día":" días")}</b> (${fechaCorta(S.lic.e)}). Pedí un código nuevo y cargalo en Ajustes.</div>`}
   if(!hayDatos()||S.tab==="ajustes")return out;
   const u=S.cfg.ultimoRespaldo;
-  if(!u||dias(u,hoy())>30)out+=`<div class="notice"><b>${u?"Respaldo atrasado.":"Sin respaldo."}</b> Tus datos viven solo en este teléfono. <button class="btn sm" data-act="tab" data-k="ajustes" style="margin-left:6px">Hacer respaldo</button></div>`;
+  if(!u||dias(u,hoy())>30)out+=`<div class="notice"><b>${u?"Respaldo atrasado.":"Sin respaldo."}</b> Tus datos viven solo en este teléfono. <button class="btn sm" data-act="irRespaldo" style="margin-left:6px">Hacer respaldo</button></div>`;
   return out;
 }
 function hayEjemplos(){return COLS.some(c=>Object.values(S[c]).some(x=>x.ejemplo))}
@@ -479,46 +487,49 @@ function vCuentas(col){
   ${cerradas.length?`<h3>Pagadas (${cerradas.length})</h3><div class="list">${cerradas.slice(0,20).map(row).join("")}</div>`:""}`;
 }
 
+let AJ=new Set();try{AJ=new Set(JSON.parse(LSG("ln_aj")||"[]"))}catch(e){}
+function ajSec(k,on){if(on===undefined)on=!AJ.has(k);on?AJ.add(k):AJ.delete(k);LSG("ln_aj",JSON.stringify([...AJ]));const el=document.getElementById("aj-"+k);if(el){el.classList.toggle("op",on);const b=el.querySelector(".ah");if(b)b.setAttribute("aria-expanded",on)}}
 function vAjustes(){
   const c=S.cfg;
   const tema=c.tema||"auto",mods=c.mods!==false;
+  const temaN=(TEMAS.find(x=>x[0]===tema)||TEMAS[0])[1];
+  const ur=c.ultimoRespaldo;
+  const sec=(k,ico,col,tit,sub,body)=>`<div class="acc ${AJ.has(k)?"op":""}" id="aj-${k}"><button class="ah" data-act="ajSec" data-k="${k}" aria-expanded="${AJ.has(k)}"><span class="ai" style="background:var(${col})">${ico}</span><span class="at"><b>${tit}</b><small>${sub}</small></span><span class="chev">›</span></button><div class="ab">${body}</div></div>`;
   return `<h2>Ajustes</h2>
-  <h3 style="margin-top:6px">Apariencia</h3>
-  <div class="temas">${TEMAS.map(([k,n,d,col])=>`<button class="tema ${tema===k?"on":""}" data-act="tema" data-k="${k}" aria-pressed="${tema===k}"><span class="sw">${col.map(x=>`<i style="background:${x}"></i>`).join("")}</span><span><b>${n}</b><br><small>${d}</small></span></button>`).join("")}</div>
-  <div class="panel spread" style="margin-top:10px"><div><b style="font-size:14px">Colores por módulo</b><div class="mods-row" style="margin-top:6px">${[["Panel","panel"],["Caja","caja"],["Nómina","nomina"],["Cobrar","cobrar"],["Pagar","pagar"]].map(([n,k])=>`<span style="background:var(--m-${k});color:var(--accent-ink)">${n}</span>`).join("")}</div></div>
-    <button class="btn sm ${mods?"pri":""}" data-act="mods" aria-pressed="${mods}">${mods?"Activados":"Desactivados"}</button></div>
-  <h3>Negocio y tasas</h3>
-  <form class="f panel" id="fCfg">
+  ${sec("apa","◐","--m-nomina","Apariencia",esc(temaN)+(mods?" · colores por módulo":""),`
+    <div class="temas">${TEMAS.map(([k,n,d,col])=>`<button class="tema ${tema===k?"on":""}" data-act="tema" data-k="${k}" aria-pressed="${tema===k}"><span class="sw">${col.map(x=>`<i style="background:${x}"></i>`).join("")}</span><span><b>${n}</b><br><small>${d}</small></span></button>`).join("")}</div>
+    <div class="spread" style="margin-top:12px"><div><b style="font-size:14px">Colores por módulo</b><div class="mods-row" style="margin-top:6px">${[["Panel","panel"],["Caja","caja"],["Nómina","nomina"],["Cobrar","cobrar"],["Pagar","pagar"]].map(([n,k])=>`<span style="background:var(--m-${k});color:var(--accent-ink)">${n}</span>`).join("")}</div></div>
+    <button class="btn sm ${mods?"pri":""}" data-act="mods" aria-pressed="${mods}">${mods?"Activados":"Desactivados"}</button></div>`)}
+  ${sec("neg","C$","--m-panel","Negocio y tasas",esc(c.negocio)+" · TC "+(+c.tc||0),`
+    <form class="f" id="fCfg">
     <label>Nombre del negocio<input id="cNeg" value="${esc(c.negocio)}" required></label>
     <div class="two"><label>INSS laboral %<input id="cLab" type="number" step="0.01" value="${c.inssLab}"></label><label>INSS patronal %<input id="cPat" type="number" step="0.01" value="${c.inssPat}"></label></div>
     <div class="two"><label>INATEC %<input id="cIna" type="number" step="0.01" value="${c.inatec}"></label><label>Tipo de cambio C$ por US$<input id="cTc" type="number" step="0.0001" value="${c.tc}"></label></div>
     <div class="muted" style="font-size:12px">Con 10 trabajadores o menos aplica el INSS patronal de 21.5%. Verificá el tipo de cambio oficial del BCN.</div>
     <div class="actions"><button class="btn pri" type="submit">Guardar ajustes</button></div>
-  </form>
-  <h3>Tabla de IR salarial (anual)</h3>
-  <div class="tbl"><table><tr><th>Desde</th><th>Hasta</th><th>Impuesto base</th><th>% sobre exceso</th></tr>${IR_TABLA.map(([a,b,base,p])=>`<tr><td class="num">${C(a)}</td><td>${b===Infinity?"En adelante":C(b)}</td><td>${C(base)}</td><td>${p*100}%</td></tr>`).join("")}</table></div>
-  <h3>Salario mínimo vigente (desde 1 mar 2026)</h3>
-  <div class="tbl"><table><tr><th>Sector</th><th>Mensual</th></tr>${MINIMOS.map(m=>`<tr><td style="white-space:normal">${esc(m[1])}</td><td>${C(m[2])}</td></tr>`).join("")}</table></div>
-  <div class="muted" style="font-size:12px;margin-top:6px">Zonas francas desde 1 ene 2026. Revisá estos valores en cada ajuste anual del MITRAB.</div>
-  <h3>Tu acceso</h3>
-  <div class="panel" style="display:grid;gap:10px">
+    </form>`)}
+  ${sec("acc","⚿","--m-cobrar","Tu acceso",S.lic&&S.lic.e?"Vence el "+esc(fechaCorta(S.lic.e))+" "+esc(S.lic.e.slice(0,4)):"Sin vencimiento",`
+    <div style="display:grid;gap:10px">
     <div class="facts" style="margin:0"><div><span>A nombre de</span><span>${esc((S.lic&&S.lic.n)||"—")}</span></div><div><span>Vence</span><span>${S.lic&&S.lic.e?esc(fechaCorta(S.lic.e))+" "+esc(S.lic.e.slice(0,4)):"Sin vencimiento"}</span></div><div><span>ID del teléfono</span><span class="num">${devFmt(devId())}</span></div></div>
     <div class="row"><button class="btn sm" data-act="waId">Pedir renovación por WhatsApp</button></div>
     <form class="f" id="fCode"><label>Cargar código nuevo (renovación)<textarea id="codeIn" rows="2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea></label><div id="codeMsg"></div><div class="actions"><button class="btn" type="submit">Activar código</button></div></form>
-  </div>
-  <h3>Respaldo de tus datos</h3>
-  <div class="panel" style="display:grid;gap:10px">
-    <div style="font-size:14px">Tus datos se guardan solo en este teléfono o navegador. Descargá un respaldo seguido y guardalo en Archivos, Drive o WhatsApp. Con ese archivo recuperás todo en otro teléfono.</div>
-    <div class="muted" style="font-size:13px">${S.cfg.ultimoRespaldo?"Último respaldo: "+fechaCorta(S.cfg.ultimoRespaldo)+" "+S.cfg.ultimoRespaldo.slice(0,4):"Todavía no hiciste un respaldo"}</div>
+    </div>`)}
+  ${sec("res","⇅","--m-caja","Respaldo de tus datos",ur?"Último: "+fechaCorta(ur)+" "+ur.slice(0,4):"Todavía no hiciste un respaldo",`
+    <div style="display:grid;gap:10px">
+    <div style="font-size:14px">Tus datos se guardan solo en este teléfono. Descargá un respaldo seguido y guardalo en Archivos, Drive o WhatsApp. Con ese archivo recuperás todo en otro teléfono.</div>
     <div class="row"><button class="btn pri" data-act="respaldo">Descargar respaldo</button></div>
     <form class="f" id="fRest">
       <label>Restaurar desde archivo<input type="file" id="rFile" accept=".json,application/json"></label>
       <label>…o pegá el texto del respaldo<textarea id="rTxt" rows="2"></textarea></label>
       <div id="rMsg"></div>
       <div class="actions"><button class="btn" type="submit" id="rBtn">Restaurar</button></div>
-    </form>
-  </div>
-  ${hayEjemplos()?`<h3>Datos de ejemplo</h3><div class="panel spread"><span style="font-size:14px">Borrar todos los registros marcados como ejemplo.</span><button class="btn danger sm" data-act="borrarEj" id="bEj">Borrar ejemplos</button></div>`:""}
+    </form></div>`)}
+  ${sec("ir","%","--m-pagar","Tabla de IR salarial","Tarifa progresiva anual",`
+    <div class="tbl"><table><tr><th>Desde</th><th>Hasta</th><th>Impuesto base</th><th>% sobre exceso</th></tr>${IR_TABLA.map(([a,b,base,p])=>`<tr><td class="num">${C(a)}</td><td>${b===Infinity?"En adelante":C(b)}</td><td>${C(base)}</td><td>${p*100}%</td></tr>`).join("")}</table></div>`)}
+  ${sec("min","≥","--m-ajustes","Salario mínimo vigente","Desde 1 mar 2026 · 10 sectores",`
+    <div class="tbl"><table><tr><th>Sector</th><th>Mensual</th></tr>${MINIMOS.map(m=>`<tr><td style="white-space:normal">${esc(m[1])}</td><td>${C(m[2])}</td></tr>`).join("")}</table></div>
+    <div class="muted" style="font-size:12px;margin-top:6px">Zonas francas desde 1 ene 2026. Revisá estos valores en cada ajuste anual del MITRAB.</div>`)}
+  ${hayEjemplos()?`<div class="panel spread" style="margin-top:10px"><span style="font-size:14px">Borrar todos los registros marcados como ejemplo.</span><button class="btn danger sm" data-act="borrarEj" id="bEj">Borrar ejemplos</button></div>`:""}
   <p class="muted" style="font-size:12px;margin-top:18px">Esta app es una herramienta de registro y cálculo. Confirmá declaraciones al INSS y a la DGI con tu contador.</p>`;
 }
 
@@ -751,6 +762,8 @@ document.addEventListener("click",ev=>{
       COLS.forEach(c=>Object.values(S[c]).filter(x=>x.ejemplo).forEach(x=>del(c,x.id)));toast("Ejemplos borrados");break;
     case "csv":exportCsv();break;
     case "waId":pedirCodigo();break;
+    case "ajSec":ajSec(el.dataset.k);break;
+    case "irRespaldo":AJ.add("res");LSG("ln_aj",JSON.stringify([...AJ]));S.tab="ajustes";closeModal();render();window.scrollTo(0,0);break;
     case "tema":putCfg({...S.cfg,tema:el.dataset.k});toast("Apariencia cambiada");break;
     case "mods":putCfg({...S.cfg,mods:S.cfg.mods===false});break;
     case "copyId":copiarId();break;
