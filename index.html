@@ -273,6 +273,17 @@ body.mods nav.tabs button.on::before{display:none}
 .saldo-box b{font-size:26px;letter-spacing:-.02em}
 .saldo-box small{font-size:12px;color:var(--muted)}
 .chips .qamt{border:1px solid var(--line);cursor:pointer;color:var(--ink);padding:6px 12px}
+#pdfv{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;background:color-mix(in srgb,var(--bg) 92%,#000)}
+body.pv-on{overflow:hidden}
+.pv-top{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 10px max(12px,env(safe-area-inset-left,0px));background:var(--surface);border-bottom:1px solid var(--line)}
+.pv-x{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;flex:none;cursor:pointer}
+.pv-t{min-width:0;display:grid}.pv-t b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pv-t small{font-size:12px;color:var(--muted)}
+.pv-body{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:14px 12px 20px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.pv-page{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:10px}
+.pv-page canvas{border-radius:6px;box-shadow:0 2px 0 #0002,0 10px 24px -10px #000a;background:#fff;max-width:100%}
+.pv-page span{font-size:11.5px;color:var(--muted)}
+.pv-bar{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding:10px max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));background:var(--surface);border-top:1px solid var(--line)}
+.pv-bar .btn{flex:1;min-width:140px;padding:12px 14px;font-size:15px}
 .hpdf{position:absolute;top:12px;right:12px;z-index:2;display:flex;align-items:center;gap:5px;padding:6px 11px 6px 9px;border-radius:999px;background:#ffffff26;border:1px solid #ffffff55;color:#fff;font-size:12.5px;font-weight:700;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 2px 0 #0003}
 .hpdf:active{transform:translateY(1px)}
 .hpdf svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
@@ -1036,7 +1047,7 @@ document.addEventListener("submit",async ev=>{
   putCfg({...S.cfg,ruc:$("#cRuc").value.trim(),prop:$("#cProp").value.trim(),tel:$("#cTel").value.trim(),dir:$("#cDir").value.trim(),negocio:$("#cNeg").value.trim()||"Mi Negocio",inssLab:+$("#cLab").value||0,inssPat:+$("#cPat").value||0,inatec:+$("#cIna").value||0,tc:+$("#cTc").value||0});
   toast("Ajustes guardados");
 });
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(document.getElementById("pdfv"))cerrarPDF();else closeModal()}});
 
 async function exportCsv(){
   const rows=[["Fecha","Tipo","Categoría","Descripción","Método","Moneda","Monto","Monto C$"]];
@@ -1095,7 +1106,7 @@ function PDFDoc(meta){
     T,R,L,
     ensure(h){if(y-h<M+28)page()},
     space(h){y-=h},
-    h1(s,color=BAND){api.ensure(40);y-=4;R(M,y-3,4,15,GOLD);T(M+10,y,s,12.5,true,color);y-=10;L(M,y,W-M,y,LINE,0.8);y-=16},
+    h1(s,color=BAND){api.ensure(95);y-=4;R(M,y-3,4,15,GOLD);T(M+10,y,s,12.5,true,color);y-=10;L(M,y,W-M,y,LINE,0.8);y-=16},
     p(s,sz=9,color=MUT,b=false){pdfWrap(s,CW,sz,b).forEach(l=>{api.ensure(sz+4);T(M,y,l,sz,b,color);y-=sz+4})},
     kpis(items){api.ensure(54);const n=items.length,g=8,w=(CW-g*(n-1))/n;items.forEach((k,i)=>{const x=M+i*(w+g);R(x,y-40,w,46,SOFT);R(x,y-40,w,2.5,k.c||BAND);T(x+8,y-8,pdfFit(k.l.toUpperCase(),w-16,7,true),7,true,MUT);T(x+8,y-28,pdfFit(k.v,w-16,12.5,true),12.5,true,k.vc||INK)});y-=58},
     row(l,v,o={}){api.ensure(17);const sz=o.sz||9.5,b=!!o.b,ind=o.ind||0;if(o.fill)R(M,y-5,CW,17,o.fill);T(M+6+ind,y,pdfFit(l,CW-180-ind,sz,b),sz,b,o.lc||INK);if(o.v2!==undefined)T(W-M-110,y,o.v2,sz,b,o.vc2||MUT,"r");T(W-M-6,y,v,sz,b,o.vc||INK,"r");y-=o.gap||16;if(o.line)L(M,y+10,W-M,y+10,LINE,0.5)},
@@ -1110,6 +1121,8 @@ function PDFDoc(meta){
       L(M,y+rh-5,W-M,y+rh-5,LINE,0.6);y-=8},
     bars(items,fmt){const mx=Math.max(1,...items.map(i=>i[1]));items.forEach(([l,v,col])=>{api.ensure(24);T(M,y,pdfFit(l,200,9),9,false,INK);T(W-M,y,fmt(v),9,true,INK,"r");y-=7;R(M,y-4,CW,5,"#E7ECE6");R(M,y-4,Math.max(2,CW*v/mx),5,col||"#B4432F");y-=16})},
     firmas(labels){api.ensure(70);y-=34;const n=labels.length,g=30,w=(CW-g*(n-1))/n;labels.forEach((l,i)=>{const x=M+i*(w+g);L(x,y,x+w,y,INK,0.7);T(x+w/2,y-12,l,8.5,false,MUT,"c")});y-=30},
+    get paginas(){return pages},
+    logoSrc:meta.logo||"",
     build(){
       const enc=new TextEncoder(),parts=[],offs=[];let len=0;
       const push=x=>{const u=typeof x==="string"?enc.encode(x):x;parts.push(u);len+=u.length};
@@ -1213,8 +1226,40 @@ function marcarRec(id){const mes=hoy().slice(0,7),pag={...(S.cfg.recPag||{})};
 /* ---------- PDF: datos comunes y compartir ---------- */
 function pdfDoc(titulo,periodo){const c=S.cfg;return PDFDoc({negocio:c.negocio,ruc:c.ruc,tel:c.tel,dir:c.dir,prop:c.prop,logo:c.logo,logoW:c.logoW,logoH:c.logoH,titulo,periodo})}
 function slug(s){return String(s).normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"")}
-async function compartirPDF(nombre,bytes){
-  const f=new File([bytes],slug(nombre)+".pdf",{type:"application/pdf"});
+/* ---------- Visor de PDF dentro de la app ---------- */
+function pdfTexto(hex){let s="";const R={};Object.entries(PDF_SPECIAL).forEach(([k,v])=>{if(v>=0x80)R[v]=k});for(let i=0;i<hex.length;i+=2){const c=parseInt(hex.substr(i,2),16);s+=R[c]||String.fromCharCode(c)}return s}
+function pintarPagina(cv,ops,logoImg,ancho){
+  const W=595.28,H=841.89,dpr=Math.min(3,window.devicePixelRatio||2),k=ancho/W;
+  cv.width=Math.round(W*k*dpr);cv.height=Math.round(H*k*dpr);cv.style.width=ancho+"px";cv.style.height=Math.round(H*k)+"px";
+  const g=cv.getContext("2d");g.setTransform(k*dpr,0,0,k*dpr,0,0);g.fillStyle="#fff";g.fillRect(0,0,W,H);
+  const rgb=(r,gg,b)=>`rgb(${Math.round(r*255)},${Math.round(gg*255)},${Math.round(b*255)})`;let m;
+  ops.forEach(op=>{
+    if((m=op.match(/^BT \/(F[12]) ([\d.]+) Tf ([\d.]+) ([\d.]+) ([\d.]+) rg ([-\d.]+) ([-\d.]+) Td <([0-9a-f]*)> Tj ET$/))){g.font=(m[1]==="F2"?"bold ":"")+m[2]+'px Helvetica, Arial, sans-serif';g.fillStyle=rgb(+m[3],+m[4],+m[5]);g.fillText(pdfTexto(m[8]),+m[6],H-+m[7]);return}
+    if((m=op.match(/^([\d.]+) ([\d.]+) ([\d.]+) rg ([-\d.]+) ([-\d.]+) ([-\d.]+) ([-\d.]+) re f$/))){g.fillStyle=rgb(+m[1],+m[2],+m[3]);g.fillRect(+m[4],H-+m[5]-+m[7],+m[6],+m[7]);return}
+    if((m=op.match(/^([\d.]+) ([\d.]+) ([\d.]+) RG ([\d.]+) w ([-\d.]+) ([-\d.]+) m ([-\d.]+) ([-\d.]+) l S$/))){g.strokeStyle=rgb(+m[1],+m[2],+m[3]);g.lineWidth=+m[4];g.beginPath();g.moveTo(+m[5],H-+m[6]);g.lineTo(+m[7],H-+m[8]);g.stroke();return}
+    if((m=op.match(/^q ([\d.]+) 0 0 ([\d.]+) ([-\d.]+) ([-\d.]+) cm \/Im1 Do Q$/))&&logoImg&&logoImg.complete){const sz=+m[1];g.drawImage(logoImg,+m[3],H-+m[4]-sz,sz,+m[2])}
+  });
+}
+let PDFV=null;
+function verPDF(nombre,doc){
+  const bytes=doc.build(),file=new File([bytes],slug(nombre)+".pdf",{type:"application/pdf"}),pags=doc.paginas;
+  cerrarPDF();
+  const ov=document.createElement("div");ov.id="pdfv";ov.setAttribute("role","dialog");ov.setAttribute("aria-modal","true");ov.setAttribute("aria-label",nombre);
+  ov.innerHTML=`<div class="pv-top"><button class="pv-x" data-pv="cerrar" aria-label="Cerrar">‹ Volver</button><div class="pv-t"><b>${esc(nombre)}</b><small>${pags.length} página${pags.length===1?"":"s"} · PDF</small></div></div>
+  <div class="pv-body"></div>
+  <div class="pv-bar"><button class="btn" data-pv="abrir">${ic("pdf")} Abrir en visor</button><button class="btn pri" data-pv="compartir">Compartir o guardar</button></div>`;
+  document.body.appendChild(ov);document.body.classList.add("pv-on");
+  const body=ov.querySelector(".pv-body"),ancho=Math.min(820,body.clientWidth-24||360);
+  let logoImg=null;const dibujar=()=>{body.innerHTML="";pags.forEach((ops,i)=>{const w=document.createElement("div");w.className="pv-page";const cv=document.createElement("canvas");cv.setAttribute("aria-label","Página "+(i+1));w.appendChild(cv);const n=document.createElement("span");n.textContent="Página "+(i+1)+" de "+pags.length;w.appendChild(n);body.appendChild(w);pintarPagina(cv,ops,logoImg,ancho)})};
+  if(doc.logoSrc){logoImg=new Image();logoImg.onload=dibujar;logoImg.onerror=dibujar;logoImg.src=doc.logoSrc}else dibujar();
+  PDFV={file,nombre,url:null};
+  ov.addEventListener("click",async e=>{const b=e.target.closest("[data-pv]");if(!b)return;const a=b.dataset.pv;
+    if(a==="cerrar"){cerrarPDF();return}
+    if(a==="compartir"){await compartirPDF(PDFV.nombre,PDFV.file);return}
+    if(a==="abrir"){if(!PDFV.url)PDFV.url=URL.createObjectURL(PDFV.file);const w=window.open(PDFV.url,"_blank");if(!w){const x=document.createElement("a");x.href=PDFV.url;x.target="_blank";x.rel="noopener";document.body.appendChild(x);x.click();x.remove()}}});
+}
+function cerrarPDF(){const o=document.getElementById("pdfv");if(o)o.remove();document.body.classList.remove("pv-on");if(PDFV&&PDFV.url)setTimeout(()=>URL.revokeObjectURL(PDFV.url),60000);PDFV=null}
+async function compartirPDF(nombre,f){
   try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:nombre});return}}catch(e){if(e&&e.name==="AbortError")return}
   try{const u=URL.createObjectURL(f);const a=document.createElement("a");a.href=u;a.download=f.name;a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);toast("PDF generado")}catch(e){toast("No se pudo generar el PDF")}
 }
@@ -1248,7 +1293,7 @@ function generarPDF(k,id,col,i){
     const tit={er:"Estado de resultados",flujo:"Flujo de efectivo",sit:"Situación del negocio",nomanio:"Nómina del año",rep:"Informe financiero"}[k];
     const d=pdfDoc(tit,k==="sit"?"Al "+fLarga(hoy()):k==="nomanio"?"Año "+P.d1.slice(0,4):P.lbl);
     if(k==="er"||k==="rep")pdfER(d,P);if(k==="flujo"||k==="rep")pdfFlujo(d,P);if(k==="sit"||k==="rep")pdfSituacion(d);if(k==="nomanio"||k==="rep")pdfNomAnio(d,P.d1.slice(0,4));
-    return compartirPDF(tit+" "+(k==="sit"?hoy():P.lbl),d.build())}
+    return verPDF(tit+" "+(k==="sit"?hoy():P.lbl),d)}
   if(k==="panel"){const t=sumMes(S.mes),d=pdfDoc("Resumen del mes",mesLbl(S.mes));
     d.kpis([{l:"Ingresos",v:C(t.i),vc:POS},{l:"Gastos",v:C(t.g),vc:NEG},{l:"Resultado",v:C(t.r),vc:t.r>=0?POS:NEG},{l:"Margen",v:pctV(t.r,t.i)}]);
     const cats={};movsDe(S.mes).filter(m=>m.tipo==="gasto").forEach(m=>cats[m.categoria]=(cats[m.categoria]||0)+enC(m));
@@ -1257,7 +1302,7 @@ function generarPDF(k,id,col,i){
     const noms=Object.values(S.noms).filter(n=>n.periodo===S.mes),tn=totNom(noms.reduce((a,n)=>a.concat(n.lineas||[]),[]));
     d.h1("Nómina del mes");d.row("Planillas generadas",String(noms.length));d.row("Neto pagado a trabajadores",C(tn.neto));d.row("Costo total (con INSS patronal e INATEC)",C(tn.costo),{b:true});
     const R=recordatorios();if(R.length){d.h1("Recordatorios pendientes");R.forEach(r=>d.row(r.t,r.sub,{sz:8.5}))}
-    return compartirPDF("Resumen "+mesLbl(S.mes),d.build())}
+    return verPDF("Resumen "+mesLbl(S.mes),d)}
   if(k==="caja"){const ms=movsDe(S.mes).sort((a,b)=>(a.fecha+(a.creado||"")).localeCompare(b.fecha+(b.creado||""))),t=sumMes(S.mes),d=pdfDoc("Libro de caja",mesLbl(S.mes));
     d.kpis([{l:"Entradas",v:C(t.i),vc:POS},{l:"Salidas",v:C(t.g),vc:NEG},{l:"Saldo del mes",v:C(t.r),vc:t.r>=0?POS:NEG},{l:"Movimientos",v:String(ms.length)}]);
     d.h1("Movimientos");let sal=0;const rows=ms.map(m=>{const v=enC(m);sal+=(m.tipo==="ingreso"?1:-1)*v;const r=[fechaCorta(m.fecha),(m.descripcion||m.categoria)+(m.moneda==="USD"?" ("+U(m.monto)+")":""),m.categoria,m.metodo,m.tipo==="ingreso"?C(v):"",m.tipo==="gasto"?C(v):"",C(sal)];r._c=[0,0,0,0,POS,NEG,0];return r});
@@ -1265,14 +1310,14 @@ function generarPDF(k,id,col,i){
     if(ms.length)d.table([{t:"Fecha",w:46},{t:"Descripción",w:150},{t:"Categoría",w:95},{t:"Forma",w:62},{t:"Entrada",w:72,al:"r"},{t:"Salida",w:72,al:"r"},{t:"Saldo",w:74,al:"r"}],rows,{sz:7.8});else d.p("No hay movimientos este mes.");
     const ci={},co={};ms.forEach(m=>{const o=m.tipo==="ingreso"?ci:co;o[m.categoria]=(o[m.categoria]||0)+enC(m)});
     d.h1("Resumen por categoría");Object.entries(ci).sort((a,b)=>b[1]-a[1]).forEach(([a,b])=>d.row(a,C(b),{vc:POS}));Object.entries(co).sort((a,b)=>b[1]-a[1]).forEach(([a,b])=>d.row(a,"− "+C(b),{vc:NEG}));
-    return compartirPDF("Libro de caja "+mesLbl(S.mes),d.build())}
+    return verPDF("Libro de caja "+mesLbl(S.mes),d)}
   if(k==="nomina"){const act=Object.values(S.emps).filter(e=>e.activo!==false).sort((a,b)=>(a.nombre||"").localeCompare(b.nombre||"")),d=pdfDoc("Personal y prestaciones","Al "+fLarga(hoy()));
     const masa=act.reduce((a,e)=>a+(+e.salario||0),0);d.kpis([{l:"Trabajadores",v:act.length+" de "+MAX_EMP},{l:"Salarios mensuales",v:C(masa)},{l:"Costo con INSS e INATEC",v:C(masa*(1+(S.cfg.inssPat+S.cfg.inatec)/100))}]);
     d.h1("Personal activo");d.table([{t:"Nombre",w:130},{t:"Cargo",w:95},{t:"Ingreso",w:65},{t:"Antigüedad",w:80},{t:"Salario",w:75,al:"r"},{t:"Mín. sector",w:75,al:"r"}],act.map(e=>{const p=prestaciones(e),mn=minimoDe(e.sector),r=[e.nombre,e.cargo||"",e.ingreso?fechaCorta(e.ingreso)+" "+e.ingreso.slice(2,4):"",p?antig(p.anios):"",C(e.salario),C(mn)];r._c=[0,0,0,0,+e.salario<mn?NEG:0,0];return r}),{sz:8});
     d.h1("Prestaciones acumuladas");let tv=0,ta=0,ti=0;const rows=act.map(e=>{const p=prestaciones(e)||{vacDias:0,vacMonto:0,ag:0,ind:0};tv+=p.vacMonto;ta+=p.ag;ti+=p.ind;return [e.nombre,p.vacDias.toFixed(1),C(p.vacMonto),C(p.ag),C(p.ind),C(p.vacMonto+p.ag+p.ind)]});const t=["Total","",C(tv),C(ta),C(ti),C(tv+ta+ti)];t._tot=true;rows.push(t);
     d.table([{t:"Trabajador",w:130},{t:"Vac. días",w:55,al:"r"},{t:"Vacaciones",w:75,al:"r"},{t:"Aguinaldo",w:75,al:"r"},{t:"Indemnización",w:85,al:"r"},{t:"Total",w:80,al:"r"}],rows,{sz:8});
     d.p("Estimación con el salario actual. La indemnización (Art. 45, tope de 5 meses) solo se paga si el empleador termina el contrato. Una liquidación real usa el salario promedio de los últimos 6 meses.",8);
-    return compartirPDF("Personal y prestaciones "+hoy(),d.build())}
+    return verPDF("Personal y prestaciones "+hoy(),d)}
   if(k==="planilla"){const n=S.noms[id];if(!n)return;const t=totNom(n.lineas||[]),d=pdfDoc("Planilla de pago",nomLbl(n));
     d.kpis([{l:"Salarios brutos",v:C(t.bruto)},{l:"Neto a pagar",v:C(t.neto),vc:POS},{l:"Costo total",v:C(t.costo)}]);
     d.h1("Detalle por trabajador");const rows=(n.lineas||[]).map(l=>[l.nombre,C(l.salario),l.he?String(l.he):"",C(l.pHE+l.otros),C(l.bruto),C(l.inss),C(l.ir),C(l.ded),C(l.neto)]);const tt=["Total","","","",C(t.bruto),C(t.inss),C(t.ir),C(t.ded),C(t.neto)];tt._tot=true;rows.push(tt);
@@ -1280,14 +1325,14 @@ function generarPDF(k,id,col,i){
     d.h1("Aportes del empleador");d.row("INSS patronal ("+(n.tasas?n.tasas.pat:S.cfg.inssPat)+" %)",C(t.pat));d.row("INATEC ("+(n.tasas?n.tasas.inatec:S.cfg.inatec)+" %)",C(t.inatec));
     d.row("Total al INSS (laboral + patronal)",C(t.inss+t.pat),{b:true});d.row("IR retenido a enterar a la DGI",C(t.ir),{b:true});d.row("Costo total del período",C(t.costo),{b:true,fill:"#EEF3EF"});
     d.h1("Firmas de recibido");(n.lineas||[]).forEach(l=>{d.ensure(44);d.row(l.nombre+" · neto "+C(l.neto),"",{sz:8.5,gap:6});d.firmas(["Firma del trabajador","Cédula"])});
-    return compartirPDF("Planilla "+nomLbl(n),d.build())}
+    return verPDF("Planilla "+nomLbl(n),d)}
   if(k==="colilla"){const n=S.noms[id];if(!n)return;const l=n.lineas[+i],e=S.emps[l.empId]||{},d=pdfDoc("Colilla de pago",nomLbl(n));
     d.h1(l.nombre);d.p([l.cargo,e.cedula?"Cédula "+e.cedula:"",e.inss?"N.º INSS "+e.inss:""].filter(Boolean).join("  ·  ")||" ",9);
     d.h1("Devengado");d.row("Salario del período",C(l.salario));d.row("Horas extra ("+l.he+" h al doble)",C(l.pHE));d.row("Otros ingresos",C(l.otros));d.row("Total devengado",C(l.bruto),{b:true,fill:"#EEF3EF"});
     d.h1("Deducciones");d.row("INSS laboral",C(l.inss));d.row("IR salarial",C(l.ir));d.row("Otras deducciones",C(l.ded));d.row("Total deducciones",C(l.inss+l.ir+l.ded),{b:true,fill:"#F8E1DC",vc:NEG});
     d.space(6);d.row("NETO A RECIBIR",C(l.neto),{b:true,sz:13,fill:"#DCEFE6",vc:POS,gap:24});
     d.firmas(["Firma del empleador","Recibí conforme"]);
-    return compartirPDF("Colilla "+l.nombre+" "+nomLbl(n),d.build())}
+    return verPDF("Colilla "+l.nombre+" "+nomLbl(n),d)}
   if(k==="cxc"||k==="cxp"){const cx=k==="cxc",arr=Object.values(S[k]),h=hoy(),b=[0,0,0,0],ab=arr.filter(c=>estado(c)!=="pagado").sort((a,c)=>(a.vence||"9").localeCompare(c.vence||"9"));
     ab.forEach(c=>{const dd=c.vence?dias(c.vence,h):0,s=saldo(c);if(dd<=0)b[0]+=s;else if(dd<=30)b[1]+=s;else if(dd<=60)b[2]+=s;else b[3]+=s});
     const tit=cx?"Cuentas por cobrar":"Cuentas por pagar",d=pdfDoc(tit,"Al "+fLarga(h));
@@ -1295,7 +1340,7 @@ function generarPDF(k,id,col,i){
     d.h1((cx?"Clientes":"Proveedores")+" con saldo");const rows=ab.map(c=>{const e=estado(c),r=[c.nombre,c.concepto||"",fechaCorta(c.fecha),c.vence?fechaCorta(c.vence):"",C(c.monto),C(c.monto-saldo(c)),C(saldo(c)),e==="vencido"?"Vencido "+dias(c.vence,h)+" d":"Pendiente"];r._c=[0,0,0,0,0,0,0,e==="vencido"?NEG:0];return r});
     const tt=["Total","","","",C(ab.reduce((a,c)=>a+(+c.monto||0),0)),C(ab.reduce((a,c)=>a+(c.monto-saldo(c)),0)),C(b.reduce((a,x)=>a+x,0)),""];tt._tot=true;rows.push(tt);
     if(ab.length)d.table([{t:cx?"Cliente":"Proveedor",w:105},{t:"Concepto",w:85},{t:"Fecha",w:45},{t:"Vence",w:45},{t:"Monto",w:65,al:"r"},{t:"Abonado",w:62,al:"r"},{t:"Saldo",w:65,al:"r"},{t:"Estado",w:62}],rows,{sz:7.6});else d.p(cx?"Nadie te debe nada.":"No tenés deudas pendientes.");
-    return compartirPDF(tit+" "+h,d.build())}
+    return verPDF(tit+" "+h,d)}
   if(k==="edocta"){const c=S[col][id];if(!c)return;const cx=col==="cxc",d=pdfDoc("Estado de cuenta","Al "+fLarga(hoy()));
     d.h1(c.nombre);d.p([c.concepto,c.contacto].filter(Boolean).join("  ·  ")||" ",9);
     d.kpis([{l:"Monto original",v:C(c.monto)},{l:cx?"Abonado":"Pagado",v:C(c.monto-saldo(c)),vc:POS},{l:"Saldo pendiente",v:C(saldo(c)),vc:saldo(c)>0?NEG:POS}]);
@@ -1303,7 +1348,7 @@ function generarPDF(k,id,col,i){
     d.h1(cx?"Abonos recibidos":"Pagos realizados");let s=+c.monto||0;const rows=[["","Monto original","",C(s)]].concat((c.abonos||[]).map(a=>{s-=+a.monto||0;return [fechaCorta(a.fecha),a.metodo||"",C(a.monto),C(s)]}));
     d.table([{t:"Fecha",w:70},{t:"Detalle",w:150},{t:"Abono",w:100,al:"r"},{t:"Saldo",w:100,al:"r"}],rows);
     if(saldo(c)>0)d.p(cx?"Saldo pendiente de pago: "+C(saldo(c))+". Gracias por su preferencia.":"Saldo pendiente: "+C(saldo(c))+".",9,"#16201C",true);
-    return compartirPDF("Estado de cuenta "+c.nombre,d.build())}
+    return verPDF("Estado de cuenta "+c.nombre,d)}
   }catch(e){console.error(e);toast("No se pudo generar el PDF")}
 }
 
