@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0E6B57">
+<meta name="theme-color" content="#10372C">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Libro Negocio">
 <link rel="manifest" href="manifest.webmanifest">
+<script>try{var o=JSON.parse(localStorage.getItem("libro-negocio-local-v1")||"{}"),t=(o.cfg&&o.cfg.tema)||"esmeralda";if(t!=="auto")document.documentElement.dataset.tema=t}catch(e){document.documentElement.dataset.tema="esmeralda"}</script>
 <link rel="icon" type="image/png" href="icon-180.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
@@ -25,16 +26,51 @@
   --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --f-num:"IBM Plex Mono", ui-monospace, Menlo, monospace;
   --r:12px;
+  --brand:#0E6B57;
+  --m-panel:#A87512; --m-caja:#0E7C86; --m-nomina:#4F46E5; --m-cobrar:#15803D; --m-pagar:#C2410C; --m-ajustes:#475569;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+@media (prefers-color-scheme: dark){:root:not([data-tema]){
+  --brand:#4CC4A4; --m-panel:#D4AF5A; --m-caja:#3CC6CF; --m-nomina:#8B8CF8; --m-cobrar:#4ADE9A; --m-pagar:#F59E7A; --m-ajustes:#A3AEC0;
   --bg:#101614; --surface:#18201D; --sunk:#0C110F; --line:#2A3531;
   --ink:#E6EEEA; --muted:#93A39B; --accent:#4CC4A4; --accent-ink:#06231C; --accent-soft:#163A31;
   --in:#5BD1A5; --out:#F08A74; --warn:#E8B64A; --warn-soft:#3A2F12; --bad-soft:#3D1F19; color-scheme:dark}}
-:root[data-theme="dark"]{
+:root[data-tema="claro"]{
+  --bg:#F5F7FA; --surface:#FFFFFF; --sunk:#EEF1F5; --line:#DDE3EA;
+  --ink:#111827; --muted:#5B6474; --accent-ink:#FFFFFF; --accent-soft:#DCF2EA;
+  --in:#0F8A5F; --out:#C2410C; --warn:#A16207; --warn-soft:#FEF3C7; --bad-soft:#FDE4DC; color-scheme:light;
+  --brand:#0E6B57; --m-panel:#A87512; --m-caja:#0E7C86; --m-nomina:#4F46E5; --m-cobrar:#15803D; --m-pagar:#C2410C; --m-ajustes:#475569}
+:root[data-tema="oscuro"]{
+  --bg:#0E0F12; --surface:#17191D; --sunk:#0A0B0D; --line:#2A2D33;
+  --ink:#EDEDED; --muted:#9A9EA6; --accent-ink:#101114; --accent-soft:#1E2A24;
+  --in:#4ADE9A; --out:#F59E7A; --warn:#E8B64A; --warn-soft:#3A2F12; --bad-soft:#3D1F19; color-scheme:dark;
+  --brand:#D4AF5A; --m-panel:#D4AF5A; --m-caja:#3CC6CF; --m-nomina:#8B8CF8; --m-cobrar:#4ADE9A; --m-pagar:#F59E7A; --m-ajustes:#A3AEC0}
+:root[data-tema="esmeralda"]{
+  --bg:#0B2A21; --surface:#10372C; --sunk:#082019; --line:#1E4B3E;
+  --ink:#F3EDDF; --muted:#A9C0B5; --accent-ink:#0B2A21; --accent-soft:#164A3B;
+  --in:#7EE0B5; --out:#F2A08A; --warn:#E8C26A; --warn-soft:#3B3418; --bad-soft:#43251E; color-scheme:dark;
+  --brand:#D4AF5A; --m-panel:#D4AF5A; --m-caja:#5FD3C6; --m-nomina:#A5B4FC; --m-cobrar:#86EFAC; --m-pagar:#FDBA74; --m-ajustes:#CBD5C0}
+:root[data-theme="dark-unused"]{
   --bg:#101614; --surface:#18201D; --sunk:#0C110F; --line:#2A3531;
   --ink:#E6EEEA; --muted:#93A39B; --accent:#4CC4A4; --accent-ink:#06231C; --accent-soft:#163A31;
   --in:#5BD1A5; --out:#F08A74; --warn:#E8B64A; --warn-soft:#3A2F12; --bad-soft:#3D1F19; color-scheme:dark}
 *{box-sizing:border-box}
+body{--accent:var(--brand)}
+body.mods.mod-panel{--accent:var(--m-panel)} body.mods.mod-caja{--accent:var(--m-caja)} body.mods.mod-nomina{--accent:var(--m-nomina)}
+body.mods.mod-cobrar{--accent:var(--m-cobrar)} body.mods.mod-pagar{--accent:var(--m-pagar)} body.mods.mod-ajustes{--accent:var(--m-ajustes)}
+body.mods header.top{border-bottom:2px solid var(--accent)}
+body.mods #main h2::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent);margin-right:10px;vertical-align:.12em}
+.tint{--tc:var(--accent)}
+body.mods .tint{background:color-mix(in srgb,var(--tc) 11%,var(--surface))!important;border-color:color-mix(in srgb,var(--tc) 38%,var(--line))!important}
+body.mods .tint .tl{color:var(--tc)}
+.tint.t-cobrar{--tc:var(--m-cobrar)} .tint.t-pagar{--tc:var(--m-pagar)} .tint.t-nomina{--tc:var(--m-nomina)} .tint.t-caja{--tc:var(--m-caja)}
+.temas{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tema{border:2px solid var(--line);border-radius:12px;padding:10px;background:var(--surface);text-align:left;display:grid;gap:8px}
+.tema.on{border-color:var(--accent)}
+.tema b{font-size:14px}.tema small{color:var(--muted);font-size:12px}
+.sw{display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.sw i{flex:1}
+.mods-row{display:flex;gap:6px;flex-wrap:wrap}
+.mods-row span{font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;color:#fff}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
 .wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 120px}
@@ -63,7 +99,8 @@ button{cursor:pointer}
 .kpi{background:var(--surface);padding:12px;min-width:0}
 .kpi .l{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
 .kpi .v{font-family:var(--f-num);font-size:17px;margin-top:4px;overflow:hidden;text-overflow:ellipsis}
-@media (max-width:420px){.kpi .v{font-size:14px}}
+.kpi .v{white-space:nowrap}
+@media (max-width:420px){.kpi{padding:10px 8px}.kpi .v{font-size:12.5px;letter-spacing:-.03em}}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media (max-width:520px){.duo{grid-template-columns:1fr}}
@@ -102,6 +139,11 @@ nav.tabs .in{max-width:760px;margin:0 auto;display:grid;grid-template-columns:re
 nav.tabs button{border:0;background:transparent;padding:8px 2px 10px;font-size:11px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px}
 nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
 nav.tabs button.on{color:var(--accent)}
+body.mods nav.tabs button.on::before{content:"";position:absolute;inset:4px 10% auto;height:3px;border-radius:3px;background:currentColor}
+nav.tabs button{position:relative}
+body.mods nav.tabs button[data-k="panel"].on{color:var(--m-panel)} body.mods nav.tabs button[data-k="caja"].on{color:var(--m-caja)}
+body.mods nav.tabs button[data-k="nomina"].on{color:var(--m-nomina)} body.mods nav.tabs button[data-k="cobrar"].on{color:var(--m-cobrar)}
+body.mods nav.tabs button[data-k="pagar"].on{color:var(--m-pagar)} body.mods nav.tabs button[data-k="ajustes"].on{color:var(--m-ajustes)}
 .fab{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:7;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:14px 20px;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,.22)}
 .sheet-bg{position:fixed;inset:0;background:rgba(10,16,14,.5);z-index:20;display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:var(--surface);width:100%;max-width:640px;max-height:92%;overflow:auto;border-radius:18px 18px 0 0;padding:18px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px))}
@@ -166,7 +208,7 @@ const MINIMOS=[
  ["minas","Minas y canteras",11113.46],
  ["zf","Zonas francas",9986.54],
  ["gobierno","Gobierno central y municipal",7716.70]];
-const DEF_CFG={negocio:"Mi Negocio",inssLab:7,inssPat:21.5,inatec:2,tc:36.62};
+const DEF_CFG={tema:"esmeralda",negocio:"Mi Negocio",inssLab:7,inssPat:21.5,inatec:2,tc:36.62};
 const CAT_IN=["Ventas","Servicios","Cobro a clientes","Otros ingresos"];
 const CAT_OUT=["Compras / inventario","Alquiler","Servicios básicos","Nómina","Impuestos","Transporte","Mantenimiento","Pago a proveedores","Publicidad","Otros gastos"];
 const METODOS=["Efectivo","Banco","Transferencia","Tarjeta"];
@@ -288,7 +330,16 @@ const TABS=[
  ["pagar","Pagar",'<path d="M12 20V8M7 13l5-5 5 5M5 4h14"/>'],
  ["ajustes","Ajustes",'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>']];
 
+const TEMAS=[["auto","Automático","Según el modo del teléfono",["#F3F5F2","#0E6B57","#101614","#4CC4A4"]],["claro","Claro luminoso","Fondo blanco, colores vivos",["#FFFFFF","#F5F7FA","#4F46E5","#0E7C86"]],["oscuro","Oscuro premium","Negro con detalles dorados",["#0E0F12","#17191D","#D4AF5A","#3CC6CF"]],["esmeralda","Esmeralda y oro","Como el ícono de la app",["#0B2A21","#10372C","#D4AF5A","#F3EDDF"]]];
+function aplicarTema(){
+  const t=S.cfg.tema||"auto",r=document.documentElement;
+  if(t==="auto")delete r.dataset.tema;else r.dataset.tema=t;
+  document.body.classList.toggle("mods",S.cfg.mods!==false);
+  ["panel","caja","nomina","cobrar","pagar","ajustes"].forEach(k=>document.body.classList.toggle("mod-"+k,S.gate==="ok"&&S.tab===k));
+  const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=getComputedStyle(document.body).getPropertyValue("--surface").trim()||"#0E6B57";
+}
 function renderGate(){
+  aplicarTema();
   $("#brand").innerHTML="Libro del Negocio<small>Registro contable · Nicaragua</small>";
   $("#mesnav").hidden=true;$("#fab").hidden=true;document.querySelector("nav.tabs").hidden=true;
   if(S.gate==="cargando"){$("#main").innerHTML=`<p class="muted" style="margin-top:40px">Verificando acceso…</p>`;return}
@@ -312,6 +363,7 @@ function renderGate(){
 }
 function render(){
   if(S.gate!=="ok"){renderGate();return}
+  aplicarTema();
   document.querySelector("nav.tabs").hidden=false;
   $("#brand").innerHTML=esc(S.cfg.negocio||"Mi Negocio")+"<small>Libro del negocio · Nicaragua</small>";
   $("#meslbl").textContent=mesLbl(S.mes);
@@ -367,8 +419,8 @@ function vPanel(){
     <div class="kpi"><div class="l">Resultado</div><div class="v ${t.r>=0?"in-c":"out-c"}">${C(t.r)}</div></div>
   </div>
   <div class="duo" style="margin-top:10px">
-    <button class="panel item" style="border:1px solid var(--line);border-radius:var(--r);display:block" data-act="tab" data-k="cobrar"><div class="muted" style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Te deben</div><div class="num" style="font-size:18px;margin-top:2px">${C(pc)}</div><div style="font-size:13px;margin-top:2px">${vc>0?`<span class="chip bad">Vencido ${C(vc)}</span>`:`<span class="chip ok">Nada vencido</span>`}</div></button>
-    <button class="panel item" style="border:1px solid var(--line);border-radius:var(--r);display:block" data-act="tab" data-k="pagar"><div class="muted" style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Debés</div><div class="num" style="font-size:18px;margin-top:2px">${C(pp)}</div><div style="font-size:13px;margin-top:2px">${vp>0?`<span class="chip bad">Vencido ${C(vp)}</span>`:`<span class="chip ok">Nada vencido</span>`}</div></button>
+    <button class="panel item tint t-cobrar" style="border:1px solid var(--line);border-radius:var(--r);display:block" data-act="tab" data-k="cobrar"><div class="muted tl" style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Te deben</div><div class="num" style="font-size:18px;margin-top:2px">${C(pc)}</div><div style="font-size:13px;margin-top:2px">${vc>0?`<span class="chip bad">Vencido ${C(vc)}</span>`:`<span class="chip ok">Nada vencido</span>`}</div></button>
+    <button class="panel item tint t-pagar" style="border:1px solid var(--line);border-radius:var(--r);display:block" data-act="tab" data-k="pagar"><div class="muted tl" style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Debés</div><div class="num" style="font-size:18px;margin-top:2px">${C(pp)}</div><div style="font-size:13px;margin-top:2px">${vp>0?`<span class="chip bad">Vencido ${C(vp)}</span>`:`<span class="chip ok">Nada vencido</span>`}</div></button>
   </div>
   <h3>Últimos 6 meses</h3>
   <div class="panel chart">${svg}<div class="row" style="font-size:12px;margin-top:6px"><span class="row" style="gap:6px"><span class="dot" style="background:var(--in)"></span>Ingresos</span><span class="row" style="gap:6px"><span class="dot" style="background:var(--out)"></span>Gastos</span></div></div>
@@ -377,7 +429,7 @@ function vPanel(){
     <div><h3>Vence en 7 días o antes</h3><div class="list">${prox.length?prox.map(c=>`<button class="item" data-act="verCuenta" data-col="${c.k}" data-id="${c.id}"><div class="main"><div class="t">${esc(c.nombre)}</div><div class="s">${c.k==="cxc"?"Cobrar":"Pagar"} · ${fechaCorta(c.vence)}</div></div>${chipEstado(c)}<span class="num">${C(saldo(c))}</span></button>`).join(""):`<div class="empty">Nada por vencer esta semana.</div>`}</div></div>
   </div>
   <h3>Nómina del mes</h3>
-  <div class="panel spread"><div><div class="num" style="font-size:18px">${C(costoNom)}</div><div class="muted" style="font-size:13px">Costo total con INSS patronal e INATEC · ${noms.length} planilla${noms.length===1?"":"s"}</div></div><button class="btn sm" data-act="irNom">Ver nómina</button></div>`;
+  <div class="panel spread tint t-nomina"><div><div class="num" style="font-size:18px">${C(costoNom)}</div><div class="muted" style="font-size:13px">Costo total con INSS patronal e INATEC · ${noms.length} planilla${noms.length===1?"":"s"}</div></div><button class="btn sm" data-act="irNom">Ver nómina</button></div>`;
 }
 function chipEstado(c){const e=estado(c);return e==="pagado"?`<span class="chip ok">Pagado</span>`:e==="vencido"?`<span class="chip bad">Vencido ${dias(c.vence,hoy())} d</span>`:`<span class="chip warn">Pendiente</span>`}
 
@@ -429,7 +481,13 @@ function vCuentas(col){
 
 function vAjustes(){
   const c=S.cfg;
+  const tema=c.tema||"auto",mods=c.mods!==false;
   return `<h2>Ajustes</h2>
+  <h3 style="margin-top:6px">Apariencia</h3>
+  <div class="temas">${TEMAS.map(([k,n,d,col])=>`<button class="tema ${tema===k?"on":""}" data-act="tema" data-k="${k}" aria-pressed="${tema===k}"><span class="sw">${col.map(x=>`<i style="background:${x}"></i>`).join("")}</span><span><b>${n}</b><br><small>${d}</small></span></button>`).join("")}</div>
+  <div class="panel spread" style="margin-top:10px"><div><b style="font-size:14px">Colores por módulo</b><div class="mods-row" style="margin-top:6px">${[["Panel","panel"],["Caja","caja"],["Nómina","nomina"],["Cobrar","cobrar"],["Pagar","pagar"]].map(([n,k])=>`<span style="background:var(--m-${k});color:var(--accent-ink)">${n}</span>`).join("")}</div></div>
+    <button class="btn sm ${mods?"pri":""}" data-act="mods" aria-pressed="${mods}">${mods?"Activados":"Desactivados"}</button></div>
+  <h3>Negocio y tasas</h3>
   <form class="f panel" id="fCfg">
     <label>Nombre del negocio<input id="cNeg" value="${esc(c.negocio)}" required></label>
     <div class="two"><label>INSS laboral %<input id="cLab" type="number" step="0.01" value="${c.inssLab}"></label><label>INSS patronal %<input id="cPat" type="number" step="0.01" value="${c.inssPat}"></label></div>
@@ -693,6 +751,8 @@ document.addEventListener("click",ev=>{
       COLS.forEach(c=>Object.values(S[c]).filter(x=>x.ejemplo).forEach(x=>del(c,x.id)));toast("Ejemplos borrados");break;
     case "csv":exportCsv();break;
     case "waId":pedirCodigo();break;
+    case "tema":putCfg({...S.cfg,tema:el.dataset.k});toast("Apariencia cambiada");break;
+    case "mods":putCfg({...S.cfg,mods:S.cfg.mods===false});break;
     case "copyId":copiarId();break;
     case "respaldo":{const h=hoy();const data=JSON.stringify({app:"libro-negocio",v:1,fecha:new Date().toISOString(),data:{...snapshot(),cfg:{...S.cfg,ultimoRespaldo:h}}});
       guardarArchivo("respaldo-negocio-"+h+".json",data,()=>{S.cfg={...S.cfg,ultimoRespaldo:h};saveLocal();render();toast("Respaldo listo")});break}
@@ -722,7 +782,7 @@ document.addEventListener("submit",async ev=>{
       $("#rBtn").textContent="Confirmar";return}
     COLS.forEach(c=>S[c]=d[c]||{});S.cfg={...DEF_CFG,...(d.cfg||{})};pendRest=null;saveLocal();render();toast("Respaldo restaurado");return}
   if(ev.target.id!=="fCfg")return;ev.preventDefault();
-  putCfg({negocio:$("#cNeg").value.trim()||"Mi Negocio",inssLab:+$("#cLab").value||0,inssPat:+$("#cPat").value||0,inatec:+$("#cIna").value||0,tc:+$("#cTc").value||0});
+  putCfg({...S.cfg,negocio:$("#cNeg").value.trim()||"Mi Negocio",inssLab:+$("#cLab").value||0,inssPat:+$("#cPat").value||0,inatec:+$("#cIna").value||0,tc:+$("#cTc").value||0});
   toast("Ajustes guardados");
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});

@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Libro Admin">
 <title>Libro del Negocio Admin</title>
 <link rel="manifest" href="admin.webmanifest">
+<script>try{var t=localStorage.getItem("ln_tema")||"esmeralda";if(t!=="auto")document.documentElement.dataset.tema=t}catch(e){document.documentElement.dataset.tema="esmeralda"}</script>
 <link rel="apple-touch-icon" href="admin-180.png">
 <link rel="icon" type="image/png" href="admin-180.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -23,11 +24,25 @@
   --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
   --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
   --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --c-gen:#0E7C86; --c-cli:#4F46E5; --c-inv:#1E9E55; --c-reg:#A87512; --c-apa:#9333EA; --c-ink:#FFFFFF;
 }
-@media (prefers-color-scheme: dark){:root{
+@media (prefers-color-scheme: dark){:root:not([data-tema]){
+  --c-gen:#3CC6CF; --c-cli:#8B8CF8; --c-inv:#3CCB7A; --c-reg:#D4AF5A; --c-apa:#C084FC; --c-ink:#0E0F12;
   --bg:#101614; --surface:#18201D; --sunk:#0C110F; --line:#2A3531;
   --ink:#E6EEEA; --muted:#93A39B; --accent:#4CC4A4; --accent-ink:#06231C; --accent-soft:#163A31;
   --gold:#E8B64A; --gold-soft:#3A2F12; --out:#F08A74; --bad-soft:#3D1F19; --wa:#3CCB7A; color-scheme:dark}}
+:root[data-tema="claro"]{
+  --bg:#F5F7FA; --surface:#FFFFFF; --sunk:#EEF1F5; --line:#DDE3EA; --ink:#111827; --muted:#5B6474;
+  --accent:#0E6B57; --accent-ink:#FFFFFF; --accent-soft:#DCF2EA; --gold:#A16207; --gold-soft:#FEF3C7; --out:#C2410C; --bad-soft:#FDE4DC; --wa:#1E9E55;
+  --c-gen:#0E7C86; --c-cli:#4F46E5; --c-inv:#1E9E55; --c-reg:#A87512; --c-apa:#9333EA; --c-ink:#FFFFFF; color-scheme:light}
+:root[data-tema="oscuro"]{
+  --bg:#0E0F12; --surface:#17191D; --sunk:#0A0B0D; --line:#2A2D33; --ink:#EDEDED; --muted:#9A9EA6;
+  --accent:#D4AF5A; --accent-ink:#101114; --accent-soft:#2A2618; --gold:#E8B64A; --gold-soft:#3A2F12; --out:#F59E7A; --bad-soft:#3D1F19; --wa:#3CCB7A;
+  --c-gen:#3CC6CF; --c-cli:#8B8CF8; --c-inv:#3CCB7A; --c-reg:#D4AF5A; --c-apa:#C084FC; --c-ink:#0E0F12; color-scheme:dark}
+:root[data-tema="esmeralda"]{
+  --bg:#0B2A21; --surface:#10372C; --sunk:#082019; --line:#1E4B3E; --ink:#F3EDDF; --muted:#A9C0B5;
+  --accent:#D4AF5A; --accent-ink:#0B2A21; --accent-soft:#164A3B; --gold:#E8C26A; --gold-soft:#3B3418; --out:#F2A08A; --bad-soft:#43251E; --wa:#4ADE9A;
+  --c-gen:#5FD3C6; --c-cli:#A5B4FC; --c-inv:#86EFAC; --c-reg:#D4AF5A; --c-apa:#D8B4FE; --c-ink:#0B2A21; color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
 main{max-width:600px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(60px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
@@ -67,12 +82,35 @@ button{font:inherit;cursor:pointer;color:inherit}
 .cli .acts{display:none;margin-top:10px}
 .cli.op .acts{display:flex}
 .chip{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
-.ok{background:var(--accent-soft);color:var(--accent)}.warn{background:var(--gold-soft);color:var(--gold)}.bad{background:var(--bad-soft);color:var(--out)}.neu{background:var(--sunk);color:var(--muted)}
+.ok{background:color-mix(in srgb,var(--c-inv) 16%,transparent);color:var(--c-inv)}.warn{background:var(--gold-soft);color:var(--gold)}.bad{background:var(--bad-soft);color:var(--out)}.neu{background:var(--sunk);color:var(--muted)}
 .empty{padding:20px 14px;text-align:center;color:var(--muted);font-size:14px}
 details.panel summary{cursor:pointer;font-weight:600;list-style:none}
 details.panel summary::-webkit-details-marker{display:none}
 details.panel[open] summary{margin-bottom:10px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;z-index:30;max-width:90%}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-bottom:12px}
+.kp{margin-bottom:12px}.kp>div{padding:8px 10px}.kp .v{font-size:18px}
+.acc{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.ah{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:transparent;border:0;text-align:left}
+.ai{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:20px;font-weight:700;background:var(--accent);color:var(--accent-ink);flex-shrink:0}
+.ai{color:var(--c-ink)!important}
+#sec-gen .ai{background:var(--c-gen)} #sec-cli .ai{background:var(--c-cli)} #sec-inv .ai{background:var(--c-inv)} #sec-reg .ai{background:var(--c-reg)} #sec-apa .ai{background:var(--c-apa)}
+#sec-gen.op{border-color:color-mix(in srgb,var(--c-gen) 45%,var(--line))} #sec-cli.op{border-color:color-mix(in srgb,var(--c-cli) 45%,var(--line))}
+#sec-inv.op{border-color:color-mix(in srgb,var(--c-inv) 45%,var(--line))} #sec-reg.op{border-color:color-mix(in srgb,var(--c-reg) 45%,var(--line))} #sec-apa.op{border-color:color-mix(in srgb,var(--c-apa) 45%,var(--line))}
+#sec-gen .btn.pri{background:var(--c-gen);border-color:var(--c-gen);color:var(--c-ink)}
+.kp>div:nth-child(1) .v{color:var(--c-gen)} .kp>div:nth-child(2) .v{color:var(--gold)} .kp>div:nth-child(3) .v{color:var(--out)}
+.temas{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tema{border:2px solid var(--line);border-radius:12px;padding:10px;background:var(--surface);text-align:left;display:grid;gap:8px}
+.tema.on{border-color:var(--c-apa)}
+.tema b{font-size:14px}.tema small{color:var(--muted);font-size:12px}
+.sw{display:flex;height:30px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}.sw i{flex:1}
+.at{flex:1;min-width:0}.at b{display:block;font-size:16px}.at small{display:block;color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chev{font-size:24px;color:var(--muted);transition:transform .15s}
+.acc .ab{display:none;padding:12px 14px 14px;border-top:1px solid var(--line)}
+.acc.op .ab{display:block}.acc.op .ab.stack{display:grid}.acc.op .chev{transform:rotate(90deg)}
+.result{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.acc .list{border-radius:10px}
+@media (prefers-reduced-motion:reduce){.chev{transition:none}}
 .lockbox{max-width:420px;margin:12vh auto 0}
 </style>
 </head>
@@ -111,10 +149,21 @@ async function enc(jwk,pass){const salt=crypto.getRandomValues(new Uint8Array(16
   const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},k,new TextEncoder().encode(JSON.stringify(jwk)));return{s:b64(salt),iv:b64(iv),ct:b64(new Uint8Array(ct))}}
 
 let PRV=null,reg=[],open=null,q="";
+let OPEN=new Set();try{OPEN=new Set(JSON.parse(LS("ln_open")||"[]"))}catch(e){}
+function openSec(k,on){const el=$("sec-"+k);if(!el)return;el.classList.toggle("op",on);if(on)OPEN.add(k);else OPEN.delete(k);LS("ln_open",JSON.stringify([...OPEN]))}
+function toggleSec(k){openSec(k,!$("sec-"+k).classList.contains("op"))}
 const loadReg=()=>{try{reg=JSON.parse(LS("ln_reg")||"[]")||[]}catch(e){reg=[]}};
 const saveReg=()=>LS("ln_reg",JSON.stringify(reg));
 
+const TEMAS=[["auto","Automático","Según el teléfono",["#F3F5F2","#0E6B57","#101614","#4CC4A4"]],["claro","Claro luminoso","Blanco, colores vivos",["#FFFFFF","#F5F7FA","#4F46E5","#0E7C86"]],["oscuro","Oscuro premium","Negro y dorado",["#0E0F12","#17191D","#D4AF5A","#3CC6CF"]],["esmeralda","Esmeralda y oro","Como el ícono",["#0B2A21","#10372C","#D4AF5A","#F3EDDF"]]];
+function aplicarTema(){const t=LS("ln_tema")||"esmeralda",r=document.documentElement;if(t==="auto")delete r.dataset.tema;else r.dataset.tema=t;
+  const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=getComputedStyle(document.body).getPropertyValue("--bg").trim()||"#13201B"}
+function pintarTemas(){const t=LS("ln_tema")||"esmeralda";if(!$("temas"))return;
+  $("temas").innerHTML=TEMAS.map(([k,n,d,c])=>`<button class="tema ${t===k?"on":""}" data-tema="${k}" aria-pressed="${t===k}"><span class="sw">${c.map(x=>`<i style="background:${x}"></i>`).join("")}</span><span><b>${n}</b><br><small>${d}</small></span></button>`).join("");
+  $("apas").textContent=TEMAS.find(x=>x[0]===t)[1];
+  $("temas").querySelectorAll("[data-tema]").forEach(b=>b.onclick=()=>{LS("ln_tema",b.dataset.tema);aplicarTema();pintarTemas();toast("Apariencia cambiada")})}
 function lock(){
+  aplicarTema();
   $("m").innerHTML=`<div class="lockbox"><div class="eyebrow">Libro del Negocio</div><h1>Administrador</h1><p class="sub">Generador de códigos de activación</p>
   ${avisoSafari()}<form class="panel" id="fl"><label>Contraseña de administrador<input id="pw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required></label><div class="err" id="er"></div><button class="btn pri full" id="go" type="submit">Entrar</button></form></div>`;
   $("fl").onsubmit=async e=>{e.preventDefault();$("go").textContent="Verificando…";$("er").textContent="";
@@ -126,11 +175,11 @@ function lock(){
 function status(e){if(!e)return["Sin vencimiento","ok"];const d=dd(e,today());return d<0?["Vencido","bad"]:d<=15?["Vence en "+d+" d","warn"]:["Activo · "+d+" d","ok"]}
 
 function main(){loadReg();
-  $("m").innerHTML=`<div class="eyebrow">Libro del Negocio · Admin</div><h1>Códigos de activación</h1>
-  <p class="sub">Generá el código para cada cliente con el ID de su teléfono y definí hasta cuándo tiene acceso.</p>
+  $("m").innerHTML=`<div class="top"><div><div class="eyebrow">Libro del Negocio · Admin</div><h1>Códigos de activación</h1></div><button class="btn sm" id="out2">Salir</button></div>
   <div class="kp" id="kp"></div>
-  <h2 id="ft">Nuevo código o renovación</h2>
-  <form class="panel" id="fg">
+  <div class="acc" id="sec-gen"><button class="ah" data-sec="gen"><span class="ai">＋</span><span class="at"><b id="ft">Nuevo código o renovación</b><small>Con el ID que te envía el cliente</small></span><span class="chev">›</span></button>
+  <div class="ab">
+  <form class="stack" id="fg">
     <label>Nombre del cliente o negocio<input id="n" maxlength="60" placeholder="Ej.: Pulpería La Esperanza" required></label>
     <label>ID del teléfono (lo envía el cliente)<input id="d" placeholder="XXXX-XXXX" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" required></label>
     <label>Tiempo de acceso<select id="t">
@@ -141,19 +190,19 @@ function main(){loadReg();
     <div class="err" id="er"></div>
     <button class="btn pri full" type="submit">Generar código</button>
   </form>
-  <div id="out"></div>
-  <h2 id="ch">Clientes (${reg.length})</h2>
-  <input id="q" placeholder="Buscar por nombre o ID" autocomplete="off" value="${esc(q)}">
-  <div class="list" id="lst" style="margin-top:8px"></div>
-  <h2>Invitar</h2>
-  <div class="panel stack">
-    <div class="hint">Mensaje con el enlace de la app y los pasos para instalarla. Mandalo antes del código: el cliente instala la app, te envía su ID y vos le devolvés el código.</div>
+  <div id="out"></div></div></div>
+  <div class="acc" id="sec-cli"><button class="ah" data-sec="cli"><span class="ai">≡</span><span class="at"><b id="ch">Clientes (${reg.length})</b><small id="chs"></small></span><span class="chev">›</span></button>
+  <div class="ab"><input id="q" placeholder="Buscar por nombre o ID" autocomplete="off" value="${esc(q)}"><div class="list" id="lst" style="margin-top:8px"></div></div></div>
+  <div class="acc" id="sec-inv"><button class="ah" data-sec="inv"><span class="ai wa">↗</span><span class="at"><b>Invitar a un cliente</b><small>Enlace de la app y pasos para instalarla</small></span><span class="chev">›</span></button>
+  <div class="ab stack">
+    <div class="hint">Mandalo antes del código: el cliente instala la app, te envía su ID y vos le devolvés el código.</div>
     <div class="code" id="appUrl">${esc(APP_URL)}</div>
-    <div class="row"><button class="btn wa" id="inv">Enviar invitación por WhatsApp</button><button class="btn" id="invc">Copiar invitación</button></div>
-  </div>
-  <h2>Registro y contraseña</h2>
-  <details class="panel"><summary>Respaldo, importar y cambiar contraseña ›</summary>
-    <div class="stack">
+    <div class="row"><button class="btn wa" id="inv">Enviar por WhatsApp</button><button class="btn" id="invc">Copiar invitación</button></div>
+  </div></div>
+  <div class="acc" id="sec-apa"><button class="ah" data-sec="apa"><span class="ai">◐</span><span class="at"><b>Apariencia</b><small id="apas"></small></span><span class="chev">›</span></button>
+  <div class="ab"><div class="temas" id="temas"></div></div></div>
+  <div class="acc" id="sec-reg"><button class="ah" data-sec="reg"><span class="ai gold">⚿</span><span class="at"><b>Registro y contraseña</b><small>Respaldo, importar y cambiar clave</small></span><span class="chev">›</span></button>
+  <div class="ab stack">
       <div class="hint">El registro de clientes vive solo en este teléfono. Copiá el respaldo y guardalo en Notas.</div>
       <div class="row"><button class="btn" id="ex">Copiar respaldo del registro</button></div>
       <label>Importar registro (pegá el respaldo)<textarea id="imt" rows="2"></textarea></label>
@@ -161,10 +210,10 @@ function main(){loadReg();
       <label>Nueva contraseña (mínimo 12 caracteres)<input id="np" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Escribí una que puedas recordar"></label>
       <div class="hint">Anotala antes de guardarla. La contraseña original del administrador sigue sirviendo como respaldo.</div>
       <div class="row"><button class="btn" id="pwc">Cambiar contraseña en este teléfono</button></div>
-      <div class="hint">Si instalás esta página como app, sus datos quedan separados de Safari. Usala siempre desde el mismo ícono.</div>
-      <div class="row"><button class="btn danger" id="out2">Cerrar sesión</button></div>
-    </div>
-  </details>`;
+  </div></div>`;
+  document.querySelectorAll("[data-sec]").forEach(b=>b.onclick=()=>toggleSec(b.dataset.sec));
+  OPEN.forEach(k=>openSec(k,true));
+  pintarTemas();
   const exp=()=>{const v=$("t").value,cur=reg.find(r=>r.d===cleanId());const base=cur&&cur.e&&cur.e>today()?cur.e:today();return v==="0"?"":v==="x"?$("x").value:addM(base,+v)};
   const vf=()=>{$("x").hidden=$("t").value!=="x";const e=exp(),cur=reg.find(r=>r.d===cleanId());
     $("vf").textContent=$("t").value==="0"?"El acceso no vence.":e?("Vence el "+fmt(e)+(cur&&cur.e&&cur.e>today()&&$("t").value!=="x"?" (se suma a lo que le quedaba)":"")):"";};
@@ -204,7 +253,8 @@ ${r.code}
 
 Copialo completo y pegalo en la app, en "Código de activación".`}
 function show(r){const [t,k]=status(r.e);
-  $("out").innerHTML=`<h2>Código generado</h2><div class="panel stack">
+  openSec("gen",true);
+  $("out").innerHTML=`<div class="result stack">
     <div class="spread"><b>${esc(r.n)}</b><span class="chip ${k}">${t}</span></div>
     <div class="hint">ID ${devFmt(r.d)} · ${r.e?"vence el "+fmt(r.e):"sin vencimiento"}</div>
     <div class="code">${esc(r.code)}</div>
@@ -214,11 +264,12 @@ function show(r){const [t,k]=status(r.e);
   $("out").scrollIntoView({behavior:"smooth",block:"start"})}
 function list(){
   if($("ch"))$("ch").textContent="Clientes ("+reg.length+")";
+  if($("chs")){const v=reg.filter(r=>r.e&&dd(r.e,today())<0).length,pv=reg.filter(r=>r.e&&dd(r.e,today())>=0&&dd(r.e,today())<=15).length;$("chs").textContent=reg.length?[pv?pv+" por vencer":"",v?v+" vencido"+(v==1?"":"s"):""].filter(Boolean).join(" · ")||"Todos al día":"Todavía no generaste códigos"}
   const L=[...reg].sort((a,b)=>(a.e||"9999").localeCompare(b.e||"9999")).filter(r=>!q||(r.n+" "+r.d+" "+devFmt(r.d)).toLowerCase().includes(q.toLowerCase()));
   $("lst").innerHTML=L.map(r=>{const [t,k]=status(r.e);return `<div class="cli ${open===r.d?"op":""}"><button class="head" data-o="${r.d}"><div class="main"><div class="t">${esc(r.n)}</div><div class="s">${devFmt(r.d)} · ${r.e?"vence "+fmt(r.e):"sin vencimiento"}</div></div><span class="chip ${k}">${t}</span></button>
     <div class="acts row"><button class="btn sm" data-re="${r.d}">Renovar</button><button class="btn sm" data-sh="${r.d}">Ver código</button><button class="btn sm danger" data-rm="${r.d}">Quitar</button></div></div>`}).join("")||`<div class="empty">${reg.length?"Sin resultados.":"Todavía no generaste códigos. Cuando un cliente te mande su ID, completá el formulario de arriba."}</div>`;
   $("lst").querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{open=open===b.dataset.o?null:b.dataset.o;list()});
-  $("lst").querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{const r=reg.find(x=>x.d===b.dataset.re);$("n").value=r.n;$("d").value=devFmt(r.d);$("t").value="12";$("t").onchange();$("ft").textContent="Renovar a "+r.n;$("fg").scrollIntoView({behavior:"smooth"})});
+  $("lst").querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{const r=reg.find(x=>x.d===b.dataset.re);$("n").value=r.n;$("d").value=devFmt(r.d);$("t").value="12";$("t").onchange();$("ft").textContent="Renovar a "+r.n;openSec("gen",true);$("sec-gen").scrollIntoView({behavior:"smooth"})});
   $("lst").querySelectorAll("[data-sh]").forEach(b=>b.onclick=()=>show(reg.find(x=>x.d===b.dataset.sh)));
   $("lst").querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{if(!b.dataset.armed){b.dataset.armed="1";b.textContent="Tocá de nuevo para quitar";return}reg=reg.filter(x=>x.d!==b.dataset.rm);saveReg();toast("Quitado. El código entregado sigue sirviendo hasta su fecha.");main()});
 }
