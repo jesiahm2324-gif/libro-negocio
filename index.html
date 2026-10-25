@@ -360,7 +360,6 @@ const CAT_IN=["Ventas","Servicios","Cobro a clientes","Otros ingresos"];
 const CAT_OUT=["Compras / inventario","Alquiler","Servicios básicos","Nómina","Impuestos","Transporte","Mantenimiento","Pago a proveedores","Publicidad","Otros gastos"];
 const METODOS=["Efectivo","Banco","Transferencia","Tarjeta"];
 const MESES=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-const MAX_EMP=10;
 const COLS=["movs","emps","noms","cxc","cxp"];
 const LS_KEY="libro-negocio-local-v1";
 const PUB={"kty": "EC", "x": "m6EBUX0bNX_zX6LsrI1UfWDfsy8GPRQJNcjHkWlONzQ", "y": "HLwSBYV4YKTsoCxJxX_peYwxW2tV1ziTTm2w2DTiRBI", "crv": "P-256"};
@@ -586,7 +585,7 @@ function vPanel(){
     ${tile("cobrar","tab","cobrar","Te deben",C(pc),vc>0?"Vencido "+C(vc):"Nada vencido",vc>0)}
     ${tile("pagar","tab","pagar","Debés",C(pp),vp>0?"Vencido "+C(vp):"Nada vencido",vp>0)}
     ${tile("nomina","irNom","","Nómina del mes",C(costoNom),noms.length+" planilla"+(noms.length===1?"":"s"),false)}
-    ${tile("caja","tab","nomina","Trabajadores",ne+" de "+MAX_EMP,ne?"Activos en planilla":"Agregá tu primer empleado",false)}
+    ${tile("caja","tab","nomina","Trabajadores",String(ne),ne?"Activos en planilla":"Agregá tu primer empleado",false)}
   </div>
   <h3>Últimos 6 meses</h3>
   <div class="panel chart">${svg}<div class="row" style="font-size:12px;margin-top:6px"><span class="row" style="gap:6px"><span class="dot" style="background:var(--in)"></span>Ingresos</span><span class="row" style="gap:6px"><span class="dot" style="background:var(--out)"></span>Gastos</span></div></div>
@@ -609,20 +608,22 @@ function vCaja(){
   <div class="list">${html||`<div class="empty">No hay movimientos en ${esc(mesLbl(S.mes))}. Tocá “+ Movimiento” para registrar una venta o un gasto.</div>`}</div>`;
 }
 
+function avisoTasaPatronal(){const n=Object.values(S.emps).filter(e=>e.activo!==false).length;return n>50&&+S.cfg.inssPat<22.5?`<div class="notice" style="margin:0 0 12px"><b>Tenés ${n} trabajadores activos.</b> Con más de 50, el INSS patronal es 22.5% y en Ajustes está en ${S.cfg.inssPat}%. <button class="btn sm" data-act="tasa225" style="margin-left:6px">Cambiar a 22.5%</button></div>`:""}
 function vNomina(){
   const emps=Object.values(S.emps).sort((a,b)=>(a.nombre||"").localeCompare(b.nombre||""));
   const act=emps.filter(e=>e.activo!==false);
   let body="";
   if(S.nomTab==="emps"){
-    body=`<div class="muted" style="font-size:13px;margin-bottom:8px">${act.length} de ${MAX_EMP} trabajadores activos</div><div class="list">${emps.length?emps.map(e=>{const p=prestaciones(e),min=minimoDe(e.sector);const bajo=min&&(+e.salario<min);
-      return `<button class="item" data-act="verEmp" data-id="${e.id}"><span class="av ini" style="--hc:var(--h-nomina)">${esc(inic(e.nombre))}</span><div class="main"><div class="t">${esc(e.nombre)}${e.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${esc(e.cargo||"Sin cargo")}${p?" · "+antig(p.anios):""}</div></div>${e.activo===false?'<span class="chip neu">Inactivo</span>':bajo?'<span class="chip bad">Bajo el mínimo</span>':""}<span class="num">${C(e.salario)}</span></button>`}).join(""):`<div class="empty">Todavía no hay empleados. Agregá hasta ${MAX_EMP} trabajadores con su salario y fecha de ingreso.</div>`}</div>`;
+    body=`<div class="muted" style="font-size:13px;margin-bottom:8px">${act.length} trabajador${act.length===1?"":"es"} activo${act.length===1?"":"s"}</div><div class="list">${emps.length?emps.map(e=>{const p=prestaciones(e),min=minimoDe(e.sector);const bajo=min&&(+e.salario<min);
+      return `<button class="item" data-act="verEmp" data-id="${e.id}"><span class="av ini" style="--hc:var(--h-nomina)">${esc(inic(e.nombre))}</span><div class="main"><div class="t">${esc(e.nombre)}${e.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${esc(e.cargo||"Sin cargo")}${p?" · "+antig(p.anios):""}</div></div>${e.activo===false?'<span class="chip neu">Inactivo</span>':bajo?'<span class="chip bad">Bajo el mínimo</span>':""}<span class="num">${C(e.salario)}</span></button>`}).join(""):`<div class="empty">Todavía no hay empleados. Agregá a tus trabajadores con su salario y fecha de ingreso.</div>`}</div>`;
   }else{
     const noms=Object.values(S.noms).sort((a,b)=>b.id.localeCompare(a.id));
     body=`<div class="list">${noms.length?noms.map(n=>{const t=totNom(n.lineas||[]);return `<button class="item" data-act="verNom" data-id="${n.id}"><div class="main"><div class="t">${esc(nomLbl(n))}${n.ejemplo?' <span class="chip neu">Ejemplo</span>':""}</div><div class="s">${(n.lineas||[]).length} trabajadores · neto ${C(t.neto)}</div></div>${n.movId?'<span class="chip ok">En caja</span>':'<span class="chip warn">Sin registrar</span>'}<span class="num">${C(t.costo)}</span></button>`}).join(""):`<div class="empty">Aún no hay planillas. Creá la planilla del mes y la app calcula INSS, IR, INATEC y el neto a pagar.</div>`}</div>`;
   }
   const nm=Object.values(S.noms).filter(n=>n.periodo===hoy().slice(0,7)).reduce((a,n)=>{const t=totNom(n.lineas||[]);a.c+=t.costo;a.n+=t.neto;return a},{c:0,n:0});
   const masa=act.reduce((a,e)=>a+(+e.salario||0),0);
-  return `${heroMod("nomina","Nómina · "+esc(mesLbl(hoy().slice(0,7))),nm.c?"Costo total de planillas del mes":"Salarios mensuales de tu equipo",nm.c?C(nm.c):C(masa),[["Trabajadores",act.length+" de "+MAX_EMP],[nm.c?"Neto pagado":"Costo con INSS e INATEC",nm.c?C(nm.n):C(masa*(1+(S.cfg.inssPat+S.cfg.inatec)/100))]],"nomina")}
+  return `${heroMod("nomina","Nómina · "+esc(mesLbl(hoy().slice(0,7))),nm.c?"Costo total de planillas del mes":"Salarios mensuales de tu equipo",nm.c?C(nm.c):C(masa),[["Trabajadores",String(act.length)],[nm.c?"Neto pagado":"Costo con INSS e INATEC",nm.c?C(nm.n):C(masa*(1+(S.cfg.inssPat+S.cfg.inatec)/100))]],"nomina")}
+  ${avisoTasaPatronal()}
   <div class="seg" style="display:inline-flex;margin-bottom:12px">${[["emps","Empleados"],["plan","Planillas"]].map(([k,l])=>`<button data-act="nomT" data-k="${k}" class="${S.nomTab===k?"on":""}">${l}</button>`).join("")}</div>${body}
   <h3>Cómo se calcula</h3><div class="panel" style="font-size:13px;line-height:1.55">INSS laboral ${S.cfg.inssLab}% del salario bruto. IR salarial con la tabla progresiva anual sobre el salario neto de INSS, proyectado a 12 meses (o 24 quincenas). Horas extra pagadas al doble del valor hora (salario ÷ 30 ÷ 8). El empleador aporta INSS patronal ${S.cfg.inssPat}% e INATEC ${S.cfg.inatec}%. Prestaciones: vacaciones de 15 días por semestre, aguinaldo de un mes por año (se paga en los primeros 10 días de diciembre) e indemnización por antigüedad del Art. 45 (tope de 5 meses).</div>`;
 }
@@ -674,7 +675,7 @@ function vAjustes(){
     <label>Dirección<input id="cDir" value="${esc(c.dir||"")}"></label>
     <div class="two"><label>INSS laboral %<input id="cLab" type="number" step="0.01" value="${c.inssLab}"></label><label>INSS patronal %<input id="cPat" type="number" step="0.01" value="${c.inssPat}"></label></div>
     <div class="two"><label>INATEC %<input id="cIna" type="number" step="0.01" value="${c.inatec}"></label><label>Tipo de cambio C$ por US$<input id="cTc" type="number" step="0.0001" value="${c.tc}"></label></div>
-    <div class="muted" style="font-size:12px">Con 10 trabajadores o menos aplica el INSS patronal de 21.5%. Verificá el tipo de cambio oficial del BCN.</div>
+    <div class="muted" style="font-size:12px">Con 50 trabajadores o menos el INSS patronal es 21.5%; con más de 50, 22.5%. Verificá el tipo de cambio oficial del BCN.</div>
     <div class="actions"><button class="btn pri" type="submit">Guardar ajustes</button></div>
     </form>`)}
   ${sec("acc","⚿","--m-cobrar","Tu acceso",S.lic&&S.lic.e?"Vence el "+esc(fechaCorta(S.lic.e))+" "+esc(S.lic.e.slice(0,4)):"Sin vencimiento",`
@@ -773,7 +774,6 @@ function armDelete(root,fn){const b=root.querySelector('[data-act="armDel"]');if
 
 function formEmp(e){
   const n=!e;
-  if(n&&Object.values(S.emps).filter(x=>x.activo!==false).length>=MAX_EMP){toast("Llegaste al máximo de "+MAX_EMP+" trabajadores activos");return}
   e=e||{sector:"comercio",ingreso:hoy(),activo:true,vacTomadas:0};
   openModal(`<h2>${n?"Nuevo empleado":"Editar empleado"}</h2>
   <form class="f" id="fEmp">
@@ -790,7 +790,6 @@ function formEmp(e){
     root.querySelector("#eSec").onchange=chk;root.querySelector("#eSal").oninput=chk;chk();
     root.querySelector("#fEmp").onsubmit=ev=>{ev.preventDefault();
       const act=root.querySelector("#eAct").checked;
-      if(act&&e.activo===false&&Object.values(S.emps).filter(x=>x.activo!==false).length>=MAX_EMP){toast("Ya tenés "+MAX_EMP+" trabajadores activos");return}
       const id=e.id||uid();
       put("emps",id,{...e,nombre:root.querySelector("#eNom").value.trim(),cedula:root.querySelector("#eCed").value.trim(),inss:root.querySelector("#eInss").value.trim(),cargo:root.querySelector("#eCargo").value.trim(),ingreso:root.querySelector("#eIng").value,sector:root.querySelector("#eSec").value,salario:r2(root.querySelector("#eSal").value),vacTomadas:+root.querySelector("#eVac").value||0,activo:act});
       closeModal();toast("Empleado guardado")};
@@ -1010,6 +1009,7 @@ document.addEventListener("click",ev=>{
       COLS.forEach(c=>Object.values(S[c]).filter(x=>x.ejemplo).forEach(x=>del(c,x.id)));toast("Ejemplos borrados");break;
     case "csv":exportCsv();break;
     case "waId":pedirCodigo();break;
+    case "tasa225":putCfg({...S.cfg,inssPat:22.5});toast("INSS patronal cambiado a 22.5%");break;
     case "abonar":{const c=S[el.dataset.col][id];if(c)formAbono(el.dataset.col,c);break}
     case "elegirAbono":elegirAbono(el.dataset.col);break;
     case "delAbono":{if(!el.dataset.armed){el.dataset.armed="1";el.textContent="¿Borrar?";el.classList.add("danger");break}
@@ -1344,7 +1344,7 @@ function generarPDF(k,id,col,i){
     d.h1("Resumen por categoría");Object.entries(ci).sort((a,b)=>b[1]-a[1]).forEach(([a,b])=>d.row(a,C(b),{vc:POS}));Object.entries(co).sort((a,b)=>b[1]-a[1]).forEach(([a,b])=>d.row(a,"− "+C(b),{vc:NEG}));
     return verPDF("Libro de caja "+mesLbl(S.mes),d)}
   if(k==="nomina"){const act=Object.values(S.emps).filter(e=>e.activo!==false).sort((a,b)=>(a.nombre||"").localeCompare(b.nombre||"")),d=pdfDoc("Personal y prestaciones","Al "+fLarga(hoy()));
-    const masa=act.reduce((a,e)=>a+(+e.salario||0),0);d.kpis([{l:"Trabajadores",v:act.length+" de "+MAX_EMP},{l:"Salarios mensuales",v:C(masa)},{l:"Costo con INSS e INATEC",v:C(masa*(1+(S.cfg.inssPat+S.cfg.inatec)/100))}]);
+    const masa=act.reduce((a,e)=>a+(+e.salario||0),0);d.kpis([{l:"Trabajadores",v:String(act.length)},{l:"Salarios mensuales",v:C(masa)},{l:"Costo con INSS e INATEC",v:C(masa*(1+(S.cfg.inssPat+S.cfg.inatec)/100))}]);
     d.h1("Personal activo");d.table([{t:"Nombre",w:130},{t:"Cargo",w:95},{t:"Ingreso",w:65},{t:"Antigüedad",w:80},{t:"Salario",w:75,al:"r"},{t:"Mín. sector",w:75,al:"r"}],act.map(e=>{const p=prestaciones(e),mn=minimoDe(e.sector),r=[e.nombre,e.cargo||"",e.ingreso?fechaCorta(e.ingreso)+" "+e.ingreso.slice(2,4):"",p?antig(p.anios):"",C(e.salario),C(mn)];r._c=[0,0,0,0,+e.salario<mn?NEG:0,0];return r}),{sz:8});
     d.h1("Prestaciones acumuladas");let tv=0,ta=0,ti=0;const rows=act.map(e=>{const p=prestaciones(e)||{vacDias:0,vacMonto:0,ag:0,ind:0};tv+=p.vacMonto;ta+=p.ag;ti+=p.ind;return [e.nombre,p.vacDias.toFixed(1),C(p.vacMonto),C(p.ag),C(p.ind),C(p.vacMonto+p.ag+p.ind)]});const t=["Total","",C(tv),C(ta),C(ti),C(tv+ta+ti)];t._tot=true;rows.push(t);
     d.table([{t:"Trabajador",w:130},{t:"Vac. días",w:55,al:"r"},{t:"Vacaciones",w:75,al:"r"},{t:"Aguinaldo",w:75,al:"r"},{t:"Indemnización",w:85,al:"r"},{t:"Total",w:80,al:"r"}],rows,{sz:8});
