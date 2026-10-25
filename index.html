@@ -296,6 +296,9 @@ body.pv-on{overflow:hidden}
 .crow .rside .num{font-size:14px}
 .crow .rside .btn{padding:4px 13px;font-size:12.5px}
 .crow .av{width:34px;height:34px}
+.brand small.modn{display:flex;align-items:center;gap:6px;color:var(--accent);font-weight:700}
+.brand small.modn i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent);flex:none}
+.hback{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:22px;line-height:1;display:grid;place-items:center;cursor:pointer;padding:0 0 2px}
 .hpdf{position:absolute;top:12px;right:12px;z-index:2;display:flex;align-items:center;gap:5px;padding:6px 11px 6px 9px;border-radius:999px;background:#ffffff26;border:1px solid #ffffff55;color:#fff;font-size:12.5px;font-weight:700;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 2px 0 #0003}
 .hpdf:active{transform:translateY(1px)}
 .hpdf svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
@@ -306,7 +309,7 @@ body.pv-on{overflow:hidden}
 .brand{display:flex;align-items:center;gap:10px}
 .brand .bt{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .blogo{width:34px;height:34px;border-radius:10px;object-fit:cover;flex:none;background:#fff;box-shadow:0 0 0 2px var(--accent)}
-.er .erl{display:grid;grid-template-columns:minmax(0,1fr) auto 64px;gap:8px;padding:6px 2px;font-size:14px;align-items:baseline}
+.er .erl{display:grid;grid-template-columns:minmax(0,1fr) auto 58px;gap:8px;padding:4px 2px;font-size:13.5px;align-items:baseline}
 .er .erl .pc{text-align:right;color:var(--muted);font-size:12px}
 .er .erl.hd{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line)}
 .er .erl.g{font-weight:600;border-top:1px solid var(--line);margin-top:4px;padding-top:9px}
@@ -511,10 +514,11 @@ function render(){
   if(S.gate!=="ok"){renderGate();return}
   aplicarTema();
   document.querySelector("nav.tabs").hidden=false;
-  $("#brand").innerHTML=(S.cfg.logo?`<img class="blogo" src="${S.cfg.logo}" alt="">`:"")+`<span class="bt">${esc(S.cfg.negocio||"Mi Negocio")}<small>${S.tab==="reportes"?"Reportes financieros":"Libro del negocio · Nicaragua"}</small></span>`;
+  const MODN={panel:"Panel",caja:"Caja",nomina:"Nómina",cobrar:"Cuentas por cobrar",pagar:"Cuentas por pagar",ajustes:"Ajustes",reportes:"Reportes",calendario:"Calendario"},sub=S.tab==="reportes"||S.tab==="calendario";
+  $("#brand").innerHTML=(sub?`<button class="hback" data-act="tab" data-k="panel" aria-label="Volver al Panel">‹</button>`:"")+(S.cfg.logo&&!sub?`<img class="blogo" src="${S.cfg.logo}" alt="">`:"")+`<span class="bt">${esc(S.cfg.negocio||"Mi Negocio")}<small class="modn"><i></i>${MODN[S.tab]||""}</small></span>`;
   $("#meslbl").textContent=mesLbl(S.mes);
   $("#mesnav").hidden=!(S.tab==="panel"||S.tab==="caja"||(S.tab==="reportes"&&(S.rp||{}).per!=="rango"));
-  $("#tabs").innerHTML=TABS.map(([k,l,ic])=>`<button data-act="tab" data-k="${k}" class="${S.tab===k?"on":""}" aria-label="${l}"><svg viewBox="0 0 24 24">${ic}</svg>${l}</button>`).join("");
+  $("#tabs").innerHTML=TABS.map(([k,l,ic])=>`<button data-act="tab" data-k="${k}" class="${S.tab===k||(k==="panel"&&(S.tab==="reportes"||S.tab==="calendario"))?"on":""}" aria-label="${l}"><svg viewBox="0 0 24 24">${ic}</svg>${l}</button>`).join("");
   const fab=$("#fab");
   const fabs={panel:["+ Movimiento","nuevoMov"],caja:["+ Movimiento","nuevoMov"],nomina:S.nomTab==="emps"?["+ Empleado","nuevoEmp"]:["+ Planilla","nuevaNom"],cobrar:["+ Cuenta por cobrar","nuevaCxc"],pagar:["+ Cuenta por pagar","nuevaCxp"]};
   const f=fabs[S.tab];fab.hidden=!f;if(f){fab.textContent=f[0];fab.dataset.act=f[1]}
@@ -1398,12 +1402,11 @@ function vReportes(){
   return `${heroMod("reportes","Reportes financieros",esc(P.lbl),C(er.t.un),[["Ventas",C(v)],["Margen neto",pctV(er.t.un,v)],["Utilidad bruta",C(er.t.ub)],["Gastos",C(er.t.c+er.t.op+er.t.i)]],"rep")}
   <div class="seg" style="display:inline-flex;margin-bottom:10px">${[["mes","Mes"],["trim","Trimestre"],["anio","Año"],["rango","Rango"]].map(([k,l])=>`<button data-act="rpPer" data-k="${k}" class="${r.per===k?"on":""}">${l}</button>`).join("")}</div>
   ${r.per==="rango"?`<form class="f two" id="fRango" style="margin-bottom:10px"><label>Desde<input type="date" id="rpD1" value="${P.d1}"></label><label>Hasta<input type="date" id="rpD2" value="${P.d2}"></label></form>`:`<div class="muted" style="font-size:12px;margin:-4px 0 10px">Usá las flechas de arriba para cambiar de ${r.per==="anio"?"año":r.per==="trim"?"trimestre":"mes"}.</div>`}
-  <div class="panel er">
-    <div class="spread" style="margin-bottom:6px"><b style="font-size:15px">Estado de resultados</b>${pdfB("er")}</div>
+  ${secP("er","grafico","--h-reportes","Estado de resultados","Utilidad neta "+C(er.t.un)+" · margen "+pctV(er.t.un,v)+(erp.t.un?" · "+(er.t.un>=erp.t.un?"▲":"▼")+" vs. anterior":""),`<div class="er">
     <div class="erl hd"><span>Concepto</span><span>Monto</span><span class="pc">% ventas</span></div>
     ${erRows}
     <div class="muted" style="font-size:11.5px;margin-top:8px">Calculado con los movimientos de Caja (base de efectivo). Compras e inventario y pagos a proveedores cuentan como costo de ventas.</div>
-  </div>
+    <div class="row" style="margin-top:10px">${pdfB("er","PDF del estado de resultados")}</div></div>`,er.t.un<0?"Pérdida":"")}
   ${secP("flujo","caja","--h-caja","Flujo de efectivo","Neto "+C(METODOS.reduce((a,k)=>a+f[k].e-f[k].s,0))+" · por forma de pago",`<div class="tbl" style="box-shadow:none;border-bottom:1px solid var(--line)"><table><tr><th>Forma</th><th>Entradas</th><th>Salidas</th><th>Neto</th></tr>${METODOS.map(k=>`<tr><td>${k}</td><td>${C(f[k].e)}</td><td>${C(f[k].s)}</td><td>${C(f[k].e-f[k].s)}</td></tr>`).join("")}</table></div><div class="row" style="margin-top:10px">${pdfB("flujo")}</div>`)}
   ${secP("sit","grafico","--h-cobrar","Situación del negocio","Posición neta "+C(s.neto),`<div class="lines">
     <div class="spread"><span>Efectivo y bancos (según registros)</span><span class="num">${C(s.caja)}</span></div>
