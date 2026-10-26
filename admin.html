@@ -134,6 +134,20 @@ const addM=(base,n)=>{const [y,m,d]=base.split("-").map(Number);const x=new Date
 const dd=(a,b)=>Math.round((new Date(a+"T00:00")-new Date(b+"T00:00"))/864e5);
 const devFmt=d=>d.slice(0,4)+"-"+d.slice(4);
 const APP_URL=new URL("./",location.href).href;
+const GRANJA_URL="https://jesiahm2324-gif.github.io/granja-porcina/";
+const APPS={negocio:{n:"Libro del Negocio",url:APP_URL,para:"llevar la caja, la nómina y las cuentas de tu negocio"},
+  porcina:{n:"Mi Granja Porcina",url:GRANJA_URL,para:"llevar la preñez de las cerdas, el inventario, los costos y los resultados de tu granja"}};
+const appDe=r=>APPS[r&&r.a]?r.a:"negocio";
+const rk=r=>appDe(r)+":"+r.d;
+/* Llave de Mi Granja Porcina: cifrada para que solo la abra la llave del Libro (que se abre con tu contraseña) */
+const GWRAP={"x": "jPCs-Vj1CGXFhn_SN8nn_j0PrzMBI1-xlFjEgmpqlDw", "y": "RkBco-n5Z5o4DzJJQ_vyYOWfiNKN8qiFKHPP63qfxUw", "iv": "HkcKsxiRm0qVgUMn", "ct": "VcLYUGgz2/EqAmFXNxhhAzWDWFPjqCh4NLoFF8UAwCSLaGVFA9iB5p0ONfjjW2u9MQHmArcqu4S/rD6ZJAvYzlVNh3WPgJXsJcdEQoCfFBf8G7kW1675aYFu/oePxp+tSDt7G1wr6EJxfhXuA19Fwq31m/janErmR5sg7dtFEj/BAzBEBvRgsElgIZgangeFBjuXVdceMIF8JC2x4MnoZQhdjylE1gSaBRebwl09a7inyrgKfPIbfgj7nbxBgLxs"};
+const cleanK=j=>({kty:j.kty,crv:j.crv,x:j.x,y:j.y,...(j.d?{d:j.d}:{})});
+async function abrirGranja(prv){const s=crypto.subtle;
+  const pk=await s.importKey("jwk",cleanK(prv),{name:"ECDH",namedCurve:"P-256"},false,["deriveBits"]);
+  const ep=await s.importKey("jwk",{kty:"EC",crv:"P-256",x:GWRAP.x,y:GWRAP.y},{name:"ECDH",namedCurve:"P-256"},false,[]);
+  const bits=await s.deriveBits({name:"ECDH",public:ep},pk,256);
+  const k=await s.importKey("raw",await s.digest("SHA-256",bits),"AES-GCM",false,["decrypt"]);
+  const pt=await s.decrypt({name:"AES-GCM",iv:unb(GWRAP.iv)},k,unb(GWRAP.ct));return JSON.parse(new TextDecoder().decode(pt))}
 const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const STANDALONE=window.navigator.standalone===true||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);
 const avisoSafari=()=>IOS&&!STANDALONE?`<div class="panel" style="border-color:var(--gold);background:var(--gold-soft);font-size:14px;margin-bottom:12px"><b>Estás dentro de Safari.</b> Para usar el Admin como app: ☰ → Compartir → <b>Agregar a pantalla de inicio</b>, dejá activado <b>“Abrir como app web”</b> y abrilo desde el ícono de la llave.</div>`:"";
@@ -148,7 +162,7 @@ async function enc(jwk,pass){const salt=crypto.getRandomValues(new Uint8Array(16
   const k=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:600000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt"]);
   const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},k,new TextEncoder().encode(JSON.stringify(jwk)));return{s:b64(salt),iv:b64(iv),ct:b64(new Uint8Array(ct))}}
 
-let PRV=null,reg=[],open=null,q="";
+let PRV=null,PRVG=null,reg=[],open=null,q="";
 let OPEN=new Set();try{OPEN=new Set(JSON.parse(LS("ln_open")||"[]"))}catch(e){}
 function openSec(k,on){const el=$("sec-"+k);if(!el)return;el.classList.toggle("op",on);if(on)OPEN.add(k);else OPEN.delete(k);LS("ln_open",JSON.stringify([...OPEN]))}
 function toggleSec(k){openSec(k,!$("sec-"+k).classList.contains("op"))}
@@ -168,18 +182,19 @@ function lock(){
   ${avisoSafari()}<form class="panel" id="fl"><label>Contraseña de administrador<input id="pw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required></label><div class="err" id="er"></div><button class="btn pri full" id="go" type="submit">Entrar</button></form></div>`;
   $("fl").onsubmit=async e=>{e.preventDefault();$("go").textContent="Verificando…";$("er").textContent="";
     const pw=$("pw").value.trim();let saved=null;try{saved=JSON.parse(LS("ln_blob")||"null")}catch(x){}
-    for(const b of [saved,BLOB]){if(!b)continue;try{PRV=await dec(b,pw);main();return}catch(x){}}
+    for(const b of [saved,BLOB]){if(!b)continue;try{PRV=await dec(b,pw)}catch(x){continue}try{PRVG=await abrirGranja(PRV)}catch(x){PRVG=null}main();return}
     $("go").textContent="Entrar";$("er").textContent="Contraseña incorrecta. Si la cambiaste y no la recordás, usá la contraseña original del administrador.";};
 }
 
 function status(e){if(!e)return["Sin vencimiento","ok"];const d=dd(e,today());return d<0?["Vencido","bad"]:d<=15?["Vence en "+d+" d","warn"]:["Activo · "+d+" d","ok"]}
 
 function main(){loadReg();
-  $("m").innerHTML=`<div class="top"><div><div class="eyebrow">Libro del Negocio · Admin</div><h1>Códigos de activación</h1></div><button class="btn sm" id="out2">Salir</button></div>
+  $("m").innerHTML=`<div class="top"><div><div class="eyebrow">Libro del Negocio · Mi Granja Porcina</div><h1>Códigos de activación</h1></div><button class="btn sm" id="out2">Salir</button></div>
   <div class="kp" id="kp"></div>
   <div class="acc" id="sec-gen"><button class="ah" data-sec="gen"><span class="ai">＋</span><span class="at"><b id="ft">Nuevo código o renovación</b><small>Con el ID que te envía el cliente</small></span><span class="chev">›</span></button>
   <div class="ab">
   <form class="stack" id="fg">
+    <label>App<select id="ap"><option value="negocio">Libro del Negocio</option><option value="porcina">Mi Granja Porcina</option></select></label>
     <label>Nombre del cliente o negocio<input id="n" maxlength="60" placeholder="Ej.: Pulpería La Esperanza" required></label>
     <label>ID del teléfono (lo envía el cliente)<input id="d" placeholder="XXXX-XXXX" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" required></label>
     <label>Tiempo de acceso<select id="t">
@@ -196,8 +211,8 @@ function main(){loadReg();
   <div class="acc" id="sec-inv"><button class="ah" data-sec="inv"><span class="ai wa">↗</span><span class="at"><b>Invitar a un cliente</b><small>Enlace de la app y pasos para instalarla</small></span><span class="chev">›</span></button>
   <div class="ab stack">
     <div class="hint">Mandalo antes del código: el cliente instala la app, te envía su ID y vos le devolvés el código.</div>
-    <div class="code" id="appUrl">${esc(APP_URL)}</div>
-    <div class="row"><button class="btn wa" id="inv">Enviar por WhatsApp</button><button class="btn" id="invc">Copiar invitación</button></div>
+    ${Object.keys(APPS).map(k=>`<div class="stack" style="gap:8px"><b>${esc(APPS[k].n)}</b><div class="code">${esc(APPS[k].url)}</div>
+    <div class="row"><button class="btn wa" data-inv="${k}">Enviar por WhatsApp</button><button class="btn" data-invc="${k}">Copiar invitación</button></div></div>`).join('<div style="border-top:1px dashed var(--line)"></div>')}
   </div></div>
   <div class="acc" id="sec-apa"><button class="ah" data-sec="apa"><span class="ai">◐</span><span class="at"><b>Apariencia</b><small id="apas"></small></span><span class="chev">›</span></button>
   <div class="ab"><div class="temas" id="temas"></div></div></div>
@@ -214,40 +229,43 @@ function main(){loadReg();
   document.querySelectorAll("[data-sec]").forEach(b=>b.onclick=()=>toggleSec(b.dataset.sec));
   OPEN.forEach(k=>openSec(k,true));
   pintarTemas();
-  const exp=()=>{const v=$("t").value,cur=reg.find(r=>r.d===cleanId());const base=cur&&cur.e&&cur.e>today()?cur.e:today();return v==="0"?"":v==="x"?$("x").value:addM(base,+v)};
-  const vf=()=>{$("x").hidden=$("t").value!=="x";const e=exp(),cur=reg.find(r=>r.d===cleanId());
+  const curDe=()=>reg.find(r=>r.d===cleanId()&&appDe(r)===$("ap").value);
+  const exp=()=>{const v=$("t").value,cur=curDe();const base=cur&&cur.e&&cur.e>today()?cur.e:today();return v==="0"?"":v==="x"?$("x").value:addM(base,+v)};
+  const vf=()=>{$("x").hidden=$("t").value!=="x";const e=exp(),cur=curDe();
     $("vf").textContent=$("t").value==="0"?"El acceso no vence.":e?("Vence el "+fmt(e)+(cur&&cur.e&&cur.e>today()&&$("t").value!=="x"?" (se suma a lo que le quedaba)":"")):"";};
-  $("t").onchange=vf;$("x").onchange=vf;$("d").oninput=vf;vf();
+  $("t").onchange=vf;$("x").onchange=vf;$("d").oninput=vf;$("ap").onchange=vf;vf();
   $("fg").onsubmit=async e=>{e.preventDefault();$("er").textContent="";
-    const n=$("n").value.trim(),d=cleanId(),ex=exp();
+    const n=$("n").value.trim(),d=cleanId(),ex=exp(),a=$("ap").value;
+    const K=a==="porcina"?PRVG:PRV;
+    if(!K){$("er").textContent="No se pudo abrir la llave de esta app. Salí y volvé a entrar con tu contraseña.";return}
     if(!n){$("er").textContent="Escribí el nombre.";return}
     if(!/^[A-Z0-9]{8}$/.test(d)){$("er").textContent="El ID debe tener 8 letras o números (XXXX-XXXX).";return}
     if($("t").value==="x"&&(!ex||ex<today())){$("er").textContent="Elegí una fecha futura.";return}
-    const p=b64u(new TextEncoder().encode(JSON.stringify({n,d,e:ex})));
-    const key=await crypto.subtle.importKey("jwk",PRV,{name:"ECDSA",namedCurve:"P-256"},false,["sign"]);
+    const p=b64u(new TextEncoder().encode(JSON.stringify(a==="porcina"?{n,d,e:ex,a}:{n,d,e:ex})));
+    const key=await crypto.subtle.importKey("jwk",a==="porcina"?cleanK(K):K,{name:"ECDSA",namedCurve:"P-256"},false,["sign"]);
     const sg=await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},key,new TextEncoder().encode(p));
     const code=p+"."+b64u(sg);
-    reg=reg.filter(r=>r.d!==d);const r={n,d,e:ex,code,at:today()};reg.push(r);saveReg();
-    $("fg").reset();$("t").value="12";vf();$("ft").textContent="Nuevo código o renovación";
+    reg=reg.filter(r=>!(r.d===d&&appDe(r)===a));const r={n,d,e:ex,code,at:today(),a};reg.push(r);saveReg();
+    $("fg").reset();$("ap").disabled=false;$("t").value="12";vf();$("ft").textContent="Nuevo código o renovación";
     show(r);list();kp()};
   $("q").oninput=()=>{q=$("q").value;list()};
-  const invTxt=()=>`Hola, te invito a usar *Libro del Negocio* para llevar la caja, la nómina y las cuentas de tu negocio.
+  const invTxt=k=>`Hola, te invito a usar *${APPS[k].n}* para ${APPS[k].para}.
 
-1. Abrí este enlace en Safari (iPhone) o Chrome (Android): ${APP_URL}
+1. Abrí este enlace en Safari (iPhone) o Chrome (Android): ${APPS[k].url}
 2. Instalala: en iPhone tocá Compartir → "Agregar a pantalla de inicio". En Android tocá ⋮ → "Instalar app" o "Agregar a pantalla principal".
 3. Abrí la app desde el ícono nuevo. Te va a mostrar tu ID: mandámelo para enviarte tu código de activación.`;
-  $("inv").onclick=()=>{location.href="https://wa.me/?text="+encodeURIComponent(invTxt())};
-  $("invc").onclick=()=>copy(invTxt(),"Invitación copiada");
+  document.querySelectorAll("[data-inv]").forEach(b=>b.onclick=()=>{location.href="https://wa.me/?text="+encodeURIComponent(invTxt(b.dataset.inv))});
+  document.querySelectorAll("[data-invc]").forEach(b=>b.onclick=()=>copy(invTxt(b.dataset.invc),"Invitación copiada"));
   $("ex").onclick=()=>copy(JSON.stringify(reg),"Respaldo copiado. Pegalo en Notas.");
-  $("im").onclick=()=>{try{const a=JSON.parse($("imt").value);if(!Array.isArray(a))throw 0;const mp={};[...reg,...a].forEach(r=>{if(r&&r.d&&r.code)mp[r.d]=r});reg=Object.values(mp);saveReg();toast("Registro importado");main()}catch(e){toast("El texto no es un registro válido")}};
+  $("im").onclick=()=>{try{const a=JSON.parse($("imt").value);if(!Array.isArray(a))throw 0;const mp={};[...reg,...a].forEach(r=>{if(r&&r.d&&r.code)mp[rk(r)]=r});reg=Object.values(mp);saveReg();toast("Registro importado");main()}catch(e){toast("El texto no es un registro válido")}};
   $("pwc").onclick=async()=>{const p=$("np").value.trim();if(p.length<12){toast("Usá al menos 12 caracteres");return}LS("ln_blob",JSON.stringify(await enc(PRV,p)));$("np").value="";toast("Contraseña cambiada en este teléfono. Anotala.")};
-  $("out2").onclick=()=>{PRV=null;lock()};
+  $("out2").onclick=()=>{PRV=null;PRVG=null;lock()};
   kp();list();
 }
 const cleanId=()=>($("d").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
 function kp(){const a=reg.filter(r=>!r.e||dd(r.e,today())>15).length,p=reg.filter(r=>r.e&&dd(r.e,today())>=0&&dd(r.e,today())<=15).length,v=reg.filter(r=>r.e&&dd(r.e,today())<0).length;
   $("kp").innerHTML=`<div><div class="l">Activos</div><div class="v">${a}</div></div><div><div class="l">Por vencer</div><div class="v">${p}</div></div><div><div class="l">Vencidos</div><div class="v">${v}</div></div>`}
-function msgCode(r){return `Tu código de activación de Libro del Negocio (${r.n})${r.e?", válido hasta el "+fmt(r.e):", sin vencimiento"}:
+function msgCode(r){return `Tu código de activación de ${APPS[appDe(r)].n} (${r.n})${r.e?", válido hasta el "+fmt(r.e):", sin vencimiento"}:
 
 ${r.code}
 
@@ -256,7 +274,7 @@ function show(r){const [t,k]=status(r.e);
   openSec("gen",true);
   $("out").innerHTML=`<div class="result stack">
     <div class="spread"><b>${esc(r.n)}</b><span class="chip ${k}">${t}</span></div>
-    <div class="hint">ID ${devFmt(r.d)} · ${r.e?"vence el "+fmt(r.e):"sin vencimiento"}</div>
+    <div class="hint">${esc(APPS[appDe(r)].n)} · ID ${devFmt(r.d)} · ${r.e?"vence el "+fmt(r.e):"sin vencimiento"}</div>
     <div class="code">${esc(r.code)}</div>
     <div class="row"><button class="btn wa" id="wa">Enviar por WhatsApp</button><button class="btn" id="cp">Copiar código</button></div></div>`;
   $("wa").onclick=()=>{location.href="https://wa.me/?text="+encodeURIComponent(msgCode(r))};
@@ -265,13 +283,13 @@ function show(r){const [t,k]=status(r.e);
 function list(){
   if($("ch"))$("ch").textContent="Clientes ("+reg.length+")";
   if($("chs")){const v=reg.filter(r=>r.e&&dd(r.e,today())<0).length,pv=reg.filter(r=>r.e&&dd(r.e,today())>=0&&dd(r.e,today())<=15).length;$("chs").textContent=reg.length?[pv?pv+" por vencer":"",v?v+" vencido"+(v==1?"":"s"):""].filter(Boolean).join(" · ")||"Todos al día":"Todavía no generaste códigos"}
-  const L=[...reg].sort((a,b)=>(a.e||"9999").localeCompare(b.e||"9999")).filter(r=>!q||(r.n+" "+r.d+" "+devFmt(r.d)).toLowerCase().includes(q.toLowerCase()));
-  $("lst").innerHTML=L.map(r=>{const [t,k]=status(r.e);return `<div class="cli ${open===r.d?"op":""}"><button class="head" data-o="${r.d}"><div class="main"><div class="t">${esc(r.n)}</div><div class="s">${devFmt(r.d)} · ${r.e?"vence "+fmt(r.e):"sin vencimiento"}</div></div><span class="chip ${k}">${t}</span></button>
-    <div class="acts row"><button class="btn sm" data-re="${r.d}">Renovar</button><button class="btn sm" data-sh="${r.d}">Ver código</button><button class="btn sm danger" data-rm="${r.d}">Quitar</button></div></div>`}).join("")||`<div class="empty">${reg.length?"Sin resultados.":"Todavía no generaste códigos. Cuando un cliente te mande su ID, completá el formulario de arriba."}</div>`;
+  const L=[...reg].sort((a,b)=>(a.e||"9999").localeCompare(b.e||"9999")).filter(r=>!q||(r.n+" "+r.d+" "+devFmt(r.d)+" "+APPS[appDe(r)].n).toLowerCase().includes(q.toLowerCase()));
+  $("lst").innerHTML=L.map(r=>{const [t,k]=status(r.e);return `<div class="cli ${open===rk(r)?"op":""}"><button class="head" data-o="${rk(r)}"><div class="main"><div class="t">${esc(r.n)}</div><div class="s">${esc(APPS[appDe(r)].n)} · ${devFmt(r.d)} · ${r.e?"vence "+fmt(r.e):"sin vencimiento"}</div></div><span class="chip ${k}">${t}</span></button>
+    <div class="acts row"><button class="btn sm" data-re="${rk(r)}">Renovar</button><button class="btn sm" data-sh="${rk(r)}">Ver código</button><button class="btn sm danger" data-rm="${rk(r)}">Quitar</button></div></div>`}).join("")||`<div class="empty">${reg.length?"Sin resultados.":"Todavía no generaste códigos. Cuando un cliente te mande su ID, completá el formulario de arriba."}</div>`;
   $("lst").querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{open=open===b.dataset.o?null:b.dataset.o;list()});
-  $("lst").querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{const r=reg.find(x=>x.d===b.dataset.re);$("n").value=r.n;$("d").value=devFmt(r.d);$("t").value="12";$("t").onchange();$("ft").textContent="Renovar a "+r.n;openSec("gen",true);$("sec-gen").scrollIntoView({behavior:"smooth"})});
-  $("lst").querySelectorAll("[data-sh]").forEach(b=>b.onclick=()=>show(reg.find(x=>x.d===b.dataset.sh)));
-  $("lst").querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{if(!b.dataset.armed){b.dataset.armed="1";b.textContent="Tocá de nuevo para quitar";return}reg=reg.filter(x=>x.d!==b.dataset.rm);saveReg();toast("Quitado. El código entregado sigue sirviendo hasta su fecha.");main()});
+  $("lst").querySelectorAll("[data-re]").forEach(b=>b.onclick=()=>{const r=reg.find(x=>rk(x)===b.dataset.re);$("ap").value=appDe(r);$("ap").disabled=true;$("n").value=r.n;$("d").value=devFmt(r.d);$("t").value="12";$("t").onchange();$("ft").textContent="Renovar a "+r.n;openSec("gen",true);$("sec-gen").scrollIntoView({behavior:"smooth"})});
+  $("lst").querySelectorAll("[data-sh]").forEach(b=>b.onclick=()=>show(reg.find(x=>rk(x)===b.dataset.sh)));
+  $("lst").querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{if(!b.dataset.armed){b.dataset.armed="1";b.textContent="Tocá de nuevo para quitar";return}reg=reg.filter(x=>rk(x)!==b.dataset.rm);saveReg();toast("Quitado. El código entregado sigue sirviendo hasta su fecha.");main()});
 }
 lock();
 })();
