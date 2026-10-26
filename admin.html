@@ -111,6 +111,15 @@ details.panel[open] summary{margin-bottom:10px}
 .result{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
 .acc .list{border-radius:10px}
 @media (prefers-reduced-motion:reduce){.chev{transition:none}}
+[hidden]{display:none!important}
+.apps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 0 8px}
+.appb{display:grid;gap:2px;text-align:left;padding:10px 12px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;border-top:4px solid var(--ac)}
+.appb b{font-size:14px;line-height:1.2}.appb small{font-size:12px;color:var(--muted)}.appb .vv{color:var(--out);font-weight:600}
+.appb.on{background:color-mix(in srgb,var(--ac) 18%,var(--surface));border-color:var(--ac);box-shadow:0 3px 0 color-mix(in srgb,var(--ac) 45%,transparent)}
+.appb.on small{color:var(--ink)}
+.apph{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:0 2px 12px}
+.apph i{width:9px;height:9px;border-radius:50%;background:var(--appc);box-shadow:0 0 0 3px color-mix(in srgb,var(--appc) 30%,transparent)}
+.apph b{color:var(--ink)}
 .lockbox{max-width:420px;margin:12vh auto 0}
 </style>
 </head>
@@ -162,7 +171,11 @@ async function enc(jwk,pass){const salt=crypto.getRandomValues(new Uint8Array(16
   const k=await crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:600000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt"]);
   const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},k,new TextEncoder().encode(JSON.stringify(jwk)));return{s:b64(salt),iv:b64(iv),ct:b64(new Uint8Array(ct))}}
 
-let PRV=null,PRVG=null,reg=[],open=null,q="";
+let PRV=null,PRVG=null,reg=[],open=null,q=""
+let APP="negocio";try{APP=localStorage.getItem("ln_app")||"negocio"}catch(e){}
+const APPC={negocio:"#0F8A6A",porcina:"#DB2777"};
+const regApp=()=>reg.filter(r=>appDe(r)===APP);
+function resApp(k){const n=reg.filter(r=>appDe(r)===k).length,v=reg.filter(r=>appDe(r)===k&&r.e&&dd(r.e,today())<0).length;return `${n} cliente${n===1?"":"s"}${v?` · <span class="vv">${v} vencido${v===1?"":"s"}</span>`:""}`};
 let OPEN=new Set();try{OPEN=new Set(JSON.parse(LS("ln_open")||"[]"))}catch(e){}
 function openSec(k,on){const el=$("sec-"+k);if(!el)return;el.classList.toggle("op",on);if(on)OPEN.add(k);else OPEN.delete(k);LS("ln_open",JSON.stringify([...OPEN]))}
 function toggleSec(k){openSec(k,!$("sec-"+k).classList.contains("op"))}
@@ -188,13 +201,15 @@ function lock(){
 
 function status(e){if(!e)return["Sin vencimiento","ok"];const d=dd(e,today());return d<0?["Vencido","bad"]:d<=15?["Vence en "+d+" d","warn"]:["Activo · "+d+" d","ok"]}
 
-function main(){loadReg();
-  $("m").innerHTML=`<div class="top"><div><div class="eyebrow">Libro del Negocio · Mi Granja Porcina</div><h1>Códigos de activación</h1></div><button class="btn sm" id="out2">Salir</button></div>
+function main(){loadReg();if(!APPS[APP])APP="negocio";
+  $("m").innerHTML=`<div class="top"><div><div class="eyebrow">Administrador de accesos</div><h1>Códigos de activación</h1></div><button class="btn sm" id="out2">Salir</button></div>
+  <div class="apps" role="tablist" aria-label="App">${Object.keys(APPS).map(k=>`<button role="tab" aria-selected="${APP===k}" class="appb ${APP===k?"on":""}" data-app="${k}" style="--ac:${APPC[k]}"><b>${esc(APPS[k].n)}</b><small>${resApp(k)}</small></button>`).join("")}</div>
+  <div class="apph"><i></i>Estás viendo los accesos de <b>${esc(APPS[APP].n)}</b></div>
   <div class="kp" id="kp"></div>
-  <div class="acc" id="sec-gen"><button class="ah" data-sec="gen"><span class="ai">＋</span><span class="at"><b id="ft">Nuevo código o renovación</b><small>Con el ID que te envía el cliente</small></span><span class="chev">›</span></button>
+  <div class="acc" id="sec-gen"><button class="ah" data-sec="gen"><span class="ai">＋</span><span class="at"><b id="ft">Nuevo código o renovación</b><small>Para ${esc(APPS[APP].n)} · con el ID del cliente</small></span><span class="chev">›</span></button>
   <div class="ab">
   <form class="stack" id="fg">
-    <label>App<select id="ap"><option value="negocio">Libro del Negocio</option><option value="porcina">Mi Granja Porcina</option></select></label>
+    <label hidden>App<select id="ap"><option value="negocio">Libro del Negocio</option><option value="porcina">Mi Granja Porcina</option></select></label>
     <label>Nombre del cliente o negocio<input id="n" maxlength="60" placeholder="Ej.: Pulpería La Esperanza" required></label>
     <label>ID del teléfono (lo envía el cliente)<input id="d" placeholder="XXXX-XXXX" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" required></label>
     <label>Tiempo de acceso<select id="t">
@@ -206,12 +221,12 @@ function main(){loadReg();
     <button class="btn pri full" type="submit">Generar código</button>
   </form>
   <div id="out"></div></div></div>
-  <div class="acc" id="sec-cli"><button class="ah" data-sec="cli"><span class="ai">≡</span><span class="at"><b id="ch">Clientes (${reg.length})</b><small id="chs"></small></span><span class="chev">›</span></button>
+  <div class="acc" id="sec-cli"><button class="ah" data-sec="cli"><span class="ai">≡</span><span class="at"><b id="ch">Clientes (${regApp().length})</b><small id="chs"></small></span><span class="chev">›</span></button>
   <div class="ab"><input id="q" placeholder="Buscar por nombre o ID" autocomplete="off" value="${esc(q)}"><div class="list" id="lst" style="margin-top:8px"></div></div></div>
   <div class="acc" id="sec-inv"><button class="ah" data-sec="inv"><span class="ai wa">↗</span><span class="at"><b>Invitar a un cliente</b><small>Enlace de la app y pasos para instalarla</small></span><span class="chev">›</span></button>
   <div class="ab stack">
     <div class="hint">Mandalo antes del código: el cliente instala la app, te envía su ID y vos le devolvés el código.</div>
-    ${Object.keys(APPS).map(k=>`<div class="stack" style="gap:8px"><b>${esc(APPS[k].n)}</b><div class="code">${esc(APPS[k].url)}</div>
+    ${[APP].map(k=>`<div class="stack" style="gap:8px"><b>${esc(APPS[k].n)}</b><div class="code">${esc(APPS[k].url)}</div>
     <div class="row"><button class="btn wa" data-inv="${k}">Enviar por WhatsApp</button><button class="btn" data-invc="${k}">Copiar invitación</button></div></div>`).join('<div style="border-top:1px dashed var(--line)"></div>')}
   </div></div>
   <div class="acc" id="sec-apa"><button class="ah" data-sec="apa"><span class="ai">◐</span><span class="at"><b>Apariencia</b><small id="apas"></small></span><span class="chev">›</span></button>
@@ -226,6 +241,8 @@ function main(){loadReg();
       <div class="hint">Anotala antes de guardarla. La contraseña original del administrador sigue sirviendo como respaldo.</div>
       <div class="row"><button class="btn" id="pwc">Cambiar contraseña en este teléfono</button></div>
   </div></div>`;
+  $("ap").value=APP;$("m").style.setProperty("--c-gen",APPC[APP]);$("m").style.setProperty("--appc",APPC[APP]);
+  document.querySelectorAll("[data-app]").forEach(b=>b.onclick=()=>{if(APP===b.dataset.app)return;APP=b.dataset.app;try{localStorage.setItem("ln_app",APP)}catch(e){};open=null;q="";main();toast("Mostrando "+APPS[APP].n)});
   document.querySelectorAll("[data-sec]").forEach(b=>b.onclick=()=>toggleSec(b.dataset.sec));
   OPEN.forEach(k=>openSec(k,true));
   pintarTemas();
@@ -246,7 +263,7 @@ function main(){loadReg();
     const sg=await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},key,new TextEncoder().encode(p));
     const code=p+"."+b64u(sg);
     reg=reg.filter(r=>!(r.d===d&&appDe(r)===a));const r={n,d,e:ex,code,at:today(),a};reg.push(r);saveReg();
-    $("fg").reset();$("ap").disabled=false;$("t").value="12";vf();$("ft").textContent="Nuevo código o renovación";
+    $("fg").reset();$("ap").disabled=false;$("ap").value=APP;$("t").value="12";vf();$("ft").textContent="Nuevo código o renovación";
     show(r);list();kp()};
   $("q").oninput=()=>{q=$("q").value;list()};
   const invTxt=k=>`Hola, te invito a usar *${APPS[k].n}* para ${APPS[k].para}.
@@ -263,7 +280,7 @@ function main(){loadReg();
   kp();list();
 }
 const cleanId=()=>($("d").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
-function kp(){const a=reg.filter(r=>!r.e||dd(r.e,today())>15).length,p=reg.filter(r=>r.e&&dd(r.e,today())>=0&&dd(r.e,today())<=15).length,v=reg.filter(r=>r.e&&dd(r.e,today())<0).length;
+function kp(){const a=regApp().filter(r=>!r.e||dd(r.e,today())>15).length,p=regApp().filter(r=>r.e&&dd(r.e,today())>=0&&dd(r.e,today())<=15).length,v=regApp().filter(r=>r.e&&dd(r.e,today())<0).length;
   $("kp").innerHTML=`<div><div class="l">Activos</div><div class="v">${a}</div></div><div><div class="l">Por vencer</div><div class="v">${p}</div></div><div><div class="l">Vencidos</div><div class="v">${v}</div></div>`}
 function msgCode(r){return `Tu código de activación de ${APPS[appDe(r)].n} (${r.n})${r.e?", válido hasta el "+fmt(r.e):", sin vencimiento"}:
 
@@ -281,9 +298,10 @@ function show(r){const [t,k]=status(r.e);
   $("cp").onclick=()=>copy(r.code,"Código copiado");
   $("out").scrollIntoView({behavior:"smooth",block:"start"})}
 function list(){
-  if($("ch"))$("ch").textContent="Clientes ("+reg.length+")";
-  if($("chs")){const v=reg.filter(r=>r.e&&dd(r.e,today())<0).length,pv=reg.filter(r=>r.e&&dd(r.e,today())>=0&&dd(r.e,today())<=15).length;$("chs").textContent=reg.length?[pv?pv+" por vencer":"",v?v+" vencido"+(v==1?"":"s"):""].filter(Boolean).join(" · ")||"Todos al día":"Todavía no generaste códigos"}
-  const L=[...reg].sort((a,b)=>(a.e||"9999").localeCompare(b.e||"9999")).filter(r=>!q||(r.n+" "+r.d+" "+devFmt(r.d)+" "+APPS[appDe(r)].n).toLowerCase().includes(q.toLowerCase()));
+  document.querySelectorAll(".appb").forEach(b=>{const sm=b.querySelector("small");if(sm)sm.innerHTML=resApp(b.dataset.app)});
+  if($("ch"))$("ch").textContent="Clientes ("+regApp().length+")";
+  if($("chs")){const v=regApp().filter(r=>r.e&&dd(r.e,today())<0).length,pv=regApp().filter(r=>r.e&&dd(r.e,today())>=0&&dd(r.e,today())<=15).length;$("chs").textContent=regApp().length?[pv?pv+" por vencer":"",v?v+" vencido"+(v==1?"":"s"):""].filter(Boolean).join(" · ")||"Todos al día":"Todavía no generaste códigos"}
+  const L=[...regApp()].sort((a,b)=>(a.e||"9999").localeCompare(b.e||"9999")).filter(r=>!q||(r.n+" "+r.d+" "+devFmt(r.d)+" "+APPS[appDe(r)].n).toLowerCase().includes(q.toLowerCase()));
   $("lst").innerHTML=L.map(r=>{const [t,k]=status(r.e);return `<div class="cli ${open===rk(r)?"op":""}"><button class="head" data-o="${rk(r)}"><div class="main"><div class="t">${esc(r.n)}</div><div class="s">${esc(APPS[appDe(r)].n)} · ${devFmt(r.d)} · ${r.e?"vence "+fmt(r.e):"sin vencimiento"}</div></div><span class="chip ${k}">${t}</span></button>
     <div class="acts row"><button class="btn sm" data-re="${rk(r)}">Renovar</button><button class="btn sm" data-sh="${rk(r)}">Ver código</button><button class="btn sm danger" data-rm="${rk(r)}">Quitar</button></div></div>`}).join("")||`<div class="empty">${reg.length?"Sin resultados.":"Todavía no generaste códigos. Cuando un cliente te mande su ID, completá el formulario de arriba."}</div>`;
   $("lst").querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>{open=open===b.dataset.o?null:b.dataset.o;list()});
