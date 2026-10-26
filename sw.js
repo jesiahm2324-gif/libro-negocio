@@ -1,4 +1,4 @@
-const C="libro-negocio-v5",F=["./","index.html","admin.html","manifest.webmanifest","admin.webmanifest","icon-180.png","icon-512.png","admin-180.png","admin-512.png"];
+const C="libro-negocio-v6",F=["./","index.html","admin.html","manifest.webmanifest","admin.webmanifest","icon-180.png","icon-512.png","admin-180.png","admin-512.png"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>Promise.all(F.map(u=>fetch(new Request(u,{cache:"reload"})).then(r=>r.ok&&c.put(u,r)).catch(()=>{})))).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",e=>{const q=e.request;if(q.method!=="GET")return;const u=new URL(q.url);if(u.origin!==location.origin)return;
