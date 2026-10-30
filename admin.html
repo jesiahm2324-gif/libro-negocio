@@ -190,6 +190,15 @@ async function appDeCodigo(r){try{const [p,sg]=String(r.code).split(".");const p
   const key=await crypto.subtle.importKey("jwk",TPUB,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
   const z=sg.replace(/-/g,"+").replace(/_/g,"/");if(await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,unb(z+"===".slice((z.length+3)%4)),new TextEncoder().encode(p)))return"tambo"}catch(e){}
   return APPS[r.a]?r.a:"negocio"}
+/* Lee un código firmado y dice de qué app es, solo si la firma es auténtica */
+const unb64u=z=>unb(z.replace(/-/g,"+").replace(/_/g,"/")+"===".slice((z.length+3)%4));
+async function leerCodigo(code){try{const [p,sg]=code.split(".");const pl=JSON.parse(new TextDecoder().decode(unb64u(p)));
+  if(!pl||!pl.d||!/^[A-Z0-9]{8}$/.test(pl.d))return null;
+  const cand=[["negocio",PRV],["porcina",PRVG],["tambo",TPUB]];
+  for(const [a,K] of cand){if(!K)continue;if(a==="porcina"&&pl.a!=="porcina")continue;if(a!=="porcina"&&pl.a)continue;
+    const key=await crypto.subtle.importKey("jwk",{kty:"EC",crv:"P-256",x:K.x,y:K.y},{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
+    if(await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,unb64u(sg),new TextEncoder().encode(p)))return{n:pl.n||"Sin nombre",d:pl.d,e:pl.e||"",code,at:today(),a}}}catch(e){}return null}
+const venceMas=(a,b)=>(a||"9999-99-99")>(b||"9999-99-99");
 const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const STANDALONE=window.navigator.standalone===true||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);
 const avisoSafari=()=>IOS&&!STANDALONE?`<div class="panel" style="border-color:var(--gold);background:var(--gold-soft);font-size:14px;margin-bottom:12px"><b>Estás dentro de Safari.</b> Para usar el Admin como app: ☰ → Compartir → <b>Agregar a pantalla de inicio</b>, dejá activado <b>“Abrir como app web”</b> y abrilo desde el ícono de la llave.</div>`:"";
@@ -208,7 +217,7 @@ let PRV=null,PRVG=null,reg=[],open=null,q=""
 let APP="negocio";try{APP=localStorage.getItem("ln_app")||"negocio"}catch(e){}
 const APPC={negocio:"#0F8A6A",porcina:"#DB2777",tambo:"#2F7D4F"};
 const regApp=()=>reg.filter(r=>appDe(r)===APP);
-function resApp(k){if(k==="tambo"&&!PRVT)return `<span class="vv">Por vincular</span>`;const n=reg.filter(r=>appDe(r)===k).length,v=reg.filter(r=>appDe(r)===k&&r.e&&dd(r.e,today())<0).length;return `${n} cliente${n===1?"":"s"}${v?` · <span class="vv">${v} vencido${v===1?"":"s"}</span>`:""}`};
+function resApp(k){const n0=reg.filter(r=>appDe(r)===k).length;if(k==="tambo"&&!PRVT)return `${n0?n0+" cliente"+(n0===1?"":"s")+" · ":""}<span class="vv">Por vincular</span>`;const n=reg.filter(r=>appDe(r)===k).length,v=reg.filter(r=>appDe(r)===k&&r.e&&dd(r.e,today())<0).length;return `${n} cliente${n===1?"":"s"}${v?` · <span class="vv">${v} vencido${v===1?"":"s"}</span>`:""}`};
 let OPEN=new Set();try{OPEN=new Set(JSON.parse(LS("ln_open")||"[]"))}catch(e){}
 function openSec(k,on){const el=$("sec-"+k);if(!el)return;el.classList.toggle("op",on);if(on)OPEN.add(k);else OPEN.delete(k);LS("ln_open",JSON.stringify([...OPEN]))}
 function toggleSec(k){openSec(k,!$("sec-"+k).classList.contains("op"))}
@@ -267,6 +276,13 @@ function main(){loadReg();if(!APPS[APP])APP="negocio";
     ${[APP].map(k=>`<div class="stack" style="gap:8px"><b>${esc(APPS[k].n)}</b><div class="code">${esc(APPS[k].url)}</div>
     <div class="row"><button class="btn wa" data-inv="${k}">Enviar por WhatsApp</button><button class="btn" data-invc="${k}">Copiar invitación</button></div></div>`).join('<div style="border-top:1px dashed var(--line)"></div>')}
   </div></div>
+  <div class="acc" id="sec-rec"><button class="ah" data-sec="rec"><span class="ai wa">⟲</span><span class="at"><b>Recuperar clientes</b><small>Desde los mensajes de WhatsApp con sus códigos</small></span><span class="chev">›</span></button>
+  <div class="ab stack">
+    <div class="hint">Cada código que enviaste trae adentro el nombre, el ID del teléfono y el vencimiento. Pegá aquí uno o varios mensajes de WhatsApp con códigos (de cualquiera de tus apps): el Admin comprueba la firma y agrega cada cliente a su app. No hace falta pedirle nada al cliente.</div>
+    <label>Mensajes con códigos<textarea id="rct" rows="4" placeholder="Tu código de activación de Mi Tambo (…): eyJu…"></textarea></label>
+    <div class="row"><button class="btn pri" id="rcb">Recuperar clientes</button></div>
+    <div class="hint" id="rcr"></div>
+  </div></div>
   <div class="acc" id="sec-apa"><button class="ah" data-sec="apa"><span class="ai">◐</span><span class="at"><b>Apariencia</b><small id="apas"></small></span><span class="chev">›</span></button>
   <div class="ab"><div class="temas" id="temas"></div></div></div>
   <div class="acc" id="sec-reg"><button class="ah" data-sec="reg"><span class="ai gold">⚿</span><span class="at"><b>Registro y contraseña</b><small>Respaldo, importar y cambiar clave</small></span><span class="chev">›</span></button>
@@ -315,6 +331,18 @@ function main(){loadReg();if(!APPS[APP])APP="negocio";
   document.querySelectorAll("[data-inv]").forEach(b=>b.onclick=()=>{location.href="https://wa.me/?text="+encodeURIComponent(invTxt(b.dataset.inv))});
   document.querySelectorAll("[data-invc]").forEach(b=>b.onclick=()=>copy(invTxt(b.dataset.invc),"Invitación copiada"));
   $("ex").onclick=()=>copy(JSON.stringify(reg),"Respaldo copiado. Pegalo en Notas.");
+  $("rcb").onclick=async()=>{const t=$("rct").value;const cods=[...new Set(t.match(/[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{60,}/g)||[])];
+    if(!cods.length){$("rcr").textContent="No encontré códigos en el texto pegado. Copiá el mensaje completo de WhatsApp.";return}
+    $("rcb").textContent="Comprobando…";const cnt={},malos=[];let nada=0;
+    for(const c of cods){const r=await leerCodigo(c);if(!r){malos.push(c);continue}
+      const k=rk(r),ya=reg.find(x=>rk(x)===k);
+      if(ya&&!(venceMas(r.e,ya.e))){nada++;continue}
+      reg=reg.filter(x=>rk(x)!==k);reg.push(r);(cnt[r.a]=cnt[r.a]||new Set()).add(k)}
+    Object.keys(cnt).forEach(k=>cnt[k]=cnt[k].size);
+    saveReg();$("rcb").textContent="Recuperar clientes";
+    const tot=Object.values(cnt).reduce((a,b)=>a+b,0);
+    const msg=(tot?"Recuperados: "+Object.keys(cnt).map(k=>cnt[k]+" de "+APPS[k].n).join(", ")+".":"No había clientes nuevos.")+(nada?" "+nada+" ya estaba"+(nada===1?"":"n")+" en la lista.":"")+(malos.length?" "+malos.length+" código"+(malos.length===1?"":"s")+" no válido"+(malos.length===1?"":"s")+" (incompleto o de otra llave).":"");
+    toast(tot?"Clientes recuperados":"Revisá el resultado");OPEN.add("rec");main();$("rcr").textContent=msg};
   $("im").onclick=async()=>{let a;try{a=JSON.parse($("imt").value);if(!Array.isArray(a))throw 0}catch(e){toast("El texto no es un registro válido");return}
     const nuevos=a.filter(r=>r&&r.d&&r.code);const cnt={};
     for(const r of nuevos){r.a=await appDeCodigo(r);cnt[r.a]=(cnt[r.a]||0)+1}
