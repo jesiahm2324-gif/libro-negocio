@@ -9,7 +9,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Libro Admin">
-<title>Libro del Negocio Admin</title>
+<title>Administrador de mis apps</title>
 <link rel="manifest" href="admin.webmanifest">
 <script>try{var t=localStorage.getItem("ln_tema")||"esmeralda";if(t!=="auto")document.documentElement.dataset.tema=t}catch(e){document.documentElement.dataset.tema="esmeralda"}</script>
 <link rel="apple-touch-icon" href="admin-180.png">
@@ -112,15 +112,18 @@ details.panel[open] summary{margin-bottom:10px}
 .acc .list{border-radius:10px}
 @media (prefers-reduced-motion:reduce){.chev{transition:none}}
 [hidden]{display:none!important}
-.apps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 0 8px}
+.apps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:2px 0 8px}
 .appb{display:grid;gap:2px;text-align:left;padding:10px 12px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;border-top:4px solid var(--ac)}
-.appb b{font-size:14px;line-height:1.2}.appb small{font-size:12px;color:var(--muted)}.appb .vv{color:var(--out);font-weight:600}
+.appb b{font-size:13px;line-height:1.2}.appb small{font-size:11.5px;color:var(--muted)}.appb .vv{color:var(--out);font-weight:600}
 .appb.on{background:color-mix(in srgb,var(--ac) 18%,var(--surface));border-color:var(--ac);box-shadow:0 3px 0 color-mix(in srgb,var(--ac) 45%,transparent)}
 .appb.on small{color:var(--ink)}
 .apph{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:0 2px 12px}
 .apph i{width:9px;height:9px;border-radius:50%;background:var(--appc);box-shadow:0 0 0 3px color-mix(in srgb,var(--appc) 30%,transparent)}
 .apph b{color:var(--ink)}
+#us{background:var(--sunk);color:var(--muted);font-size:14px}
 .lockbox{max-width:420px;margin:12vh auto 0}
+.link{border:1.5px dashed var(--appc);border-radius:14px;padding:12px;background:color-mix(in srgb,var(--appc) 8%,var(--surface))}
+.link h3{margin:0 0 4px;font-size:15px}
 </style>
 </head>
 <body>
@@ -145,7 +148,8 @@ const devFmt=d=>d.slice(0,4)+"-"+d.slice(4);
 const APP_URL=new URL("./",location.href).href;
 const GRANJA_URL="https://jesiahm2324-gif.github.io/granja-porcina/";
 const APPS={negocio:{n:"Libro del Negocio",url:APP_URL,para:"llevar la caja, la nómina y las cuentas de tu negocio"},
-  porcina:{n:"Mi Granja Porcina",url:GRANJA_URL,para:"llevar la preñez de las cerdas, el inventario, los costos y los resultados de tu granja"}};
+  porcina:{n:"Mi Granja Porcina",url:GRANJA_URL,para:"llevar la preñez de las cerdas, el inventario, los costos y los resultados de tu granja"},
+  tambo:{n:"Mi Tambo",url:"https://jesiahm2324-gif.github.io/mi-tambo/",para:"llevar el registro de tu ganado, la leche y las finanzas de tu finca"}};
 const appDe=r=>APPS[r&&r.a]?r.a:"negocio";
 const rk=r=>appDe(r)+":"+r.d;
 /* Llave de Mi Granja Porcina: cifrada para que solo la abra la llave del Libro (que se abre con tu contraseña) */
@@ -157,6 +161,35 @@ async function abrirGranja(prv){const s=crypto.subtle;
   const bits=await s.deriveBits({name:"ECDH",public:ep},pk,256);
   const k=await s.importKey("raw",await s.digest("SHA-256",bits),"AES-GCM",false,["decrypt"]);
   const pt=await s.decrypt({name:"AES-GCM",iv:unb(GWRAP.iv)},k,unb(GWRAP.ct));return JSON.parse(new TextDecoder().decode(pt))}
+/* Mi Tambo: su llave viene cifrada con la contraseña del Admin de Mi Tambo. Se abre una sola vez
+   y queda guardada en este teléfono cifrada para la llave del Libro (que abre tu contraseña). */
+const TBLOB={"s": "YQDfQQF5pn3RQHaX9iO7bA==", "iv": "Mz6H2Vy2TvPya+4E", "ct": "aRra/1v3ZCInDrqCoxDl9OLcQkfoRHevXXwCWPjcyUnh8egoYJ7Hoz2BS1yOf63w62tjpYGdj8ynZR8kFOgGuLBgyxoG4Ci/BbDSHtKOf6ARE36cKbFIY/v4gpvlqw2PWOiGLzOr2v8HqpKmY8v5G/Nd62AvurO3lcC7zm+Y0PVkxBsqBFRzLD+x1U9ooVgbIJkPukgmm9Rugour6+f4y18pMYtHr+BbEcttWapwZm64YGoepNtji6Ki0WFIkgnsLW7TuWbZvcTb8Q7/4sq41IR7yGfMmidu9Uk3K2wm"};
+const TPUB={"kty": "EC", "crv": "P-256", "x": "5KgEFPis3DHEpfHboTJSAIN9N7BgrAF53p3MncLovqU", "y": "DHbX3Zo7Q5j_0lfRXakjDEzRz40JBgjwXMCsyrLPZWo"};
+let PRVT=null;
+async function envolver(jwk,prv){const s=crypto.subtle;
+  const eph=await s.generateKey({name:"ECDH",namedCurve:"P-256"},true,["deriveBits"]);
+  const pub=await s.importKey("jwk",{kty:"EC",crv:"P-256",x:prv.x,y:prv.y},{name:"ECDH",namedCurve:"P-256"},false,[]);
+  const bits=await s.deriveBits({name:"ECDH",public:pub},eph.privateKey,256);
+  const k=await s.importKey("raw",await s.digest("SHA-256",bits),"AES-GCM",false,["encrypt"]);
+  const iv=crypto.getRandomValues(new Uint8Array(12)),ej=await s.exportKey("jwk",eph.publicKey);
+  const ct=await s.encrypt({name:"AES-GCM",iv},k,new TextEncoder().encode(JSON.stringify(cleanK(jwk))));
+  return{x:ej.x,y:ej.y,iv:b64(iv),ct:b64(new Uint8Array(ct))}}
+async function desenvolver(W,prv){const s=crypto.subtle;
+  const pk=await s.importKey("jwk",cleanK(prv),{name:"ECDH",namedCurve:"P-256"},false,["deriveBits"]);
+  const ep=await s.importKey("jwk",{kty:"EC",crv:"P-256",x:W.x,y:W.y},{name:"ECDH",namedCurve:"P-256"},false,[]);
+  const bits=await s.deriveBits({name:"ECDH",public:ep},pk,256);
+  const k=await s.importKey("raw",await s.digest("SHA-256",bits),"AES-GCM",false,["decrypt"]);
+  return JSON.parse(new TextDecoder().decode(await s.decrypt({name:"AES-GCM",iv:unb(W.iv)},k,unb(W.ct))))}
+async function abrirTambo(prv){let W=null;try{W=JSON.parse(LS("ln_tw")||"null")}catch(e){}if(!W)return null;
+  const j=await desenvolver(W,prv);return j.x===TPUB.x&&j.y===TPUB.y?j:null}
+async function vincularTambo(pw){const j=await dec(TBLOB,pw);if(j.x!==TPUB.x||j.y!==TPUB.y)throw 0;
+  LS("ln_tw",JSON.stringify(await envolver(j,PRV)));PRVT=cleanK(j)}
+/* De qué app es un código: Granja lo trae escrito; Mi Tambo se reconoce por su firma */
+async function appDeCodigo(r){try{const [p,sg]=String(r.code).split(".");const pl=JSON.parse(new TextDecoder().decode(unb(p.replace(/-/g,"+").replace(/_/g,"/")+"===".slice((p.length+3)%4))));
+  if(pl.a==="porcina")return"porcina";
+  const key=await crypto.subtle.importKey("jwk",TPUB,{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
+  const z=sg.replace(/-/g,"+").replace(/_/g,"/");if(await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,unb(z+"===".slice((z.length+3)%4)),new TextEncoder().encode(p)))return"tambo"}catch(e){}
+  return APPS[r.a]?r.a:"negocio"}
 const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const STANDALONE=window.navigator.standalone===true||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches);
 const avisoSafari=()=>IOS&&!STANDALONE?`<div class="panel" style="border-color:var(--gold);background:var(--gold-soft);font-size:14px;margin-bottom:12px"><b>Estás dentro de Safari.</b> Para usar el Admin como app: ☰ → Compartir → <b>Agregar a pantalla de inicio</b>, dejá activado <b>“Abrir como app web”</b> y abrilo desde el ícono de la llave.</div>`:"";
@@ -173,9 +206,9 @@ async function enc(jwk,pass){const salt=crypto.getRandomValues(new Uint8Array(16
 
 let PRV=null,PRVG=null,reg=[],open=null,q=""
 let APP="negocio";try{APP=localStorage.getItem("ln_app")||"negocio"}catch(e){}
-const APPC={negocio:"#0F8A6A",porcina:"#DB2777"};
+const APPC={negocio:"#0F8A6A",porcina:"#DB2777",tambo:"#2F7D4F"};
 const regApp=()=>reg.filter(r=>appDe(r)===APP);
-function resApp(k){const n=reg.filter(r=>appDe(r)===k).length,v=reg.filter(r=>appDe(r)===k&&r.e&&dd(r.e,today())<0).length;return `${n} cliente${n===1?"":"s"}${v?` · <span class="vv">${v} vencido${v===1?"":"s"}</span>`:""}`};
+function resApp(k){if(k==="tambo"&&!PRVT)return `<span class="vv">Por vincular</span>`;const n=reg.filter(r=>appDe(r)===k).length,v=reg.filter(r=>appDe(r)===k&&r.e&&dd(r.e,today())<0).length;return `${n} cliente${n===1?"":"s"}${v?` · <span class="vv">${v} vencido${v===1?"":"s"}</span>`:""}`};
 let OPEN=new Set();try{OPEN=new Set(JSON.parse(LS("ln_open")||"[]"))}catch(e){}
 function openSec(k,on){const el=$("sec-"+k);if(!el)return;el.classList.toggle("op",on);if(on)OPEN.add(k);else OPEN.delete(k);LS("ln_open",JSON.stringify([...OPEN]))}
 function toggleSec(k){openSec(k,!$("sec-"+k).classList.contains("op"))}
@@ -191,11 +224,11 @@ function pintarTemas(){const t=LS("ln_tema")||"esmeralda";if(!$("temas"))return;
   $("temas").querySelectorAll("[data-tema]").forEach(b=>b.onclick=()=>{LS("ln_tema",b.dataset.tema);aplicarTema();pintarTemas();toast("Apariencia cambiada")})}
 function lock(){
   aplicarTema();
-  $("m").innerHTML=`<div class="lockbox"><div class="eyebrow">Libro del Negocio</div><h1>Administrador</h1><p class="sub">Generador de códigos de activación</p>
-  ${avisoSafari()}<form class="panel" id="fl"><label>Contraseña de administrador<input id="pw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" required></label><div class="err" id="er"></div><button class="btn pri full" id="go" type="submit">Entrar</button></form></div>`;
+  $("m").innerHTML=`<div class="lockbox"><div class="eyebrow">Libro del Negocio · Granja Porcina · Mi Tambo</div><h1>Administrador</h1><p class="sub">Un solo acceso para generar los códigos de todas tus apps</p>
+  ${avisoSafari()}<form class="panel" id="fl" action="#" autocomplete="on"><label>Usuario<input id="us" name="username" type="text" autocomplete="username" value="Administrador de mis apps" readonly></label><label>Contraseña de administrador<input id="pw" name="password" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required></label><div class="err" id="er"></div><button class="btn pri full" id="go" type="submit">Entrar</button></form></div>`;
   $("fl").onsubmit=async e=>{e.preventDefault();$("go").textContent="Verificando…";$("er").textContent="";
     const pw=$("pw").value.trim();let saved=null;try{saved=JSON.parse(LS("ln_blob")||"null")}catch(x){}
-    for(const b of [saved,BLOB]){if(!b)continue;try{PRV=await dec(b,pw)}catch(x){continue}try{PRVG=await abrirGranja(PRV)}catch(x){PRVG=null}main();return}
+    for(const b of [saved,BLOB]){if(!b)continue;try{PRV=await dec(b,pw)}catch(x){continue}try{PRVG=await abrirGranja(PRV)}catch(x){PRVG=null}try{PRVT=await abrirTambo(PRV)}catch(x){PRVT=null}main();return}
     $("go").textContent="Entrar";$("er").textContent="Contraseña incorrecta. Si la cambiaste y no la recordás, usá la contraseña original del administrador.";};
 }
 
@@ -206,10 +239,15 @@ function main(){loadReg();if(!APPS[APP])APP="negocio";
   <div class="apps" role="tablist" aria-label="App">${Object.keys(APPS).map(k=>`<button role="tab" aria-selected="${APP===k}" class="appb ${APP===k?"on":""}" data-app="${k}" style="--ac:${APPC[k]}"><b>${esc(APPS[k].n)}</b><small>${resApp(k)}</small></button>`).join("")}</div>
   <div class="apph"><i></i>Estás viendo los accesos de <b>${esc(APPS[APP].n)}</b></div>
   <div class="kp" id="kp"></div>
-  <div class="acc" id="sec-gen"><button class="ah" data-sec="gen"><span class="ai">＋</span><span class="at"><b id="ft">Nuevo código o renovación</b><small>Para ${esc(APPS[APP].n)} · con el ID del cliente</small></span><span class="chev">›</span></button>
+  <div class="acc" id="sec-gen"><button class="ah" data-sec="gen"><span class="ai">＋</span><span class="at"><b id="ft">Nuevo código o renovación</b><small>${APP==="tambo"&&!PRVT?"Primero vinculá Mi Tambo (una sola vez)":"Para "+esc(APPS[APP].n)+" · con el ID del cliente"}</small></span><span class="chev">›</span></button>
   <div class="ab">
-  <form class="stack" id="fg">
-    <label hidden>App<select id="ap"><option value="negocio">Libro del Negocio</option><option value="porcina">Mi Granja Porcina</option></select></label>
+  ${APP==="tambo"&&!PRVT?`<form class="link stack" id="fvt" action="#" autocomplete="on"><h3>Vincular Mi Tambo (una sola vez)</h3>
+    <div class="hint">Escribí la contraseña que usabas en el Admin de Mi Tambo. Queda guardada protegida en este teléfono y desde ahí entrás a todo con tu contraseña de siempre.</div>
+    <input type="text" name="username" autocomplete="username" value="Admin Mi Tambo" readonly hidden>
+    <label>Contraseña del Admin de Mi Tambo<input id="tpw" name="password" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required></label>
+    <div class="err" id="ter"></div><button class="btn pri full" id="tgo" type="submit">Vincular Mi Tambo</button></form>`:""}
+  <form class="stack" id="fg" ${APP==="tambo"&&!PRVT?"hidden":""}>
+    <label hidden>App<select id="ap"><option value="negocio">Libro del Negocio</option><option value="porcina">Mi Granja Porcina</option><option value="tambo">Mi Tambo</option></select></label>
     <label>Nombre del cliente o negocio<input id="n" maxlength="60" placeholder="Ej.: Pulpería La Esperanza" required></label>
     <label>ID del teléfono (lo envía el cliente)<input id="d" placeholder="XXXX-XXXX" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" required></label>
     <label>Tiempo de acceso<select id="t">
@@ -233,7 +271,7 @@ function main(){loadReg();if(!APPS[APP])APP="negocio";
   <div class="ab"><div class="temas" id="temas"></div></div></div>
   <div class="acc" id="sec-reg"><button class="ah" data-sec="reg"><span class="ai gold">⚿</span><span class="at"><b>Registro y contraseña</b><small>Respaldo, importar y cambiar clave</small></span><span class="chev">›</span></button>
   <div class="ab stack">
-      <div class="hint">El registro de clientes vive solo en este teléfono. Copiá el respaldo y guardalo en Notas.</div>
+      <div class="hint">El registro de clientes de las 3 apps vive solo en este teléfono. Copiá el respaldo y guardalo en Notas. Para pasar tus ganaderos del Admin viejo de Mi Tambo: allá tocá «Copiar respaldo del registro» y pegalo aquí; cada código se ubica solo en su app.</div>
       <div class="row"><button class="btn" id="ex">Copiar respaldo del registro</button></div>
       <label>Importar registro (pegá el respaldo)<textarea id="imt" rows="2"></textarea></label>
       <div class="row"><button class="btn" id="im">Importar</button></div>
@@ -241,6 +279,9 @@ function main(){loadReg();if(!APPS[APP])APP="negocio";
       <div class="hint">Anotala antes de guardarla. La contraseña original del administrador sigue sirviendo como respaldo.</div>
       <div class="row"><button class="btn" id="pwc">Cambiar contraseña en este teléfono</button></div>
   </div></div>`;
+  if($("fvt"))$("fvt").onsubmit=async e=>{e.preventDefault();$("tgo").textContent="Verificando…";$("ter").textContent="";
+    try{await vincularTambo($("tpw").value.trim());toast("Mi Tambo quedó vinculado");OPEN.add("gen");main()}
+    catch(x){$("tgo").textContent="Vincular Mi Tambo";$("ter").textContent="Esa no es la contraseña de Mi Tambo. Si la cambiaste en su Admin, probá con la contraseña original."}};
   $("ap").value=APP;$("m").style.setProperty("--c-gen",APPC[APP]);$("m").style.setProperty("--appc",APPC[APP]);
   document.querySelectorAll("[data-app]").forEach(b=>b.onclick=()=>{if(APP===b.dataset.app)return;APP=b.dataset.app;try{localStorage.setItem("ln_app",APP)}catch(e){};open=null;q="";main();toast("Mostrando "+APPS[APP].n)});
   document.querySelectorAll("[data-sec]").forEach(b=>b.onclick=()=>toggleSec(b.dataset.sec));
@@ -253,13 +294,13 @@ function main(){loadReg();if(!APPS[APP])APP="negocio";
   $("t").onchange=vf;$("x").onchange=vf;$("d").oninput=vf;$("ap").onchange=vf;vf();
   $("fg").onsubmit=async e=>{e.preventDefault();$("er").textContent="";
     const n=$("n").value.trim(),d=cleanId(),ex=exp(),a=$("ap").value;
-    const K=a==="porcina"?PRVG:PRV;
-    if(!K){$("er").textContent="No se pudo abrir la llave de esta app. Salí y volvé a entrar con tu contraseña.";return}
+    const K=a==="porcina"?PRVG:a==="tambo"?PRVT:PRV;
+    if(!K){$("er").textContent=a==="tambo"?"Primero vinculá Mi Tambo con su contraseña.":"No se pudo abrir la llave de esta app. Salí y volvé a entrar con tu contraseña.";return}
     if(!n){$("er").textContent="Escribí el nombre.";return}
     if(!/^[A-Z0-9]{8}$/.test(d)){$("er").textContent="El ID debe tener 8 letras o números (XXXX-XXXX).";return}
     if($("t").value==="x"&&(!ex||ex<today())){$("er").textContent="Elegí una fecha futura.";return}
     const p=b64u(new TextEncoder().encode(JSON.stringify(a==="porcina"?{n,d,e:ex,a}:{n,d,e:ex})));
-    const key=await crypto.subtle.importKey("jwk",a==="porcina"?cleanK(K):K,{name:"ECDSA",namedCurve:"P-256"},false,["sign"]);
+    const key=await crypto.subtle.importKey("jwk",a==="negocio"?K:cleanK(K),{name:"ECDSA",namedCurve:"P-256"},false,["sign"]);
     const sg=await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},key,new TextEncoder().encode(p));
     const code=p+"."+b64u(sg);
     reg=reg.filter(r=>!(r.d===d&&appDe(r)===a));const r={n,d,e:ex,code,at:today(),a};reg.push(r);saveReg();
@@ -274,9 +315,13 @@ function main(){loadReg();if(!APPS[APP])APP="negocio";
   document.querySelectorAll("[data-inv]").forEach(b=>b.onclick=()=>{location.href="https://wa.me/?text="+encodeURIComponent(invTxt(b.dataset.inv))});
   document.querySelectorAll("[data-invc]").forEach(b=>b.onclick=()=>copy(invTxt(b.dataset.invc),"Invitación copiada"));
   $("ex").onclick=()=>copy(JSON.stringify(reg),"Respaldo copiado. Pegalo en Notas.");
-  $("im").onclick=()=>{try{const a=JSON.parse($("imt").value);if(!Array.isArray(a))throw 0;const mp={};[...reg,...a].forEach(r=>{if(r&&r.d&&r.code)mp[rk(r)]=r});reg=Object.values(mp);saveReg();toast("Registro importado");main()}catch(e){toast("El texto no es un registro válido")}};
+  $("im").onclick=async()=>{let a;try{a=JSON.parse($("imt").value);if(!Array.isArray(a))throw 0}catch(e){toast("El texto no es un registro válido");return}
+    const nuevos=a.filter(r=>r&&r.d&&r.code);const cnt={};
+    for(const r of nuevos){r.a=await appDeCodigo(r);cnt[r.a]=(cnt[r.a]||0)+1}
+    const mp={};[...reg,...nuevos].forEach(r=>{mp[rk(r)]=r});reg=Object.values(mp);saveReg();
+    toast(nuevos.length?"Importado: "+Object.keys(cnt).map(k=>cnt[k]+" de "+APPS[k].n).join(", "):"No había códigos para importar");main()};
   $("pwc").onclick=async()=>{const p=$("np").value.trim();if(p.length<12){toast("Usá al menos 12 caracteres");return}LS("ln_blob",JSON.stringify(await enc(PRV,p)));$("np").value="";toast("Contraseña cambiada en este teléfono. Anotala.")};
-  $("out2").onclick=()=>{PRV=null;PRVG=null;lock()};
+  $("out2").onclick=()=>{PRV=null;PRVG=null;PRVT=null;lock()};
   kp();list();
 }
 const cleanId=()=>($("d").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
